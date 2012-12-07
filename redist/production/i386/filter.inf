@@ -1,0 +1,106 @@
+; fastdev.inf
+;
+; Installation file (.inf) for the Fastcom 422-PCIe devices.
+;
+; (c) Copyright 2003 Commtech, Inc. 
+;
+; Instead of specifying a hardware id of *PNP0501, a vendor-specific
+; hardware id is used to trigger the install of a filter driver that
+; filters the resources of the children so that they are acceptable to
+; serial/serenum
+;
+
+[Version]
+Signature="$Windows NT$"
+Class=MultiportSerial
+ClassGUID={50906cb8-ba12-11d1-bf5d-0000f805f530}
+Provider=%ManufacturerName%
+CatalogFile=serial_fc.cat
+DriverVer=11/13/2003,1.2.2
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+[Manufacturer]
+;%ManufacturerName%=Standard,NT$ARCH$
+%ManufacturerName%=Standard,NTx86
+
+;[Standard.NT$ARCH$]
+[Standard.NTx86]
+%4224.DeviceDesc%=4224_Device, PCI\VEN_18F7&DEV_0020
+%4228.DeviceDesc%=4228_Device, PCI\VEN_18F7&DEV_0021
+
+[4224_Device]
+Include = mf.inf
+Needs = MFINSTALL.mf
+
+[4224_Device.HW]
+AddReg=4224_Device.RegHW
+
+[4224_Device.Services]
+Include = mf.inf
+Needs = MFINSTALL.mf.Services
+
+; here the system is fooled to start child03 as the first rather than child00
+; we have seen that child00 is always the last to enumerate
+; this way we can have consisten com numbers both in the app and device manager
+[4224_Device.RegHW]
+HKR,Child00,HardwareID,,OEMPORT
+HKR,Child00,ResourceMap,1,02
+HKR,Child00,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
+HKR,Child01,HardwareID,,OEMPORT
+HKR,Child01,ResourceMap,1,02
+HKR,Child01,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
+HKR,Child02,HardwareID,,OEMPORT
+HKR,Child02,ResourceMap,1,02
+HKR,Child02,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
+HKR,Child03,HardwareID,,OEMPORT
+HKR,Child03,ResourceMap,1,02
+HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
+
+[4228_Device]
+Include = mf.inf
+Needs = MFINSTALL.mf
+
+[4228_Device.HW]
+AddReg=4228_Device.RegHW
+
+[4228_Device.Services]
+Include = mf.inf
+Needs = MFINSTALL.mf.Services
+
+; here the system is fooled to start child07 as the first rather than child00
+; we have seen that child00 is always the last to enumerate
+; this way we can have consisten com numbers both in the app and device manager
+[4228_Device.RegHW]
+HKR,Child00,HardwareID,,OEMPORT
+HKR,Child00,ResourceMap,1,02
+HKR,Child00,VaryingResourceMap,1,00, 00,1C,00,00, 00,04,00,00
+HKR,Child01,HardwareID,,OEMPORT
+HKR,Child01,ResourceMap,1,02
+HKR,Child01,VaryingResourceMap,1,00, 00,18,00,00, 00,04,00,00
+HKR,Child02,HardwareID,,OEMPORT
+HKR,Child02,ResourceMap,1,02
+HKR,Child02,VaryingResourceMap,1,00, 00,14,00,00, 00,04,00,00
+HKR,Child03,HardwareID,,OEMPORT
+HKR,Child03,ResourceMap,1,02
+HKR,Child03,VaryingResourceMap,1,00, 00,10,00,00, 00,04,00,00
+HKR,Child04,HardwareID,,OEMPORT
+HKR,Child04,ResourceMap,1,02
+HKR,Child04,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
+HKR,Child05,HardwareID,,OEMPORT
+HKR,Child05,ResourceMap,1,02
+HKR,Child05,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
+HKR,Child06,HardwareID,,OEMPORT
+HKR,Child06,ResourceMap,1,02
+HKR,Child06,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
+HKR,Child07,HardwareID,,OEMPORT
+HKR,Child07,ResourceMap,1,02
+HKR,Child07,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
+
+
+[Strings]
+ManufacturerName="Commtech, Inc."
+
+4224.DeviceDesc = "Commtech 422/4-PCIe Controller"
+4228.DeviceDesc = "Commtech 422/8-PCIe Controller"
