@@ -15,7 +15,7 @@ Signature="$Windows NT$"
 Class=MultiportSerial
 ClassGUID={50906cb8-ba12-11d1-bf5d-0000f805f530}
 Provider=%ManufacturerName%
-CatalogFile=serial_fc.cat
+CatalogFile=serialfc.cat
 DriverVer=11/13/2003,1.2.2
 
 [ControlFlags]
@@ -27,80 +27,221 @@ ExcludeFromSelect=*
 
 ;[Standard.NT$ARCH$]
 [Standard.NTAMD64]
-%4224.DeviceDesc%=4224_Device, PCI\VEN_18F7&DEV_0020
-%4228.DeviceDesc%=4228_Device, PCI\VEN_18F7&DEV_0021
+%4222PCI.DeviceDesc%=4222PCI_Device, PCI\VEN_18F7&DEV_0004
+%4224PCI.DeviceDesc%=4224PCI_Device, PCI\VEN_18F7&DEV_0002
+%2324PCI.DeviceDesc%=2324PCI_Device, PCI\VEN_18F7&DEV_000a
+%2328PCI.DeviceDesc%=2328PCI_Device, PCI\VEN_18F7&DEV_000b
 
-[4224_Device]
+%4224PCIe.DeviceDesc%=4224PCIe_Device, PCI\VEN_18F7&DEV_0020
+%4228PCIe.DeviceDesc%=4228PCIe_Device, PCI\VEN_18F7&DEV_0021
+
+
+
+[4222PCI_Device]
 Include = mf.inf
 Needs = MFINSTALL.mf
 
-[4224_Device.HW]
-AddReg=4224_Device.RegHW
+[4222PCI_Device.HW]
+AddReg=4222PCI_Device.RegHW
 
-[4224_Device.Services]
+[4222PCI_Device.Services]
+Include = mf.inf
+Needs = MFINSTALL.mf.Services
+
+[4222PCI_Device.RegHW]
+; here the system is fooled to start child01 as the first rather than child00
+; we have seen that child00 is always the last to enumerate
+; this way we can have consisten com numbers both in the app and device manager
+HKR,Child00,HardwareID,,4222PCIPort
+HKR,Child00,ResourceMap,1,02
+HKR,Child00,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
+HKR,Child01,HardwareID,,4222PCIPort
+HKR,Child01,ResourceMap,1,02
+HKR,Child01,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
+
+
+
+[4224PCI_Device]
+Include = mf.inf
+Needs = MFINSTALL.mf
+
+[4224PCI_Device.HW]
+AddReg=4224PCI_Device.RegHW
+
+[4224PCI_Device.Services]
 Include = mf.inf
 Needs = MFINSTALL.mf.Services
 
 ; here the system is fooled to start child03 as the first rather than child00
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
-[4224_Device.RegHW]
-HKR,Child00,HardwareID,,OEMPORT
+[4224PCI_Device.RegHW]
+HKR,Child00,HardwareID,,4224PCIPort
 HKR,Child00,ResourceMap,1,02
-HKR,Child00,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
-HKR,Child01,HardwareID,,OEMPORT
+HKR,Child00,VaryingResourceMap,1,00, 00,06,00,00, 00,02,00,00
+HKR,Child01,HardwareID,,4224PCIPort
 HKR,Child01,ResourceMap,1,02
-HKR,Child01,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
-HKR,Child02,HardwareID,,OEMPORT
+HKR,Child01,VaryingResourceMap,1,00, 00,04,00,00, 00,02,00,00
+HKR,Child02,HardwareID,,4224PCIPort
 HKR,Child02,ResourceMap,1,02
-HKR,Child02,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
-HKR,Child03,HardwareID,,OEMPORT
+HKR,Child02,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
+HKR,Child03,HardwareID,,4224PCIPort
 HKR,Child03,ResourceMap,1,02
-HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
+HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
 
-[4228_Device]
+
+
+[2324PCI_Device]
 Include = mf.inf
 Needs = MFINSTALL.mf
 
-[4228_Device.HW]
-AddReg=4228_Device.RegHW
+[2324PCI_Device.HW]
+AddReg=2324PCI_Device.RegHW
 
-[4228_Device.Services]
+[2324PCI_Device.Services]
+Include = mf.inf
+Needs = MFINSTALL.mf.Services
+
+; here the system is fooled to start child03 as the first rather than child00
+; we have seen that child00 is always the last to enumerate
+; this way we can have consisten com numbers both in the app and device manager
+[2324PCI_Device.RegHW]
+HKR,Child00,HardwareID,,2324PCIPort
+HKR,Child00,ResourceMap,1,02
+HKR,Child00,VaryingResourceMap,1,00, 00,06,00,00, 00,02,00,00
+HKR,Child01,HardwareID,,2324PCIPort
+HKR,Child01,ResourceMap,1,02
+HKR,Child01,VaryingResourceMap,1,00, 00,04,00,00, 00,02,00,00
+HKR,Child02,HardwareID,,2324PCIPort
+HKR,Child02,ResourceMap,1,02
+HKR,Child02,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
+HKR,Child03,HardwareID,,2324PCIPort
+HKR,Child03,ResourceMap,1,02
+HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
+
+
+
+[2328PCI_Device]
+Include = mf.inf
+Needs = MFINSTALL.mf
+
+[2328PCI_Device.HW]
+AddReg=2328PCI_Device.RegHW
+
+[2328PCI_Device.Services]
 Include = mf.inf
 Needs = MFINSTALL.mf.Services
 
 ; here the system is fooled to start child07 as the first rather than child00
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
-[4228_Device.RegHW]
-HKR,Child00,HardwareID,,OEMPORT
+[2328PCI_Device.RegHW]
+HKR,Child00,HardwareID,,2328PCIPort
+HKR,Child00,ResourceMap,1,02
+HKR,Child00,VaryingResourceMap,1,00, 00,0E,00,00, 00,02,00,00
+HKR,Child01,HardwareID,,2328PCIPort
+HKR,Child01,ResourceMap,1,02
+HKR,Child01,VaryingResourceMap,1,00, 00,0C,00,00, 00,02,00,00
+HKR,Child02,HardwareID,,2328PCIPort
+HKR,Child02,ResourceMap,1,02
+HKR,Child02,VaryingResourceMap,1,00, 00,0A,00,00, 00,02,00,00
+HKR,Child03,HardwareID,,2328PCIPort
+HKR,Child03,ResourceMap,1,02
+HKR,Child03,VaryingResourceMap,1,00, 00,08,00,00, 00,02,00,00
+HKR,Child04,HardwareID,,2328PCIPort
+HKR,Child04,ResourceMap,1,02
+HKR,Child04,VaryingResourceMap,1,00, 00,06,00,00, 00,02,00,00
+HKR,Child05,HardwareID,,2328PCIPort
+HKR,Child05,ResourceMap,1,02
+HKR,Child05,VaryingResourceMap,1,00, 00,04,00,00, 00,02,00,00
+HKR,Child06,HardwareID,,2328PCIPort
+HKR,Child06,ResourceMap,1,02
+HKR,Child06,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
+HKR,Child07,HardwareID,,2328PCIPort
+HKR,Child07,ResourceMap,1,02
+HKR,Child07,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
+
+
+
+[4224PCIe_Device]
+Include = mf.inf
+Needs = MFINSTALL.mf
+
+[4224PCIe_Device.HW]
+AddReg=4224PCIe_Device.RegHW
+
+[4224PCIe_Device.Services]
+Include = mf.inf
+Needs = MFINSTALL.mf.Services
+
+; here the system is fooled to start child03 as the first rather than child00
+; we have seen that child00 is always the last to enumerate
+; this way we can have consisten com numbers both in the app and device manager
+[4224PCIe_Device.RegHW]
+HKR,Child00,HardwareID,,4224PCIePort
+HKR,Child00,ResourceMap,1,02
+HKR,Child00,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
+HKR,Child01,HardwareID,,4224PCIePort
+HKR,Child01,ResourceMap,1,02
+HKR,Child01,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
+HKR,Child02,HardwareID,,4224PCIePort
+HKR,Child02,ResourceMap,1,02
+HKR,Child02,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
+HKR,Child03,HardwareID,,4224PCIePort
+HKR,Child03,ResourceMap,1,02
+HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
+
+
+
+[4228PCIe_Device]
+Include = mf.inf
+Needs = MFINSTALL.mf
+
+[4228PCIe_Device.HW]
+AddReg=4228PCIe_Device.RegHW
+
+[4228PCIe_Device.Services]
+Include = mf.inf
+Needs = MFINSTALL.mf.Services
+
+; here the system is fooled to start child07 as the first rather than child00
+; we have seen that child00 is always the last to enumerate
+; this way we can have consisten com numbers both in the app and device manager
+[4228PCIe_Device.RegHW]
+HKR,Child00,HardwareID,,4228PCIePort
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,1C,00,00, 00,04,00,00
-HKR,Child01,HardwareID,,OEMPORT
+HKR,Child01,HardwareID,,4228PCIePort
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,18,00,00, 00,04,00,00
-HKR,Child02,HardwareID,,OEMPORT
+HKR,Child02,HardwareID,,4228PCIePort
 HKR,Child02,ResourceMap,1,02
 HKR,Child02,VaryingResourceMap,1,00, 00,14,00,00, 00,04,00,00
-HKR,Child03,HardwareID,,OEMPORT
+HKR,Child03,HardwareID,,4228PCIePort
 HKR,Child03,ResourceMap,1,02
 HKR,Child03,VaryingResourceMap,1,00, 00,10,00,00, 00,04,00,00
-HKR,Child04,HardwareID,,OEMPORT
+HKR,Child04,HardwareID,,4228PCIePort
 HKR,Child04,ResourceMap,1,02
 HKR,Child04,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
-HKR,Child05,HardwareID,,OEMPORT
+HKR,Child05,HardwareID,,4228PCIePort
 HKR,Child05,ResourceMap,1,02
 HKR,Child05,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
-HKR,Child06,HardwareID,,OEMPORT
+HKR,Child06,HardwareID,,4228PCIePort
 HKR,Child06,ResourceMap,1,02
 HKR,Child06,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
-HKR,Child07,HardwareID,,OEMPORT
+HKR,Child07,HardwareID,,4228PCIePort
 HKR,Child07,ResourceMap,1,02
 HKR,Child07,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
+
 
 
 [Strings]
 ManufacturerName = "Commtech, Inc."
 
-4224.DeviceDesc = "Commtech 422/4-PCIe Controller"
-4228.DeviceDesc = "Commtech 422/8-PCIe Controller"
+4222PCI.DeviceDesc = "Commtech 422/2-PCI-335 Controller"
+4224PCI.DeviceDesc = "Commtech 422/4-PCI-335 Controller"
+2324PCI.DeviceDesc = "Commtech 232/4-PCI-335 Controller"
+2328PCI.DeviceDesc = "Commtech 232/8-PCI-335 Controller"
+
+4224PCIe.DeviceDesc = "Commtech 422/4-PCIe Controller"
+4228PCIe.DeviceDesc = "Commtech 422/8-PCIe Controller"

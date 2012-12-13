@@ -1,4 +1,4 @@
-TARGETNAME=serial_fc
+TARGETNAME=serialfc
 TARGETTYPE=DRIVER
 
 
@@ -6,9 +6,10 @@ KMDF_VERSION_MAJOR=1
 
 TARGETLIBS=$(TARGETLIBS) \
            $(DDK_LIB_PATH)\ntstrsafe.lib \
-           $(DDK_LIB_PATH)\rtlver.lib
+           $(DDK_LIB_PATH)\rtlver.lib \
+           $(DDK_LIB_PATH)\wdmsec.lib
 
-INF_NAME=serial_fc
+INF_NAME=serialfc
 NTTARGETFILE0=$(OBJ_PATH)\$(O)\$(INF_NAME).inf
 PASS0_BINPLACE=$(NTTARGETFILE0)
 

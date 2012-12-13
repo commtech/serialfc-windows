@@ -1,4 +1,4 @@
-set NAME=serial_fc
+set NAME=serialfc
 set TOP=bin\%NAME%
 
 echo off

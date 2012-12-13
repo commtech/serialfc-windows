@@ -20,8 +20,8 @@
 signature="$CHICAGO$"
 Class=Ports
 ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
-Provider=%MSFT%
-CatalogFile=serial_fc.cat
+Provider=%ManufacturerName%
+CatalogFile=serialfc.cat
 
 
 ; ================= Device Install section =====================
@@ -30,10 +30,10 @@ CatalogFile=serial_fc.cat
 ExcludeFromSelect=*
 
 [Manufacturer]
-%MSFT%=MSFT,NT$ARCH$
+%ManufacturerName%=Standard,NT$ARCH$
 
 [SourceDisksFiles]
-serial_fc.sys=1
+serialfc.sys=1
 
 [SourceDisksNames]
 1=%DISK_NAME%,
@@ -41,26 +41,18 @@ serial_fc.sys=1
 [DestinationDirs]
 DefaultDestDir  = 12
 
-; For Win2K
-[MSFT]
-; DisplayName           Section           DeviceId
-; -----------           -------           --------
-%PNP0500.DevDesc%=       Serial_Inst,      *PNP0500, *PNP0501, OEMPORT ; Communications Port
-%PNP0501.DevDesc%=       Serial_Inst,      *PNP0501, *PNP0500, OEMPORT ; Communications Port
-
 ; For XP and later
-[MSFT.NT$ARCH$]
+[Standard.NT$ARCH$]
 ; DisplayName           Section           DeviceId
 ; -----------           -------           --------
-%PNP0500.DevDesc%=       Serial_Inst,      *PNP0500, *PNP0501, OEMPORT ; Communications Port
-%PNP0501.DevDesc%=       Serial_Inst,      *PNP0501, *PNP0500, OEMPORT ; Communications Port
+%PNP0500.DevDesc%=       Serial_Inst,      4222PCIPort, 4224PCIPort, 2324PCIPort, 2328PCIPort, 4224PCIePort, 4228PCIePort ; Communications Port
 
 
 [Serial_Inst.NT]
 CopyFiles=Serial.CopyFiles
 
 [Serial.CopyFiles]
-serial_fc.sys
+serialfc.sys
 
 [Serial_Inst.NT.Services]
 AddService=Serial,0x00000002,Serial_Service 
@@ -70,7 +62,7 @@ DisplayName    = %Serial.SVCDESC%
 ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
 StartType      = 3                  ; SERVICE_DEMAND_START
 ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
-ServiceBinary  = %12%\serial_fc.sys                            
+ServiceBinary  = %12%\serialfc.sys                            
 AddReg         = Serial_Parameters_AddReg
 
 ;-------------- WDF Coinstaller installation
@@ -96,9 +88,8 @@ KmdfService = Serial, Serial_wdfsect
 KmdfLibraryVersion = $KMDFVERSION$
 
 [Strings]
-MSFT = "Microsoft"
-Serial.SVCDESC = "WDF Serial driver"
+ManufacturerName = "Commtech, Inc."
+Serial.SVCDESC = "Fastcom 422 serial driver"
 PNP0500.DevDesc = "Communications Port"
-PNP0501.DevDesc = "Communications Port"
 DISK_NAME = "Serial Install Disk"
 
