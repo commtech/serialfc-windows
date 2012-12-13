@@ -125,6 +125,8 @@ Return Value:
     if (!NT_SUCCESS(status)) {
         return status;
     }
+    
+    status = WdfDeviceInitAssignSDDLString(DeviceInit, &SDDL_DEVOBJ_SYS_ALL_ADM_RWX_WORLD_RWX_RES_RWX);
 
     status = WdfDeviceInitAssignName(DeviceInit,& deviceName);
     if (!NT_SUCCESS(status)) {
@@ -706,7 +708,7 @@ Return Value:
     NTSTATUS status;
     CONFIG_DATA config;
     PCONFIG_DATA pConfig = &config;
-    ULONG defaultClockRate = 1843200;
+    ULONG defaultClockRate = 14745600;
 
     PAGED_CODE();
 
@@ -1186,6 +1188,49 @@ Return Value:
     pDevExt->AddressSpace          = PConfigData->AddressSpace;
     pDevExt->SpanOfController      = PConfigData->SpanOfController;
 
+
+    //PCI
+    switch (pDevExt->DeviceID) {
+    case FC_422_2_PCI_335_ID:
+    case FC_422_4_PCI_335_ID:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x78); //This is 0x00 in the windows driver
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32);
+        break;
+
+    case FC_232_4_PCI_335_ID:
+    case FC_232_8_PCI_335_ID:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32);
+        break;
+
+    case FC_422_4_PCIe_ID:
+    case FC_422_8_PCIe_ID:
+        for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
+            pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 128);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 128);
+		break;
+    }
+
     //
     // Save off the interface type and the bus number.
     //
@@ -1423,15 +1468,19 @@ Return Value:
     //
 
 #pragma prefast(suppress: __WARNING_IRQ_SET_TOO_HIGH, "This warning is because we are calling interrupt synchronize routine directly. Suppress it because interrupt is not connected yet.")
+#pragma prefast(suppress:6387, "Interrupt is UNREFERENCED_PARAMETER, so it can be NULL")
     SerialReset(NULL, pDevExt);
 
 #pragma prefast(suppress: __WARNING_IRQ_SET_TOO_HIGH, "This warning is because we are calling interrupt synchronize routine directly. Suppress it because interrupt is not connected yet.")
+#pragma prefast(suppress:6387, "Interrupt is UNREFERENCED_PARAMETER, so it can be NULL")
     SerialMarkClose(NULL, pDevExt);
 
 #pragma prefast(suppress: __WARNING_IRQ_SET_TOO_HIGH, "This warning is because we are calling interrupt synchronize routine directly. Suppress it because interrupt is not connected yet.")
+#pragma prefast(suppress:6387, "Interrupt is UNREFERENCED_PARAMETER, so it can be NULL")
     SerialClrRTS(NULL, pDevExt);
 
 #pragma prefast(suppress: __WARNING_IRQ_SET_TOO_HIGH, "This warning is because we are calling interrupt synchronize routine directly. Suppress it because interrupt is not connected yet.")
+#pragma prefast(suppress:6387, "Interrupt is UNREFERENCED_PARAMETER, so it can be NULL")
     SerialClrDTR(NULL, pDevExt);
 
     //
@@ -1567,6 +1616,7 @@ Return Value:
    ULONG curIoIndex = 0;
    ULONG gotMem = 0;
    BOOLEAN DebugPortInUse = FALSE;
+   PDEVICE_OBJECT pdo;
 
    PAGED_CODE();
 
@@ -1585,6 +1635,7 @@ Return Value:
    }
 
     for (i = 0; i < WdfCmResourceListGetCount(PTrResList); i++) {
+
         pPartialTrResourceDesc = WdfCmResourceListGetDescriptor(PTrResList, i);
         pPartialRawResourceDesc = WdfCmResourceListGetDescriptor(PResList, i);
 
@@ -1613,6 +1664,7 @@ Return Value:
                     PConfig->AddressSpace  = pPartialTrResourceDesc->Flags;
                     pDevExt->SerialReadUChar = SerialReadPortUChar;
                     pDevExt->SerialWriteUChar = SerialWritePortUChar;
+                    pDevExt->SerialWriteUChars = SerialWritePortUChars;
 
                 } else {
                     curIoIndex++;
@@ -1627,11 +1679,6 @@ Return Value:
         // IO space
         //
         case CmResourceTypeMemory:
-        ASSERT(!(pPartialTrResourceDesc->u.Port.Length == SERIAL_STATUS_LENGTH));
-
-        if ((gotMem == 0) && (gotIO == 0)
-                         && (pPartialTrResourceDesc->u.Memory.Length
-                         == (SERIAL_REGISTER_SPAN + SERIAL_STATUS_LENGTH))) {
             gotMem = 1;
             PConfig->TrController = pPartialTrResourceDesc->u.Memory.Start;
 
@@ -1647,7 +1694,7 @@ Return Value:
             PConfig->SpanOfController = SERIAL_REGISTER_SPAN;
             pDevExt->SerialReadUChar = SerialReadRegisterUChar;
             pDevExt->SerialWriteUChar = SerialWriteRegisterUChar;
-        }
+            pDevExt->SerialWriteUChars = SerialWriteRegisterUChars;
         break;
 
         case CmResourceTypeInterrupt:
@@ -1682,7 +1729,7 @@ Return Value:
         status = STATUS_INSUFFICIENT_RESOURCES;
         goto End;
    }
-KdPrint(("C"));
+
    //
    // First check what type of AddressSpace this port is in. Then check
    // if the debugger is using this port. If it is, set DebugPortInUse to TRUE.
@@ -1734,6 +1781,10 @@ KdPrint(("C"));
       status = STATUS_INSUFFICIENT_RESOURCES;
       goto End;
    }
+
+   pdo = WdfDeviceWdmGetDeviceObject(Device);
+
+   PCIReadConfigWord(pdo, 0x02, &pDevExt->DeviceID);
 
 End:
 

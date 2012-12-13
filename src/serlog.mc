@@ -288,4 +288,3 @@ The serial driver detected a hardware failure on device %2 and will disable this
 
 ;#endif /* _NTIOLOGC_ */
 
-

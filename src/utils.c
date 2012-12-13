@@ -1944,3 +1944,49 @@ SerialCompleteRequest(
 }
 
 
+/*****************************************************************************
+ * Direct R/W from config space.
+ *****************************************************************************/
+INT
+PCIReadConfigWord(
+    IN PDEVICE_OBJECT DeviceObject,
+    IN ULONG          Offset,
+    IN PVOID          Value
+    )
+{
+    PDEVICE_OBJECT TargetObject;
+    PIRP pIrp;
+    IO_STATUS_BLOCK IoStatusBlock;
+    PIO_STACK_LOCATION IrpStack;
+    KEVENT ConfigReadWordEvent;
+    INT error = 0;
+
+    TargetObject = IoGetAttachedDeviceReference(DeviceObject);
+    KeInitializeEvent(&ConfigReadWordEvent, NotificationEvent, FALSE);
+    
+    pIrp = IoBuildSynchronousFsdRequest(IRP_MJ_PNP, TargetObject, NULL,
+        0, NULL, &ConfigReadWordEvent, &IoStatusBlock );
+
+    if (pIrp) {
+        /* Create the config space read IRP */
+        IrpStack = IoGetNextIrpStackLocation(pIrp);
+        IrpStack->MinorFunction = IRP_MN_READ_CONFIG;
+        IrpStack->Parameters.ReadWriteConfig.WhichSpace = \
+            PCI_WHICHSPACE_CONFIG;
+        IrpStack->Parameters.ReadWriteConfig.Offset = Offset;
+        IrpStack->Parameters.ReadWriteConfig.Length = 0x2;
+        IrpStack->Parameters.ReadWriteConfig.Buffer = Value;
+        pIrp->IoStatus.Status = STATUS_NOT_SUPPORTED ;
+     
+        /* Send the IRP */
+        if (IoCallDriver(TargetObject, pIrp)==STATUS_PENDING) {
+            KeWaitForSingleObject(&ConfigReadWordEvent, Executive, \
+                KernelMode, FALSE, NULL);
+        }
+    } else {
+        error = -1;
+    }
+
+    ObDereferenceObject(TargetObject);
+    return error;
+} 

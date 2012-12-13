@@ -500,6 +500,13 @@ SerialCompleteRequest(
     IN ULONG_PTR     Info
     );
 
+INT
+PCIReadConfigWord(
+    IN PDEVICE_OBJECT DeviceObject,
+    IN ULONG          Offset,
+    IN PVOID          Value
+    );
+
 BOOLEAN
 SerialGetFdoRegistryKeyValue(
     IN PWDFDEVICE_INIT  DeviceInit,

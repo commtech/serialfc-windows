@@ -766,15 +766,29 @@ doTrasmitStuff:;
                                         *(Extension->WriteCurrentChar));
 
                                 } else {
+                                    unsigned i = 0;
 
                                     Extension->PerfStats.TransmittedCount +=
                                         amountToWrite;
                                     Extension->WmiPerfData.TransmittedCount +=
                                         amountToWrite;
-                                    WRITE_TRANSMIT_FIFO_HOLDING(Extension,
+									
+									/* Disable using WRITE_TRANSMIT_FIFO_HOLDING until 
+                                      I figure out why it isn't working the same as the 
+                                      for loop below */
+
+                                    /*
+									WRITE_TRANSMIT_FIFO_HOLDING(Extension,
                                         Extension->Controller,
                                         Extension->WriteCurrentChar,
                                         amountToWrite);
+									*/
+
+                                    for (i = 0; i < amountToWrite; i++) {
+                                        WRITE_TRANSMIT_HOLDING(Extension,
+                                            Extension->Controller,
+                                            *(Extension->WriteCurrentChar+i));
+                                    }
 
                                 }
 

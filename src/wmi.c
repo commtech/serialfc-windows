@@ -293,4 +293,3 @@ EvtWmiQueryPortPropData(
     return STATUS_SUCCESS;
 }
 
-
