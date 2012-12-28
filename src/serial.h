@@ -1284,6 +1284,7 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
     SERIAL_WMI_PERF_DATA WmiPerfData;
 
     UINT32 DeviceID;
+    unsigned SampleRate;
 
 } SERIAL_DEVICE_EXTENSION,*PSERIAL_DEVICE_EXTENSION;
 
@@ -1803,6 +1804,7 @@ typedef struct   _SUPPORTED_BAUD_RATES {
 #define MPIOODH_OFFSET 0x9a
 
 #define UART_EXAR_8XMODE 0x88 /* 8X sampling rate select */
+#define UART_EXAR_4XMODE 0x89 /* 4X sampling rate select */
 #define UART_EXAR_TXTRG 0x0a /* Tx FIFO trigger level write-only */
 #define UART_EXAR_RXTRG 0x0b /* Rx FIFO trigger level write-only */
 #define UART_EXAR_FCTR 0x08 /* Feature Control Register */

@@ -236,6 +236,7 @@ EVT_WDF_INTERRUPT_ISR SerialISR;
 NTSTATUS
 SerialGetDivisorFromBaud(
     IN ULONG ClockRate,
+    IN ULONG SampleRate,
     IN LONG DesiredBaud,
     OUT PSHORT AppropriateDivisor
     );
@@ -600,3 +601,4 @@ KAFFINITY
 
 
 
+BOOLEAN FastcomSetSampling(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);

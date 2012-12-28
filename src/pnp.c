@@ -1192,6 +1192,7 @@ Return Value:
     pDevExt->SpanOfController      = PConfigData->SpanOfController;
 
 
+    //FastcomSetSampling(pDevExt, 16);
     //PCI
     switch (pDevExt->DeviceID) {
     case FC_422_2_PCI_335_ID:
@@ -1202,7 +1203,7 @@ Return Value:
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32);
@@ -1216,7 +1217,7 @@ Return Value:
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32);
@@ -1227,7 +1228,7 @@ Return Value:
         for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
             pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
 
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 128);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 128);
@@ -1423,6 +1424,7 @@ Return Value:
 
         if (!NT_ERROR(SerialGetDivisorFromBaud(
                                             pDevExt->ClockRate,
+                                            pDevExt->SampleRate,
                                             (LONG)SupportedBaudRates[i].BaudRate,
                                             &junk
                                             ))) {
@@ -2617,6 +2619,7 @@ Return Value:
       SERIAL_IOCTL_SYNC s;
 
       SerialGetDivisorFromBaud( extension->ClockRate,
+                                extension->SampleRate,
                                 extension->CurrentBaud,
                                 &appropriateDivisor );
 

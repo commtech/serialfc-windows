@@ -134,7 +134,7 @@ Return Value:
     // Set the baud rate
     //
 
-    SerialGetDivisorFromBaud(deviceExtension->ClockRate, deviceExtension->CurrentBaud, &divisor);
+    SerialGetDivisorFromBaud(deviceExtension->ClockRate, deviceExtension->SampleRate, deviceExtension->CurrentBaud, &divisor);
     S.Extension = deviceExtension;
     S.Data = (PVOID) (ULONG_PTR) divisor;
 

@@ -1673,6 +1673,7 @@ Return Value:
 NTSTATUS
 SerialGetDivisorFromBaud(
                         IN ULONG ClockRate,
+                        IN ULONG SampleRate,
                         IN LONG DesiredBaud,
                         OUT PSHORT AppropriateDivisor
                         )
@@ -1726,7 +1727,7 @@ Return Value:
    // Reject any non-positive bauds.
    //
 
-   denominator = DesiredBaud*(ULONG)16;
+   denominator = DesiredBaud*SampleRate;
 
    if (DesiredBaud <= 0) {
 
@@ -1989,4 +1990,75 @@ PCIReadConfigWord(
 
     ObDereferenceObject(TargetObject);
     return error;
-} 
+}
+
+BOOLEAN FastcomSetSamplingPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    UCHAR current_8x_mode, new_8x_mode;
+
+    if (value != 8 || value != 16)
+        return FALSE;
+
+    current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
+
+    switch (value) {
+    case 8:
+        new_8x_mode = current_8x_mode | (1 << pDevExt->Channel);
+        break;
+
+    case 16:
+        new_8x_mode = current_8x_mode & ~(1 << pDevExt->Channel);
+        break;
+    }
+    
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, new_8x_mode);  
+
+    return TRUE;
+}
+
+BOOLEAN FastcomSetSamplingPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    UCHAR current_8x_mode, new_8x_mode;
+    UCHAR current_4x_mode, new_4x_mode;
+
+    if (value != 4 || value != 8 || value != 16)
+        return FALSE;
+
+    current_4x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_4XMODE);
+    current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
+
+    switch (value) {
+    case 4:
+        new_4x_mode = current_4x_mode | (1 << pDevExt->Channel);
+        new_8x_mode = current_8x_mode & ~(1 << pDevExt->Channel);
+        break;
+
+    case 8:
+        new_4x_mode = current_4x_mode & ~(1 << pDevExt->Channel);
+        new_8x_mode = current_8x_mode | (1 << pDevExt->Channel); 
+        break;
+
+    case 16:
+        new_4x_mode = current_4x_mode & ~(1 << pDevExt->Channel);
+        new_8x_mode = current_8x_mode & ~(1 << pDevExt->Channel);
+        break;
+    }
+    
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_4XMODE, new_4x_mode); 
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, new_8x_mode);  
+
+    return TRUE;
+}
+
+BOOLEAN FastcomSetSampling(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        return FastcomSetSamplingPCI(pDevExt, value);
+
+    case CARD_TYPE_PCIe:
+        return FastcomSetSamplingPCIe(pDevExt, value);
+    }
+
+    return FALSE;
+}

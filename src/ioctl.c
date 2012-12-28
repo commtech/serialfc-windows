@@ -694,6 +694,7 @@ Return Value:
 
             Status = SerialGetDivisorFromBaud(
                          Extension->ClockRate,
+                         Extension->SampleRate,
                          BaudRate,
                          &AppropriateDivisor
                          );
