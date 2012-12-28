@@ -21,7 +21,7 @@ Abstract:
 //
 #define SERIAL_UNINITIALIZED_DEFAULT    1234567
 #define SERIAL_FORCE_FIFO_DEFAULT       1
-#define SERIAL_RX_FIFO_DEFAULT          8
+#define SERIAL_RX_FIFO_DEFAULT          14 /* 14 lets us use our larger FIFOs */
 #define SERIAL_TX_FIFO_DEFAULT          14
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
