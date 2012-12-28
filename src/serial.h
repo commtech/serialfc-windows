@@ -54,7 +54,7 @@ Abstract:
 // \Device\Serial0.
 //
 #define DEFAULT_NT_SUFFIX L"Serial"
-#define _DRIVER_NAME_  "Serial.sys"
+#define _DRIVER_NAME_  "Serialfc.sys"
 
 #define DEVICE_OBJECT_NAME_LENGTH       128
 #define SYMBOLIC_NAME_LENGTH            128
