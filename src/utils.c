@@ -2125,3 +2125,39 @@ BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 
     return TRUE;
 }
+
+void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    UCHAR current_mcr, new_mcr;
+    UCHAR current_fctr, new_fctr;
+    UCHAR current_mpio_lvl, new_mpio_lvl;
+    
+    current_mcr = READ_MODEM_CONTROL(pDevExt, pDevExt->Controller);
+    current_fctr = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_FCTR);
+    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+
+    if (enable) {
+        new_mcr = current_mcr & ~0x3; 
+        new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
+        new_mpio_lvl = current_mpio_lvl & ~(0x8 << pDevExt->Channel); /* Enable 485 on transmitters */
+    }
+    else {
+        new_mcr = current_mcr | 0x3;
+        new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
+        new_mpio_lvl = current_mpio_lvl | (0x8 << pDevExt->Channel); /* Disable 485 on transmitters */
+    }
+
+    WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, new_fctr);
+}
+
+void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    FastcomSetRS485(pDevExt, TRUE);
+}
+
+void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    FastcomSetRS485(pDevExt, FALSE);
+}

@@ -604,4 +604,8 @@ KAFFINITY
 BOOLEAN FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 BOOLEAN FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
+void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
+void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
+
 enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt);

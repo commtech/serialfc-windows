@@ -757,6 +757,18 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
+                                   L"RS485",
+                                   &pConfig->RS485)){
+        pConfig->RS485 = driverDefaults.RS485Default;
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
+                                   L"SampleRate",
+                                   &pConfig->RxTrigger)){
+        pConfig->SampleRate = driverDefaults.SampleRateDefault;
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
                                    L"RxTrigger",
                                    &pConfig->RxTrigger)){
         pConfig->RxTrigger = driverDefaults.RxTriggerDefault;
@@ -1271,10 +1283,19 @@ Return Value:
         break;
     }
 
-    FastcomSetSampleRate(pDevExt, 16);
+    FastcomSetRS485(pDevExt, (BOOLEAN)PConfigData->RS485);
+    FastcomSetSampleRate(pDevExt, PConfigData->SampleRate);
     FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
     FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
 
+    {
+    UCHAR current_mcr, new_mcr;
+    
+    current_mcr = READ_MODEM_CONTROL(pDevExt, pDevExt->Controller);
+    new_mcr = current_mcr | 0x10;
+
+    WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
+    }
 
     //
     // If the user requested that we disable the port, then

@@ -134,6 +134,52 @@ Return Value:
 
     }
 
+    status = RtlUnicodeStringPrintf(&valueName,L"RS485");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->RS485Default);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->RS485Default = SERIAL_RS485_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->RS485Default
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
+    status = RtlUnicodeStringPrintf(&valueName,L"SampleRate");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->SampleRateDefault);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->SampleRateDefault = SERIAL_SAMPLE_RATE_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->SampleRateDefault
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
     status = RtlUnicodeStringPrintf(&valueName,L"RxTrigger");
     if (!NT_SUCCESS (status)) {
             goto End;
