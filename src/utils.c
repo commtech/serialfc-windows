@@ -1992,6 +1992,23 @@ PCIReadConfigWord(
     return error;
 }
 
+enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    switch (pDevExt->DeviceID) {
+    case FC_422_2_PCI_335_ID:
+    case FC_422_4_PCI_335_ID:
+    case FC_232_4_PCI_335_ID:
+    case FC_232_8_PCI_335_ID:
+        return CARD_TYPE_PCI;
+
+    case FC_422_4_PCIe_ID:
+    case FC_422_8_PCIe_ID:
+        return CARD_TYPE_PCIe;
+    }
+
+    return CARD_TYPE_PCI;// TODO
+}
+
 BOOLEAN FastcomSetSamplingPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UCHAR current_8x_mode, new_8x_mode;

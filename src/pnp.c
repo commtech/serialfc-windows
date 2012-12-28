@@ -868,7 +868,6 @@ Return Value:
     return STATUS_SUCCESS;
 }
 
-
 NTSTATUS
 SerialEvtDeviceD0EntryPostInterruptsEnabled(
     IN WDFDEVICE Device,
@@ -1233,6 +1232,16 @@ Return Value:
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 128);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 128);
 		break;
+    }
+
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x200;
+        break;
+
+    case CARD_TYPE_PCIe:
+        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x400;
+        break;
     }
 
     //
@@ -1622,6 +1631,7 @@ Return Value:
    ULONG gotMem = 0;
    BOOLEAN DebugPortInUse = FALSE;
    PDEVICE_OBJECT pdo;
+   UINT32 Bar0;
 
    PAGED_CODE();
 
@@ -1790,7 +1800,7 @@ Return Value:
    pdo = WdfDeviceWdmGetDeviceObject(Device);
 
    PCIReadConfigWord(pdo, 0x02, &pDevExt->DeviceID);
-
+   PCIReadConfigWord(pdo, 0x10, &PConfig->Bar0);
 End:
 
    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP, "<-- SerialMapHWResources %x\n", status);

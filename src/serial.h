@@ -453,6 +453,7 @@ typedef struct _CONFIG_DATA {
     ULONG               TrIrql;
     KAFFINITY           Affinity;
     ULONG               TL16C550CAFC;
+    UINT32              Bar0;
     } CONFIG_DATA,*PCONFIG_DATA;
 
 
@@ -1285,6 +1286,7 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
 
     UINT32 DeviceID;
     unsigned SampleRate;
+    unsigned Channel;
 
 } SERIAL_DEVICE_EXTENSION,*PSERIAL_DEVICE_EXTENSION;
 
@@ -1815,3 +1817,5 @@ typedef struct   _SUPPORTED_BAUD_RATES {
 #define FC_232_8_PCI_335_ID 0x000b
 #define FC_422_4_PCIe_ID 0x0020
 #define FC_422_8_PCIe_ID 0x0021
+
+enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe };
