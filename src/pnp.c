@@ -1271,7 +1271,7 @@ Return Value:
         break;
     }
 
-    FastcomSetSampling(pDevExt, 16);
+    FastcomSetSampleRate(pDevExt, 16);
     FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
     FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
 

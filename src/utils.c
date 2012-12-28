@@ -2008,7 +2008,7 @@ enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt)
     return CARD_TYPE_PCI;// TODO
 }
 
-BOOLEAN FastcomSetSamplingPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+BOOLEAN FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UCHAR current_8x_mode, new_8x_mode;
 
@@ -2032,7 +2032,7 @@ BOOLEAN FastcomSetSamplingPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return TRUE;
 }
 
-BOOLEAN FastcomSetSamplingPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+BOOLEAN FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UCHAR current_8x_mode, new_8x_mode;
     UCHAR current_4x_mode, new_4x_mode;
@@ -2066,16 +2066,16 @@ BOOLEAN FastcomSetSamplingPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return TRUE;
 }
 
-BOOLEAN FastcomSetSampling(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+BOOLEAN FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     BOOLEAN ret = FALSE;;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
-        ret = FastcomSetSamplingPCI(pDevExt, value);
+        ret = FastcomSetSampleRatePCI(pDevExt, value);
 
     case CARD_TYPE_PCIe:
-        ret = FastcomSetSamplingPCIe(pDevExt, value);
+        ret = FastcomSetSampleRatePCIe(pDevExt, value);
     }
 
     if (ret == TRUE)

@@ -601,7 +601,7 @@ KAFFINITY
 
 
 
-BOOLEAN FastcomSetSampling(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+BOOLEAN FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 BOOLEAN FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt);
