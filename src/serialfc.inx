@@ -45,7 +45,7 @@ DefaultDestDir  = 12
 [Standard.NT$ARCH$]
 ; DisplayName           Section           DeviceId
 ; -----------           -------           --------
-%PNP0500.DevDesc%=       Serial_Inst,      4222PCIPort, 4224PCIPort, 2324PCIPort, 2328PCIPort, 4224PCIePort, 4228PCIePort ; Communications Port
+%PNP0500.DevDesc%=       Serial_Inst,      SerialFC\Port
 
 
 [Serial_Inst.NT]

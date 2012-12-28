@@ -52,10 +52,10 @@ Needs = MFINSTALL.mf.Services
 ; here the system is fooled to start child01 as the first rather than child00
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
-HKR,Child00,HardwareID,,4222PCIPort
+HKR,Child00,HardwareID,,SerialFC\Port
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
-HKR,Child01,HardwareID,,4222PCIPort
+HKR,Child01,HardwareID,,SerialFC\Port
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
 
@@ -76,16 +76,16 @@ Needs = MFINSTALL.mf.Services
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
 [4224PCI_Device.RegHW]
-HKR,Child00,HardwareID,,4224PCIPort
+HKR,Child00,HardwareID,,SerialFC\Port
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,06,00,00, 00,02,00,00
-HKR,Child01,HardwareID,,4224PCIPort
+HKR,Child01,HardwareID,,SerialFC\Port
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,04,00,00, 00,02,00,00
-HKR,Child02,HardwareID,,4224PCIPort
+HKR,Child02,HardwareID,,SerialFC\Port
 HKR,Child02,ResourceMap,1,02
 HKR,Child02,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
-HKR,Child03,HardwareID,,4224PCIPort
+HKR,Child03,HardwareID,,SerialFC\Port
 HKR,Child03,ResourceMap,1,02
 HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
 
@@ -106,16 +106,16 @@ Needs = MFINSTALL.mf.Services
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
 [2324PCI_Device.RegHW]
-HKR,Child00,HardwareID,,2324PCIPort
+HKR,Child00,HardwareID,,SerialFC\Port
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,06,00,00, 00,02,00,00
-HKR,Child01,HardwareID,,2324PCIPort
+HKR,Child01,HardwareID,,SerialFC\Port
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,04,00,00, 00,02,00,00
-HKR,Child02,HardwareID,,2324PCIPort
+HKR,Child02,HardwareID,,SerialFC\Port
 HKR,Child02,ResourceMap,1,02
 HKR,Child02,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
-HKR,Child03,HardwareID,,2324PCIPort
+HKR,Child03,HardwareID,,SerialFC\Port
 HKR,Child03,ResourceMap,1,02
 HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
 
@@ -136,28 +136,28 @@ Needs = MFINSTALL.mf.Services
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
 [2328PCI_Device.RegHW]
-HKR,Child00,HardwareID,,2328PCIPort
+HKR,Child00,HardwareID,,SerialFC\Port
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,0E,00,00, 00,02,00,00
-HKR,Child01,HardwareID,,2328PCIPort
+HKR,Child01,HardwareID,,SerialFC\Port
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,0C,00,00, 00,02,00,00
-HKR,Child02,HardwareID,,2328PCIPort
+HKR,Child02,HardwareID,,SerialFC\Port
 HKR,Child02,ResourceMap,1,02
 HKR,Child02,VaryingResourceMap,1,00, 00,0A,00,00, 00,02,00,00
-HKR,Child03,HardwareID,,2328PCIPort
+HKR,Child03,HardwareID,,SerialFC\Port
 HKR,Child03,ResourceMap,1,02
 HKR,Child03,VaryingResourceMap,1,00, 00,08,00,00, 00,02,00,00
-HKR,Child04,HardwareID,,2328PCIPort
+HKR,Child04,HardwareID,,SerialFC\Port
 HKR,Child04,ResourceMap,1,02
 HKR,Child04,VaryingResourceMap,1,00, 00,06,00,00, 00,02,00,00
-HKR,Child05,HardwareID,,2328PCIPort
+HKR,Child05,HardwareID,,SerialFC\Port
 HKR,Child05,ResourceMap,1,02
 HKR,Child05,VaryingResourceMap,1,00, 00,04,00,00, 00,02,00,00
-HKR,Child06,HardwareID,,2328PCIPort
+HKR,Child06,HardwareID,,SerialFC\Port
 HKR,Child06,ResourceMap,1,02
 HKR,Child06,VaryingResourceMap,1,00, 00,02,00,00, 00,02,00,00
-HKR,Child07,HardwareID,,2328PCIPort
+HKR,Child07,HardwareID,,SerialFC\Port
 HKR,Child07,ResourceMap,1,02
 HKR,Child07,VaryingResourceMap,1,00, 00,00,00,00, 00,02,00,00
 
@@ -178,16 +178,16 @@ Needs = MFINSTALL.mf.Services
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
 [4224PCIe_Device.RegHW]
-HKR,Child00,HardwareID,,4224PCIePort
+HKR,Child00,HardwareID,,SerialFC\Port
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
-HKR,Child01,HardwareID,,4224PCIePort
+HKR,Child01,HardwareID,,SerialFC\Port
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
-HKR,Child02,HardwareID,,4224PCIePort
+HKR,Child02,HardwareID,,SerialFC\Port
 HKR,Child02,ResourceMap,1,02
 HKR,Child02,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
-HKR,Child03,HardwareID,,4224PCIePort
+HKR,Child03,HardwareID,,SerialFC\Port
 HKR,Child03,ResourceMap,1,02
 HKR,Child03,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
 
@@ -208,28 +208,28 @@ Needs = MFINSTALL.mf.Services
 ; we have seen that child00 is always the last to enumerate
 ; this way we can have consisten com numbers both in the app and device manager
 [4228PCIe_Device.RegHW]
-HKR,Child00,HardwareID,,4228PCIePort
+HKR,Child00,HardwareID,,SerialFC\Port
 HKR,Child00,ResourceMap,1,02
 HKR,Child00,VaryingResourceMap,1,00, 00,1C,00,00, 00,04,00,00
-HKR,Child01,HardwareID,,4228PCIePort
+HKR,Child01,HardwareID,,SerialFC\Port
 HKR,Child01,ResourceMap,1,02
 HKR,Child01,VaryingResourceMap,1,00, 00,18,00,00, 00,04,00,00
-HKR,Child02,HardwareID,,4228PCIePort
+HKR,Child02,HardwareID,,SerialFC\Port
 HKR,Child02,ResourceMap,1,02
 HKR,Child02,VaryingResourceMap,1,00, 00,14,00,00, 00,04,00,00
-HKR,Child03,HardwareID,,4228PCIePort
+HKR,Child03,HardwareID,,SerialFC\Port
 HKR,Child03,ResourceMap,1,02
 HKR,Child03,VaryingResourceMap,1,00, 00,10,00,00, 00,04,00,00
-HKR,Child04,HardwareID,,4228PCIePort
+HKR,Child04,HardwareID,,SerialFC\Port
 HKR,Child04,ResourceMap,1,02
 HKR,Child04,VaryingResourceMap,1,00, 00,0C,00,00, 00,04,00,00
-HKR,Child05,HardwareID,,4228PCIePort
+HKR,Child05,HardwareID,,SerialFC\Port
 HKR,Child05,ResourceMap,1,02
 HKR,Child05,VaryingResourceMap,1,00, 00,08,00,00, 00,04,00,00
-HKR,Child06,HardwareID,,4228PCIePort
+HKR,Child06,HardwareID,,SerialFC\Port
 HKR,Child06,ResourceMap,1,02
 HKR,Child06,VaryingResourceMap,1,00, 00,04,00,00, 00,04,00,00
-HKR,Child07,HardwareID,,4228PCIePort
+HKR,Child07,HardwareID,,SerialFC\Port
 HKR,Child07,ResourceMap,1,02
 HKR,Child07,VaryingResourceMap,1,00, 00,00,00,00, 00,04,00,00
 
