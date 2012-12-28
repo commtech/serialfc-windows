@@ -1722,7 +1722,6 @@ Return Value:
    ULONG maxRemain;
 
 
-
    //
    // Reject any non-positive bauds.
    //
@@ -2013,7 +2012,7 @@ BOOLEAN FastcomSetSamplingPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UCHAR current_8x_mode, new_8x_mode;
 
-    if (value != 8 || value != 16)
+    if (value != 8 && value != 16)
         return FALSE;
 
     current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
@@ -2038,7 +2037,7 @@ BOOLEAN FastcomSetSamplingPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     UCHAR current_8x_mode, new_8x_mode;
     UCHAR current_4x_mode, new_4x_mode;
 
-    if (value != 4 || value != 8 || value != 16)
+    if (value != 4 && value != 8 && value != 16)
         return FALSE;
 
     current_4x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_4XMODE);
@@ -2069,15 +2068,20 @@ BOOLEAN FastcomSetSamplingPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 
 BOOLEAN FastcomSetSampling(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
+    BOOLEAN ret = FALSE;;
+
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
-        return FastcomSetSamplingPCI(pDevExt, value);
+        ret = FastcomSetSamplingPCI(pDevExt, value);
 
     case CARD_TYPE_PCIe:
-        return FastcomSetSamplingPCIe(pDevExt, value);
+        ret = FastcomSetSamplingPCIe(pDevExt, value);
     }
 
-    return FALSE;
+    if (ret == TRUE)
+        pDevExt->SampleRate = value;
+
+    return ret;
 }
 
 BOOLEAN FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)

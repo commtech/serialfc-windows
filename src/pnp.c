@@ -1191,7 +1191,6 @@ Return Value:
     pDevExt->SpanOfController      = PConfigData->SpanOfController;
 
 
-    //FastcomSetSampling(pDevExt, 16);
     //FastcomSetTxTrigger(pDevExt, 32);
     //FastcomSetRxTrigger(pDevExt, 32);
 
@@ -1246,6 +1245,8 @@ Return Value:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x400;
         break;
     }
+
+    FastcomSetSampling(pDevExt, 16);
 
     //
     // Save off the interface type and the bus number.
