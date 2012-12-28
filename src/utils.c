@@ -2068,14 +2068,16 @@ BOOLEAN FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
 
 BOOLEAN FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    BOOLEAN ret = FALSE;;
+    BOOLEAN ret = FALSE;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
         ret = FastcomSetSampleRatePCI(pDevExt, value);
+        break;
 
     case CARD_TYPE_PCIe:
         ret = FastcomSetSampleRatePCIe(pDevExt, value);
+        break;
     }
 
     if (ret == TRUE)
