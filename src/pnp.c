@@ -126,12 +126,15 @@ Return Value:
         return status;
     }
     
-    status = WdfDeviceInitAssignSDDLString(DeviceInit, &SDDL_DEVOBJ_SYS_ALL_ADM_RWX_WORLD_RWX_RES_RWX);
-
     status = WdfDeviceInitAssignName(DeviceInit,& deviceName);
     if (!NT_SUCCESS(status)) {
         return status;
     }
+	
+    status = WdfDeviceInitAssignSDDLString(DeviceInit, &SDDL_DEVOBJ_SYS_ALL_ADM_RWX_WORLD_RWX_RES_RWX);
+	if (!NT_SUCCESS(status)) {
+		return status;
+	}
 
     WdfDeviceInitSetExclusive(DeviceInit, TRUE);
     WdfDeviceInitSetDeviceType(DeviceInit, FILE_DEVICE_SERIAL_PORT);
