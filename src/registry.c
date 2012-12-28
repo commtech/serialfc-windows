@@ -134,22 +134,22 @@ Return Value:
 
     }
 
-    status = RtlUnicodeStringPrintf(&valueName,L"RxFIFO");
+    status = RtlUnicodeStringPrintf(&valueName,L"RxTrigger");
     if (!NT_SUCCESS (status)) {
             goto End;
     }
 
     status = WdfRegistryQueryULong (hKey,
               &valueName,
-              &DriverDefaultsPtr->RxFIFODefault);
+              &DriverDefaultsPtr->RxTriggerDefault);
 
     if (!NT_SUCCESS (status)) {
 
-        DriverDefaultsPtr->RxFIFODefault = SERIAL_RX_FIFO_DEFAULT;
+        DriverDefaultsPtr->RxTriggerDefault = SERIAL_RX_TRIGGER_DEFAULT;
 
         status = WdfRegistryAssignULong(hKey,
                             &valueName,
-                            DriverDefaultsPtr->RxFIFODefault
+                            DriverDefaultsPtr->RxTriggerDefault
                             );
         if (!NT_SUCCESS (status)) {
             goto End;
@@ -157,22 +157,22 @@ Return Value:
 
     }
 
-    status = RtlUnicodeStringPrintf(&valueName,L"TxFIFO");
+    status = RtlUnicodeStringPrintf(&valueName,L"TxTrigger");
     if (!NT_SUCCESS (status)) {
             goto End;
     }
 
     status = WdfRegistryQueryULong (hKey,
               &valueName,
-              &DriverDefaultsPtr->TxFIFODefault);
+              &DriverDefaultsPtr->TxTriggerDefault);
 
     if (!NT_SUCCESS (status)) {
 
-        DriverDefaultsPtr->TxFIFODefault = SERIAL_TX_FIFO_DEFAULT;
+        DriverDefaultsPtr->TxTriggerDefault = SERIAL_TX_TRIGGER_DEFAULT;
 
         status = WdfRegistryAssignULong(hKey,
                             &valueName,
-                            DriverDefaultsPtr->TxFIFODefault
+                            DriverDefaultsPtr->TxTriggerDefault
                             );
         if (!NT_SUCCESS (status)) {
             goto End;

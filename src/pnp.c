@@ -388,7 +388,6 @@ Return Value:
     pDevExt->DeviceObject   = WdfDeviceWdmGetDeviceObject(device);
     pDevExt->WdfDevice = device;
 
-    pDevExt->TxFifoAmount           = driverDefaults.TxFIFODefault;
     pDevExt->UartRemovalDetect      = driverDefaults.UartRemovalDetect;
     pDevExt->CreatedSymbolicLink    = FALSE;
     pDevExt->OwnsPowerPolicy = relinquishPowerPolicy ? FALSE : TRUE;
@@ -758,15 +757,15 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
-                                   L"RxFIFO",
-                                   &pConfig->RxFIFO)){
-        pConfig->RxFIFO = driverDefaults.RxFIFODefault;
+                                   L"RxTrigger",
+                                   &pConfig->RxTrigger)){
+        pConfig->RxTrigger = driverDefaults.RxTriggerDefault;
     }
 
     if(!SerialGetRegistryKeyValue (Device,
-                                   L"TxFIFO",
-                                   &pConfig->TxFIFO)){
-        pConfig->TxFIFO = driverDefaults.TxFIFODefault;
+                                   L"TxTrigger",
+                                   &pConfig->TxTrigger)){
+        pConfig->TxTrigger = driverDefaults.TxTriggerDefault;
     }
 
     if(!SerialGetRegistryKeyValue (Device,
@@ -1191,8 +1190,7 @@ Return Value:
     pDevExt->SpanOfController      = PConfigData->SpanOfController;
 
 
-    //FastcomSetTxTrigger(pDevExt, 32);
-    //FastcomSetRxTrigger(pDevExt, 32);
+    pDevExt->TxFifoAmount           = 64; /* Safe amount until we know the card type */
 
     //PCI
     switch (pDevExt->DeviceID) {
@@ -1239,14 +1237,22 @@ Return Value:
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x200;
+        pDevExt->TxFifoAmount = 64;
         break;
 
     case CARD_TYPE_PCIe:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x400;
+        pDevExt->TxFifoAmount = 256;
         break;
     }
 
+    /* The FCR value, not the actual trigger level. We are fixing this at 0xC0 so we can 
+       use our custom trigger levels. */
+    pDevExt->RxFifoTrigger = SERIAL_14_BYTE_HIGH_WATER;
+
     FastcomSetSampling(pDevExt, 16);
+    FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
+    FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
 
     //
     // Save off the interface type and the bus number.
@@ -1263,57 +1269,6 @@ Return Value:
     //
 
     pDevExt->PermitShare = PConfigData->PermitShare;
-
-
-    //
-    // Before we test whether the port exists (which will enable the FIFO)
-    // convert the rx trigger value to what should be used in the register.
-    //
-    // If a bogus value was given - crank them down to 1.
-    //
-    // If this is a "souped up" UART with like a 64 byte FIFO, they
-    // should use the appropriate "spoofing" value to get the desired
-    // results.  I.e., if on their chip 0xC0 in the FCR is for 64 bytes,
-    // they should specify 14 in the registry.
-    //
-
-    switch (PConfigData->RxFIFO) {
-
-    case 1:
-
-      pDevExt->RxFifoTrigger = SERIAL_1_BYTE_HIGH_WATER;
-      break;
-
-    case 4:
-
-      pDevExt->RxFifoTrigger = SERIAL_4_BYTE_HIGH_WATER;
-      break;
-
-    case 8:
-      pDevExt->RxFifoTrigger = SERIAL_8_BYTE_HIGH_WATER;
-      break;
-
-    case 14:
-      pDevExt->RxFifoTrigger = SERIAL_14_BYTE_HIGH_WATER;
-      break;
-
-    default:
-
-      pDevExt->RxFifoTrigger = SERIAL_1_BYTE_HIGH_WATER;
-      break;
-
-    }
-
-
-    if (PConfigData->TxFIFO < 1) {
-
-      pDevExt->TxFifoAmount = 1;
-
-    } else {
-
-      pDevExt->TxFifoAmount = PConfigData->TxFIFO;
-
-    }
 
     if (!SerialDoesPortExist(
                            pDevExt,

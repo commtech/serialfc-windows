@@ -21,8 +21,8 @@ Abstract:
 //
 #define SERIAL_UNINITIALIZED_DEFAULT    1234567
 #define SERIAL_FORCE_FIFO_DEFAULT       1
-#define SERIAL_RX_FIFO_DEFAULT          14 /* 14 lets us use our larger FIFOs */
-#define SERIAL_TX_FIFO_DEFAULT          14
+#define SERIAL_RX_TRIGGER_DEFAULT          32
+#define SERIAL_TX_TRIGGER_DEFAULT          32
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
 
@@ -443,8 +443,8 @@ typedef struct _CONFIG_DATA {
     ULONG               AddressSpace;
     ULONG               DisablePort;
     ULONG               ForceFifoEnable;
-    ULONG               RxFIFO;
-    ULONG               TxFIFO;
+    ULONG               RxTrigger;
+    ULONG               TxTrigger;
     ULONG               PermitShare;
     ULONG               PermitSystemWideShare;
     ULONG               LogFifo;
@@ -467,8 +467,8 @@ typedef struct _SERIAL_FIRMWARE_DATA {
     ULONG           ForceFifoEnableDefault;
     ULONG           DebugLevel;
     ULONG           ShouldBreakOnEntry;
-    ULONG           RxFIFODefault;
-    ULONG           TxFIFODefault;
+    ULONG           RxTriggerDefault;
+    ULONG           TxTriggerDefault;
     ULONG           PermitShareDefault;
     ULONG           PermitSystemWideShare;
     ULONG           LogFifoDefault;
