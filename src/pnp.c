@@ -1192,6 +1192,9 @@ Return Value:
 
 
     //FastcomSetSampling(pDevExt, 16);
+    //FastcomSetTxTrigger(pDevExt, 32);
+    //FastcomSetRxTrigger(pDevExt, 32);
+
     //PCI
     switch (pDevExt->DeviceID) {
     case FC_422_2_PCI_335_ID:
@@ -1204,8 +1207,8 @@ Return Value:
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32); // Handled by SetTxTrigger
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32); // Handled by SetRxTrigger
         break;
 
     case FC_232_4_PCI_335_ID:
@@ -1218,8 +1221,8 @@ Return Value:
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32); // Handled by SetTxTrigger
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32); // Handled by SetRxTrigger
         break;
 
     case FC_422_4_PCIe_ID:
@@ -1229,8 +1232,8 @@ Return Value:
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
         pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 128);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 128);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 128); // Handled by SetTxTrigger
+        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 128); // Handled by SetRxTrigger
 		break;
     }
 
@@ -1286,12 +1289,10 @@ Return Value:
       break;
 
     case 8:
-
       pDevExt->RxFifoTrigger = SERIAL_8_BYTE_HIGH_WATER;
       break;
 
     case 14:
-
       pDevExt->RxFifoTrigger = SERIAL_14_BYTE_HIGH_WATER;
       break;
 

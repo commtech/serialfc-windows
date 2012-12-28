@@ -2079,3 +2079,45 @@ BOOLEAN FastcomSetSampling(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 
     return FALSE;
 }
+
+BOOLEAN FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        if (value > 64)
+            return FALSE;
+
+        break;
+
+    case CARD_TYPE_PCIe:
+        if (value > 255)
+            return FALSE;
+
+        break;
+    }
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, (UCHAR)value);
+
+    return TRUE;
+}
+
+BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        if (value > 64)
+            return FALSE;
+
+        break;
+
+    case CARD_TYPE_PCIe:
+        if (value > 255)
+            return FALSE;
+
+        break;
+    }
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
+
+    return TRUE;
+}
