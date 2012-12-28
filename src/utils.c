@@ -2126,7 +2126,7 @@ BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return TRUE;
 }
 
-void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     UCHAR current_mcr, new_mcr;
     UCHAR current_fctr, new_fctr;
@@ -2150,6 +2150,23 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
     pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, new_fctr);
+}
+
+void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+}
+
+void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        FastcomSetRS485PCI(pDevExt, enable);
+        break;
+
+    case CARD_TYPE_PCIe:
+        FastcomSetRS485PCIe(pDevExt, enable);
+        break;
+    }
 }
 
 void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt) 
