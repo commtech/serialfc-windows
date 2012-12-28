@@ -22,7 +22,7 @@ copy src\%2\%3\serialfc.sys %TOP%\ > nul
 :copy_inf_files
 echo Copying Installation Files...
 copy src\%2\%3\serialfc.inf %TOP%\ > nul
-copy redist\production\%3\filter.inf %TOP%\ > nul
+copy src\%2\%3\filter.inf %TOP%\ > nul
 
 :copy_coinstaller_files
 echo Copying Coinstaller Files...

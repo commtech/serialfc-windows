@@ -10,8 +10,11 @@ TARGETLIBS=$(TARGETLIBS) \
            $(DDK_LIB_PATH)\wdmsec.lib
 
 INF_NAME=serialfc
+INF_NAME2=filter
 NTTARGETFILE0=$(OBJ_PATH)\$(O)\$(INF_NAME).inf
+NTTARGETFILE1=$(OBJ_PATH)\$(O)\$(INF_NAME2).inf
 PASS0_BINPLACE=$(NTTARGETFILE0)
+
 
 SOURCES=error.c    \
         immediat.c \

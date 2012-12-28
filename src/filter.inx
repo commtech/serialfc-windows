@@ -16,17 +16,14 @@ Class=MultiportSerial
 ClassGUID={50906cb8-ba12-11d1-bf5d-0000f805f530}
 Provider=%ManufacturerName%
 CatalogFile=serialfc.cat
-DriverVer=11/13/2003,1.2.2
 
 [ControlFlags]
 ExcludeFromSelect=*
 
 [Manufacturer]
-;%ManufacturerName%=Standard,NT$ARCH$
-%ManufacturerName%=Standard,NTAMD64
+%ManufacturerName%=Standard,NT$ARCH$
 
-;[Standard.NT$ARCH$]
-[Standard.NTAMD64]
+[Standard.NT$ARCH$]
 %4222PCI.DeviceDesc%=4222PCI_Device, PCI\VEN_18F7&DEV_0004
 %4224PCI.DeviceDesc%=4224PCI_Device, PCI\VEN_18F7&DEV_0002
 %2324PCI.DeviceDesc%=2324PCI_Device, PCI\VEN_18F7&DEV_000a
