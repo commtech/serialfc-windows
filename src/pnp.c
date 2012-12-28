@@ -1189,51 +1189,6 @@ Return Value:
     pDevExt->AddressSpace          = PConfigData->AddressSpace;
     pDevExt->SpanOfController      = PConfigData->SpanOfController;
 
-
-    pDevExt->TxFifoAmount           = 64; /* Safe amount until we know the card type */
-
-    //PCI
-    switch (pDevExt->DeviceID) {
-    case FC_422_2_PCI_335_ID:
-    case FC_422_4_PCI_335_ID:
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x78); //This is 0x00 in the windows driver
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32); // Handled by SetTxTrigger
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32); // Handled by SetRxTrigger
-        break;
-
-    case FC_232_4_PCI_335_ID:
-    case FC_232_8_PCI_335_ID:
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 32); // Handled by SetTxTrigger
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 32); // Handled by SetRxTrigger
-        break;
-
-    case FC_422_4_PCIe_ID:
-    case FC_422_8_PCIe_ID:
-        for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
-            pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
-
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, 0x00); // Handled by SetSampling
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, 128); // Handled by SetTxTrigger
-        pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, 128); // Handled by SetRxTrigger
-		break;
-    }
-
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x200;
@@ -1249,10 +1204,6 @@ Return Value:
     /* The FCR value, not the actual trigger level. We are fixing this at 0xC0 so we can 
        use our custom trigger levels. */
     pDevExt->RxFifoTrigger = SERIAL_14_BYTE_HIGH_WATER;
-
-    FastcomSetSampling(pDevExt, 16);
-    FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
-    FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
 
     //
     // Save off the interface type and the bus number.
@@ -1290,6 +1241,39 @@ Return Value:
       goto ExtensionCleanup;
 
     }
+
+    //PCI
+    switch (pDevExt->DeviceID) {
+    case FC_422_2_PCI_335_ID:
+    case FC_422_4_PCI_335_ID:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x78); //This is 0x00 in the windows driver
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        break;
+
+    case FC_232_4_PCI_335_ID:
+    case FC_232_8_PCI_335_ID:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        break;
+
+    case FC_422_4_PCIe_ID:
+    case FC_422_8_PCIe_ID:
+        for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
+            pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
+        break;
+    }
+
+    FastcomSetSampling(pDevExt, 16);
+    FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
+    FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
 
 
     //
