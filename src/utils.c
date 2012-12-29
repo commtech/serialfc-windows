@@ -2139,14 +2139,16 @@ void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
 
     if (enable) {
-        new_mcr = current_mcr & ~0x3; 
+        new_mcr = current_mcr | 0x3;  /* Force RTS/DTS to low (not sure why yet) */
         new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl & ~(0x8 << pDevExt->Channel); /* Enable 485 on transmitters */
+        new_mpio_lvl = current_mpio_lvl | 0x80; /* Enable echo cancel */
+        new_mpio_lvl = new_mpio_lvl & ~(0x8 << pDevExt->Channel); /* Enable 485 on transmitters */
     }
     else {
-        new_mcr = current_mcr | 0x3;
+        new_mcr = current_mcr & ~0x3;  /* Force RTS/DTS to high (not sure why yet) */
         new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl | (0x8 << pDevExt->Channel); /* Disable 485 on transmitters */
+        new_mpio_lvl = current_mpio_lvl & ~0x80; /* Disable echo cancel */
+        new_mpio_lvl = new_mpio_lvl | (0x8 << pDevExt->Channel); /* Disable 485 on transmitters */
     }
 
     WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);

@@ -1260,7 +1260,6 @@ Return Value:
     case FC_422_4_PCI_335_ID:
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x78); //This is 0x00 in the windows driver
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
@@ -1270,7 +1269,6 @@ Return Value:
     case FC_232_8_PCI_335_ID:
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
@@ -1287,15 +1285,6 @@ Return Value:
     FastcomSetSampleRate(pDevExt, PConfigData->SampleRate);
     FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
     FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
-
-    {
-    UCHAR current_mcr, new_mcr;
-    
-    current_mcr = READ_MODEM_CONTROL(pDevExt, pDevExt->Controller);
-    new_mcr = current_mcr | 0x10;
-
-    WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
-    }
 
     //
     // If the user requested that we disable the port, then
