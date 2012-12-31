@@ -2174,7 +2174,7 @@ void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     else {
         new_mcr = current_mcr & ~0x1;  /* Disable 485 on transmitters using DTR pin */
         new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Enable echo cancel */
+        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Disable echo cancel */
     }
 
     WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
