@@ -2008,12 +2008,12 @@ enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt)
     return CARD_TYPE_PCI;// TODO
 }
 
-BOOLEAN FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UCHAR current_8x_mode, new_8x_mode;
 
     if (value != 8 && value != 16)
-        return FALSE;
+        return STATUS_NOT_SUPPORTED;
 
     current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
 
@@ -2029,16 +2029,16 @@ BOOLEAN FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value
     
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, new_8x_mode);  
 
-    return TRUE;
+    return STATUS_SUCCESS;
 }
 
-BOOLEAN FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UCHAR current_8x_mode, new_8x_mode;
     UCHAR current_4x_mode, new_4x_mode;
 
     if (value != 4 && value != 8 && value != 16)
-        return FALSE;
+        return STATUS_NOT_SUPPORTED;
 
     current_4x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_4XMODE);
     current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
@@ -2063,69 +2063,69 @@ BOOLEAN FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_4XMODE, new_4x_mode); 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, new_8x_mode);  
 
-    return TRUE;
+    return STATUS_SUCCESS;
 }
 
-BOOLEAN FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    BOOLEAN ret = FALSE;
+    NTSTATUS status = STATUS_UNSUCCESSFUL;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
-        ret = FastcomSetSampleRatePCI(pDevExt, value);
+        status = FastcomSetSampleRatePCI(pDevExt, value);
         break;
 
     case CARD_TYPE_PCIe:
-        ret = FastcomSetSampleRatePCIe(pDevExt, value);
+        status = FastcomSetSampleRatePCIe(pDevExt, value);
         break;
     }
 
-    if (ret == TRUE)
+    if (NT_SUCCESS (status))
         pDevExt->SampleRate = value;
 
-    return ret;
+    return status;
 }
 
-BOOLEAN FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
         if (value > 64)
-            return FALSE;
+            return STATUS_NOT_SUPPORTED;
 
         break;
 
     case CARD_TYPE_PCIe:
         if (value > 255)
-            return FALSE;
+            return STATUS_NOT_SUPPORTED;
 
         break;
     }
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, (UCHAR)value);
 
-    return TRUE;
+    return STATUS_SUCCESS;
 }
 
-BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
         if (value > 64)
-            return FALSE;
+            return STATUS_NOT_SUPPORTED;
 
         break;
 
     case CARD_TYPE_PCIe:
         if (value > 255)
-            return FALSE;
+            return STATUS_NOT_SUPPORTED;
 
         break;
     }
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
 
-    return TRUE;
+    return STATUS_SUCCESS;
 }
 
 void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)

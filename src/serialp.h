@@ -601,9 +601,9 @@ KAFFINITY
 
 
 
-BOOLEAN FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
-BOOLEAN FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
-BOOLEAN FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
 NTSTATUS FastcomEnableTermination(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FastcomDisableTermination(SERIAL_DEVICE_EXTENSION *pDevExt);
