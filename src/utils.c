@@ -2158,6 +2158,28 @@ void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
 void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
+    UCHAR current_mcr, new_mcr;
+    UCHAR current_fctr, new_fctr;
+    UCHAR current_mpio_lvl, new_mpio_lvl;
+    
+    current_mcr = READ_MODEM_CONTROL(pDevExt, pDevExt->Controller);
+    current_fctr = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_FCTR);
+    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+
+    if (enable) {
+        new_mcr = current_mcr | 0x1;  /* Enable 485 on transmitters using DTR pin */
+        new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
+        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel); /* Enable echo cancel */
+    }
+    else {
+        new_mcr = current_mcr & ~0x1;  /* Disable 485 on transmitters using DTR pin */
+        new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
+        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Enable echo cancel */
+    }
+
+    WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, new_fctr);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
 }
 
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
