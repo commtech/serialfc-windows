@@ -2182,3 +2182,41 @@ void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt)
 {
     FastcomSetRS485(pDevExt, FALSE);
 }
+
+void FastcomSetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    UCHAR current_mpio_lvlh, new_mpio_lvlh;
+    
+    current_mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
+
+    if (enable)
+        new_mpio_lvlh = new_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable termination */
+    else
+        new_mpio_lvlh = current_mpio_lvlh & (0x1 << pDevExt->Channel); /* Disable termination */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
+}
+
+NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        return STATUS_NOT_SUPPORTED;
+
+    case CARD_TYPE_PCIe:
+        FastcomSetTerminationPCIe(pDevExt, enable);
+        return STATUS_SUCCESS;
+    }
+
+    return STATUS_UNSUCCESSFUL;
+}
+
+NTSTATUS FastcomEnableTermination(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    return FastcomSetTermination(pDevExt, TRUE);
+}
+
+NTSTATUS FastcomDisableTermination(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    return FastcomSetTermination(pDevExt, FALSE);
+}
