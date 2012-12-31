@@ -26,6 +26,7 @@ iver
 #define SERIAL_RX_TRIGGER_DEFAULT       32
 #define SERIAL_TX_TRIGGER_DEFAULT       32
 #define SERIAL_TERMINATION_DEFAULT      1
+#define SERIAL_ECHO_CANCEL_DEFAULT      0
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
 
@@ -451,6 +452,7 @@ typedef struct _CONFIG_DATA {
     ULONG               RxTrigger;
     ULONG               TxTrigger;
     ULONG               Termination;
+    ULONG               EchoCancel;
     ULONG               PermitShare;
     ULONG               PermitSystemWideShare;
     ULONG               LogFifo;
@@ -478,6 +480,7 @@ typedef struct _SERIAL_FIRMWARE_DATA {
     ULONG           RxTriggerDefault;
     ULONG           TxTriggerDefault;
     ULONG           TerminationDefault;
+    ULONG           EchoCancelDefault;
     ULONG           PermitShareDefault;
     ULONG           PermitSystemWideShare;
     ULONG           LogFifoDefault;

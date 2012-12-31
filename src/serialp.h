@@ -602,11 +602,18 @@ KAFFINITY
 
 
 NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+
 NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+
 NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
 NTSTATUS FastcomEnableTermination(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FastcomDisableTermination(SERIAL_DEVICE_EXTENSION *pDevExt);
+
+void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
+void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt);
+void FastcomDisableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt);
+
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
 void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
 void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);

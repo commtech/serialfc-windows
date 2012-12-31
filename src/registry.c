@@ -249,6 +249,29 @@ Return Value:
 
     }
 
+    status = RtlUnicodeStringPrintf(&valueName,L"EchoCancel");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->EchoCancelDefault);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->EchoCancelDefault = SERIAL_ECHO_CANCEL_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->EchoCancelDefault
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
     status = RtlUnicodeStringPrintf(&valueName,L"PermitShare");
     if (!NT_SUCCESS (status)) {
             goto End;

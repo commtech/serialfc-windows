@@ -2141,13 +2141,11 @@ void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     if (enable) {
         new_mcr = current_mcr | 0x3;  /* Force RTS/DTS to low (not sure why yet) */
         new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl | 0x80; /* Enable echo cancel */
         new_mpio_lvl = new_mpio_lvl & ~(0x8 << pDevExt->Channel); /* Enable 485 on transmitters */
     }
     else {
         new_mcr = current_mcr & ~0x3;  /* Force RTS/DTS to high (not sure why yet) */
         new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl & ~0x80; /* Disable echo cancel */
         new_mpio_lvl = new_mpio_lvl | (0x8 << pDevExt->Channel); /* Disable 485 on transmitters */
     }
 
@@ -2160,26 +2158,21 @@ void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     UCHAR current_mcr, new_mcr;
     UCHAR current_fctr, new_fctr;
-    UCHAR current_mpio_lvl, new_mpio_lvl;
     
     current_mcr = READ_MODEM_CONTROL(pDevExt, pDevExt->Controller);
     current_fctr = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_FCTR);
-    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
 
     if (enable) {
         new_mcr = current_mcr | 0x1;  /* Enable 485 on transmitters using DTR pin */
         new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel); /* Enable echo cancel */
     }
     else {
         new_mcr = current_mcr & ~0x1;  /* Disable 485 on transmitters using DTR pin */
         new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
-        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Disable echo cancel */
     }
 
     WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, new_fctr);
-    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
 }
 
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2241,4 +2234,55 @@ NTSTATUS FastcomEnableTermination(SERIAL_DEVICE_EXTENSION *pDevExt)
 NTSTATUS FastcomDisableTermination(SERIAL_DEVICE_EXTENSION *pDevExt) 
 {
     return FastcomSetTermination(pDevExt, FALSE);
+}
+
+void FastcomSetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    UCHAR current_mpio_lvl, new_mpio_lvl;
+    
+    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+
+    if (enable)
+        new_mpio_lvl = current_mpio_lvl | 0x80; /* Enable echo cancel */
+    else
+        new_mpio_lvl = current_mpio_lvl & ~0x80; /* Disable echo cancel */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
+}
+
+void FastcomSetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    UCHAR current_mpio_lvl, new_mpio_lvl;
+    
+    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+
+    if (enable) 
+        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel); /* Enable echo cancel */
+    else
+        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Disable echo cancel */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
+}
+
+void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        FastcomSetEchoCancelPCI(pDevExt, enable);
+        break;
+
+    case CARD_TYPE_PCIe:
+        FastcomSetEchoCancelPCIe(pDevExt, enable);
+        break;
+    }
+}
+
+void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    FastcomSetEchoCancel(pDevExt, TRUE);
+}
+
+void FastcomDisableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    FastcomSetEchoCancel(pDevExt, FALSE);
 }
