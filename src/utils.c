@@ -2212,7 +2212,7 @@ void FastcomSetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     current_mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
 
     if (enable)
-        new_mpio_lvlh = new_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable termination */
+        new_mpio_lvlh = current_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable termination */
     else
         new_mpio_lvlh = current_mpio_lvlh & (0x1 << pDevExt->Channel); /* Disable termination */
 
