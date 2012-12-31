@@ -781,6 +781,12 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
+                                   L"Termination",
+                                   &pConfig->Termination)){
+        pConfig->Termination = driverDefaults.TerminationDefault;
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
                                    L"Share System Interrupt",
                                    &pConfig->PermitShare)){
         pConfig->PermitShare = driverDefaults.PermitShareDefault;
@@ -1285,6 +1291,7 @@ Return Value:
     FastcomSetSampleRate(pDevExt, PConfigData->SampleRate);
     FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
     FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
+    FastcomSetTermination(pDevExt, (BOOLEAN)PConfigData->Termination); /* This does nothing on the 335 cards */
 
     //
     // If the user requested that we disable the port, then

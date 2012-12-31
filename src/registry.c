@@ -226,6 +226,29 @@ Return Value:
 
     }
 
+    status = RtlUnicodeStringPrintf(&valueName,L"Termination");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->TerminationDefault);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->TerminationDefault = SERIAL_TERMINATION_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->TerminationDefault
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
     status = RtlUnicodeStringPrintf(&valueName,L"PermitShare");
     if (!NT_SUCCESS (status)) {
             goto End;

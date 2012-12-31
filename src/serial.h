@@ -25,6 +25,7 @@ iver
 #define SERIAL_SAMPLE_RATE_DEFAULT      16
 #define SERIAL_RX_TRIGGER_DEFAULT       32
 #define SERIAL_TX_TRIGGER_DEFAULT       32
+#define SERIAL_TERMINATION_DEFAULT      1
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
 
@@ -449,6 +450,7 @@ typedef struct _CONFIG_DATA {
     ULONG               SampleRate;
     ULONG               RxTrigger;
     ULONG               TxTrigger;
+    ULONG               Termination;
     ULONG               PermitShare;
     ULONG               PermitSystemWideShare;
     ULONG               LogFifo;
@@ -475,6 +477,7 @@ typedef struct _SERIAL_FIRMWARE_DATA {
     ULONG           SampleRateDefault;
     ULONG           RxTriggerDefault;
     ULONG           TxTriggerDefault;
+    ULONG           TerminationDefault;
     ULONG           PermitShareDefault;
     ULONG           PermitSystemWideShare;
     ULONG           LogFifoDefault;
