@@ -19,6 +19,7 @@ Environment:
 --*/
 
 #include "precomp.h"
+#include "serialfc.h"
 
 #if defined(EVENT_TRACING)
 #include "ioctl.tmh"
@@ -1881,6 +1882,142 @@ Return Value:
                 );
             break;
         }
+        case IOCTL_FASTCOM_ENABLE_RS485: {
+
+            FastcomEnableRS485(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_RS485: {
+
+            FastcomDisableRS485(Extension);
+            break;
+        }
+        /*case IOCTL_FASTCOM_GET_RS485: {
+            BOOLEAN *rs485 = 0;
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*rs485), (PVOID *)&rs485, NULL);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            *rs485 = FastcomGetRS485(Extension);
+
+            reqContext->Information = sizeof(*rs485);
+        }*/
+        case IOCTL_FASTCOM_ENABLE_ECHO_CANCEL: {
+
+            FastcomEnableEchoCancel(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_ECHO_CANCEL: {
+
+            FastcomDisableEchoCancel(Extension);
+            break;
+        }
+        /*case IOCTL_FASTCOM_GET_ECHO_CANCEL: {
+            BOOLEAN *echo_cancel = 0;
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*echo_cancel), (PVOID *)&echo_cancel, NULL);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            *echo_cancel = FastcomGetEchoCancel(Extension);
+
+            reqContext->Information = sizeof(*echo_cancel);
+        }*/
+        case IOCTL_FASTCOM_ENABLE_TERMINATION: {
+
+            Status = FastcomEnableTermination(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_TERMINATION: {
+
+            Status = FastcomDisableTermination(Extension);
+            break;
+        }
+        /*case IOCTL_FASTCOM_GET_TERMINATION: {
+            BOOLEAN *termination = 0;
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*termination), (PVOID *)&termination, NULL);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            *termination = FastcomGetEchoCancel(Extension);
+
+            reqContext->Information = sizeof(*termination);
+        }*/
+        case IOCTL_FASTCOM_SET_SAMPLE_RATE: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            Status = FastcomSetSampleRate(Extension, *((unsigned *)buffer));
+            break;
+        }
+        /*case IOCTL_FASTCOM_GET_SAMPLE_RATE: {
+            unsigned *sample_rate = 0;
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*sample_rate), (PVOID *)&sample_rate, NULL);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            *sample_rate = FastcomGetSampleRate(Extension);
+
+            reqContext->Information = sizeof(*sample_rate);
+        }*/
+        case IOCTL_FASTCOM_SET_TX_TRIGGER: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            Status = FastcomSetTxTrigger(Extension, *((unsigned *)buffer));
+        }
+        /*case IOCTL_FASTCOM_GET_TX_TRIGGER: {
+            unsigned *tx_trigger = 0;
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*tx_trigger), (PVOID *)&tx_trigger, NULL);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            *tx_trigger = FastcomGetTxTrigger(Extension);
+
+            reqContext->Information = sizeof(*tx_trigger);
+        }*/
+        case IOCTL_FASTCOM_SET_RX_TRIGGER: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            Status = FastcomSetRxTrigger(Extension, *((unsigned *)buffer));
+        }
+        /*case IOCTL_FASTCOM_GET_RX_TRIGGER: {
+            unsigned *rx_trigger = 0;
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*rx_trigger), (PVOID *)&rx_trigger, NULL);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            *rx_trigger = FastcomGetRxTrigger(Extension);
+
+            reqContext->Information = sizeof(*rx_trigger);
+        }*/
         default: {
 
             Status = STATUS_INVALID_PARAMETER;
