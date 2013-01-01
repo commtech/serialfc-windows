@@ -2086,6 +2086,11 @@ NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return status;
 }
 
+void FastcomGetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+{
+    *value = pDevExt->SampleRate;
+}
+
 NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2107,6 +2112,11 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return STATUS_SUCCESS;
 }
 
+void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+{
+    *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
+}
+
 NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2126,6 +2136,11 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
 
     return STATUS_SUCCESS;
+}
+
+void FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+{
+    *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_RXTRG);
 }
 
 void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2212,6 +2227,15 @@ void FastcomSetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
 }
 
+void FastcomGetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    UCHAR mpio_lvlh;
+    
+    mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
+
+    *enabled = mpio_lvlh & (0x1 << pDevExt->Channel) ? TRUE : FALSE;
+}
+
 NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2220,6 +2244,20 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
     case CARD_TYPE_PCIe:
         FastcomSetTerminationPCIe(pDevExt, enable);
+        return STATUS_SUCCESS;
+    }
+
+    return STATUS_UNSUCCESSFUL;
+}
+
+NTSTATUS FastcomGetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        return STATUS_NOT_SUPPORTED;
+
+    case CARD_TYPE_PCIe:
+        FastcomGetTerminationPCIe(pDevExt, enabled);
         return STATUS_SUCCESS;
     }
 
@@ -2264,6 +2302,24 @@ void FastcomSetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
 }
 
+void FastcomGetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    UCHAR mpio_lvl;
+    
+    mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+
+    *enabled = mpio_lvl & 0x80 ? TRUE : FALSE;
+}
+
+void FastcomGetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    UCHAR mpio_lvl;
+    
+    mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+
+    *enabled = mpio_lvl & (0x1 << pDevExt->Channel) ? TRUE : FALSE;
+}
+
 void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2275,6 +2331,19 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
         FastcomSetEchoCancelPCIe(pDevExt, enable);
         break;
     }
+}
+
+void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        FastcomGetEchoCancelPCI(pDevExt, enabled);
+        break;
+
+    case CARD_TYPE_PCIe:
+        FastcomGetEchoCancelPCIe(pDevExt, enabled);
+        break;
+    }    
 }
 
 void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
