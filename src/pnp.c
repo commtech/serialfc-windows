@@ -1334,7 +1334,7 @@ Return Value:
     FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
     FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
     FastcomSetTermination(pDevExt, (BOOLEAN)PConfigData->Termination); /* This does nothing on the 335 cards */
-    FastcomSetRxTrigger(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
+    FastcomSetEchoCancel(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
 
     //
     // If the user requested that we disable the port, then
