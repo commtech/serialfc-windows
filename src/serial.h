@@ -1830,4 +1830,21 @@ typedef struct   _SUPPORTED_BAUD_RATES {
 #define FC_422_4_PCIe_ID 0x0020
 #define FC_422_8_PCIe_ID 0x0021
 
-enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe };
+enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC };
+
+/* Normal registers */
+#define FCR_OFFSET 0x2
+#define LCR_OFFSET 0x3
+#define SPR_OFFSET 0x7
+
+/* Extended 650 registers when LCR = 0xbf */
+#define EFR_OFFSET 0x2
+#define TTL_OFFSET 0x4
+
+/* Extended 950 registers */
+#define ICR_OFFSET 0x5
+
+/* Indexed control register set */
+#define ACR_OFFSET 0x0
+#define TCR_OFFSET 0x2
+#define RTL_OFFSET 0x5

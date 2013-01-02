@@ -2005,7 +2005,10 @@ enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt)
         return CARD_TYPE_PCIe;
     }
 
-    return CARD_TYPE_PCI;// TODO
+    if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F)
+        return CARD_TYPE_FSCC;
+
+    return CARD_TYPE_PCI; // TODO
 }
 
 NTSTATUS FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
@@ -2066,6 +2069,24 @@ NTSTATUS FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned val
     return STATUS_SUCCESS;
 }
 
+NTSTATUS FastcomSetSampleRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    UCHAR orig_lcr;
+
+    if (value < 4 || value > 16)
+        return STATUS_NOT_SUPPORTED;
+
+    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, TCR_OFFSET); /* To allow access to TCR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Actually writing to TCR through ICR */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+
+    return STATUS_SUCCESS;
+}
+
 NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     NTSTATUS status = STATUS_UNSUCCESSFUL;
@@ -2077,6 +2098,10 @@ NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 
     case CARD_TYPE_PCIe:
         status = FastcomSetSampleRatePCIe(pDevExt, value);
+        break;
+
+    case CARD_TYPE_FSCC:
+        status = FastcomSetSampleRateFSCC(pDevExt, value);
         break;
     }
 
@@ -2091,56 +2116,122 @@ void FastcomGetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
     *value = pDevExt->SampleRate;
 }
 
-NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetTxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-        if (value > 64)
-            return STATUS_NOT_SUPPORTED;
-
-        break;
-
-    case CARD_TYPE_PCIe:
-        if (value > 255)
-            return STATUS_NOT_SUPPORTED;
-
-        break;
-    }
+    if (value > 64)
+        return STATUS_NOT_SUPPORTED;
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, (UCHAR)value);
 
     return STATUS_SUCCESS;
 }
 
-void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+NTSTATUS FastcomSetTxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
+    if (value > 255)
+        return STATUS_NOT_SUPPORTED;
+    
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, (UCHAR)value);
+
+    return STATUS_SUCCESS;
 }
 
-NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS FastcomSetTxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    if (value > 127)
+        return STATUS_NOT_SUPPORTED;
+
+    //TODO
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
-        if (value > 64)
-            return STATUS_NOT_SUPPORTED;
-
-        break;
+        return FastcomSetTxTriggerPCI(pDevExt, value);
 
     case CARD_TYPE_PCIe:
-        if (value > 255)
-            return STATUS_NOT_SUPPORTED;
+        return FastcomSetTxTriggerPCIe(pDevExt, value);
 
+    case CARD_TYPE_FSCC:
+        return FastcomSetTxTriggerFSCC(pDevExt, value);
+    }
+
+    return STATUS_UNSUCCESSFUL;
+}
+
+void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
+        break;
+    case CARD_TYPE_FSCC:
+        // TODO
         break;
     }
+}
+
+NTSTATUS FastcomSetRxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    if (value > 64) // TODO: Check if < 1 check is needed
+        return STATUS_NOT_SUPPORTED;
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
 
     return STATUS_SUCCESS;
 }
 
+NTSTATUS FastcomSetRxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    if (value > 255) // TODO: Check if < 1 check is needed
+        return STATUS_NOT_SUPPORTED;
+    
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    if (value < 1 || value > 127)
+        return STATUS_NOT_SUPPORTED;
+
+    //TODO
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        return FastcomSetRxTriggerPCI(pDevExt, value);
+
+    case CARD_TYPE_PCIe:
+        return FastcomSetRxTriggerPCIe(pDevExt, value);
+
+    case CARD_TYPE_FSCC:
+        return FastcomSetRxTriggerFSCC(pDevExt, value);
+    }
+
+    return STATUS_UNSUCCESSFUL;
+}
+
 void FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
-    *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_RXTRG);
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_RXTRG);
+        break;
+    case CARD_TYPE_FSCC:
+        // TODO
+        break;
+    }
 }
 
 void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2190,6 +2281,11 @@ void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, new_fctr);
 }
 
+void FastcomSetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    //TODO
+}
+
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2199,6 +2295,10 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
     case CARD_TYPE_PCIe:
         FastcomSetRS485PCIe(pDevExt, enable);
+        break;
+
+    case CARD_TYPE_FSCC:
+        FastcomSetRS485FSCC(pDevExt, enable);
         break;
     }
 }
@@ -2240,6 +2340,7 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
+    case CARD_TYPE_FSCC:
         return STATUS_NOT_SUPPORTED;
 
     case CARD_TYPE_PCIe:
@@ -2254,6 +2355,7 @@ NTSTATUS FastcomGetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enable
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
+    case CARD_TYPE_FSCC:
         return STATUS_NOT_SUPPORTED;
 
     case CARD_TYPE_PCIe:
@@ -2331,6 +2433,8 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
         FastcomSetEchoCancelPCIe(pDevExt, enable);
         break;
     }
+
+    //TODO: Does the FSCC support this?
 }
 
 void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)

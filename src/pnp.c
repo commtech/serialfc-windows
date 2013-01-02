@@ -740,6 +740,17 @@ Return Value:
         goto End;
     }
 
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        defaultClockRate = 14745600;
+        break;
+
+    case CARD_TYPE_FSCC:
+        defaultClockRate = 1843200;
+        break;
+    }
+
     //
     // Open the "Device Parameters" section of registry for this device and get parameters.
     //
@@ -1223,6 +1234,11 @@ Return Value:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x400;
         pDevExt->TxFifoAmount = 256;
         break;
+
+	case CARD_TYPE_FSCC:
+		pDevExt->Channel = 0; // TODO
+		pDevExt->TxFifoAmount = 128;
+		break;
     }
 
     /* The FCR value, not the actual trigger level. We are fixing this at 0xC0 so we can 
@@ -1291,6 +1307,26 @@ Return Value:
         for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
             pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
         break;
+    }
+
+    if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F) {
+        UCHAR orig_lcr;
+        UCHAR orig_fcr, new_fcr;
+    
+        orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+        orig_fcr = pDevExt->SerialReadUChar(pDevExt->Controller + FCR_OFFSET);
+    
+        new_fcr = orig_fcr | 0x1;
+        pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, new_fcr); /* Enable FIFO (combined with enhanced enabled 950 mode) */
+    
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0xbf); /* Set to 0xbf to access 650 registers */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + EFR_OFFSET, 0x10); /* Enable enhanced mode */
+#if 0       
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to TTL */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x20); /* Enable 950 trigger to ACR through ICR */
+#endif  
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
     }
 
     FastcomSetRS485(pDevExt, (BOOLEAN)PConfigData->RS485);
