@@ -2200,7 +2200,9 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     if (value < 1 || value > 127)
         return STATUS_NOT_SUPPORTED;
 
-    //TODO
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, RTL_OFFSET); /* To allow access to RTL */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Set the trigger level to RTL through ICR */
 
     return STATUS_SUCCESS;
 }
