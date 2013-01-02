@@ -1321,11 +1321,11 @@ Return Value:
     
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0xbf); /* Set to 0xbf to access 650 registers */
         pDevExt->SerialWriteUChar(pDevExt->Controller + EFR_OFFSET, 0x10); /* Enable enhanced mode */
-#if 0       
+
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to TTL */
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x20); /* Enable 950 trigger to ACR through ICR */
-#endif  
+
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
     }
 
