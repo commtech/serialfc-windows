@@ -1310,23 +1310,23 @@ Return Value:
     }
 
     if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F) {
-        UCHAR orig_lcr;
-        UCHAR orig_fcr, new_fcr;
+        UCHAR init_lcr;
+        UCHAR init_fcr;
     
-        orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
-        orig_fcr = pDevExt->SerialReadUChar(pDevExt->Controller + FCR_OFFSET);
-    
-        new_fcr = orig_fcr | 0x1;
-        pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, new_fcr); /* Enable FIFO (combined with enhanced enabled 950 mode) */
+        init_lcr = 0x00;
+        init_fcr = 0x01; /* Enable FIFO (combined with enhanced enables 950 mode) */
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, init_fcr); 
     
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0xbf); /* Set to 0xbf to access 650 registers */
         pDevExt->SerialWriteUChar(pDevExt->Controller + EFR_OFFSET, 0x10); /* Enable enhanced mode */
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
-        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to TTL */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x20); /* Enable 950 trigger to ACR through ICR */
 
-        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
     }
 
     FastcomSetRS485(pDevExt, (BOOLEAN)PConfigData->RS485);
