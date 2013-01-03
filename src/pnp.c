@@ -1236,8 +1236,9 @@ Return Value:
         break;
 
 	case CARD_TYPE_FSCC:
-		pDevExt->Channel = 0; // TODO
-		pDevExt->TxFifoAmount = 128;
+        /* Bar1 comes in 0x1 higher than expected for some reason. On 4 port cards it will repeat channels 1-2 twice */
+        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - (PConfigData->Bar1 - 1)) / 0x8;
+        pDevExt->TxFifoAmount = 128;
 		break;
     }
 
@@ -1632,7 +1633,6 @@ Return Value:
    ULONG gotMem = 0;
    BOOLEAN DebugPortInUse = FALSE;
    PDEVICE_OBJECT pdo;
-   UINT32 Bar0;
 
    PAGED_CODE();
 
@@ -1802,6 +1802,7 @@ Return Value:
 
    PCIReadConfigWord(pdo, 0x02, &pDevExt->DeviceID);
    PCIReadConfigWord(pdo, 0x10, &PConfig->Bar0);
+   PCIReadConfigWord(pdo, 0x14, &PConfig->Bar1);
 End:
 
    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP, "<-- SerialMapHWResources %x\n", status);

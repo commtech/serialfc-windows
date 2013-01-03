@@ -462,6 +462,7 @@ typedef struct _CONFIG_DATA {
     KAFFINITY           Affinity;
     ULONG               TL16C550CAFC;
     UINT32              Bar0;
+    UINT32              Bar1;
     } CONFIG_DATA,*PCONFIG_DATA;
 
 
