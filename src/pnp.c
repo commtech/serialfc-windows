@@ -1325,7 +1325,8 @@ Return Value:
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
-        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x20); /* Enable 950 trigger to ACR through ICR */
+        pDevExt->ACR = 0x20;
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Enable 950 trigger to ACR through ICR */
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
     }
