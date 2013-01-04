@@ -2167,7 +2167,7 @@ void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 
 NTSTATUS FastcomSetRxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    if (value > 64) // TODO: Check if < 1 check is needed
+    if (value > 64)
         return STATUS_NOT_SUPPORTED;
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
@@ -2177,7 +2177,7 @@ NTSTATUS FastcomSetRxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value
 
 NTSTATUS FastcomSetRxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    if (value > 255) // TODO: Check if < 1 check is needed
+    if (value > 255)
         return STATUS_NOT_SUPPORTED;
     
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
