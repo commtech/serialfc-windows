@@ -2457,3 +2457,50 @@ void FastcomDisableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt)
 {
     FastcomSetEchoCancel(pDevExt, FALSE);
 }
+
+NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status)
+{
+    UINT32 orig_fcr;
+
+    if (FastcomGetCardType(pDevExt) != CARD_TYPE_FSCC)
+        return STATUS_NOT_SUPPORTED;
+
+    orig_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+
+    *status = (orig_fcr & (0x40000000 << pDevExt->Channel)) ? TRUE: FALSE;
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    UINT32 orig_fcr, new_fcr;
+
+    if (FastcomGetCardType(pDevExt) != CARD_TYPE_FSCC)
+        return STATUS_NOT_SUPPORTED;
+
+    orig_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+
+    if ((orig_fcr & (0x01000000 << pDevExt->Channel)) == FALSE) {
+        new_fcr = orig_fcr | (0x01000000 << pDevExt->Channel);
+
+        WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
+    }
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    UINT32 orig_fcr, new_fcr;
+
+    if (FastcomGetCardType(pDevExt) != CARD_TYPE_FSCC)
+        return STATUS_NOT_SUPPORTED;
+
+    orig_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+    new_fcr = orig_fcr & ~(0x01000000 << pDevExt->Channel);
+
+    WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
+
+    return STATUS_SUCCESS;
+}

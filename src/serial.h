@@ -461,8 +461,6 @@ typedef struct _CONFIG_DATA {
     ULONG               TrIrql;
     KAFFINITY           Affinity;
     ULONG               TL16C550CAFC;
-    UINT32              Bar0;
-    UINT32              Bar1;
     } CONFIG_DATA,*PCONFIG_DATA;
 
 
@@ -1300,7 +1298,12 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
     UINT32 DeviceID;
     unsigned SampleRate;
     unsigned Channel;
+    UINT32 Bar0;
 
+    /* FSCC specific */
+    UCHAR ACR;
+    UINT32 Bar1;
+    UINT32 Bar2;
 } SERIAL_DEVICE_EXTENSION,*PSERIAL_DEVICE_EXTENSION;
 
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(SERIAL_DEVICE_EXTENSION,

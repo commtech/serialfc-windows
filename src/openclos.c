@@ -136,6 +136,7 @@ SerialDeviceFileCreateWorker (
     NTSTATUS status;
     PSERIAL_DEVICE_EXTENSION extension = SerialGetDeviceExtension (Device);
 
+
     //
     // Create a buffer for the RX data when no reads are outstanding.
     //
@@ -268,6 +269,19 @@ SerialDeviceFileCreateWorker (
     //
 
     extension->EscapeChar = 0;
+
+    if (FastcomGetCardType(extension) == CARD_TYPE_FSCC) {
+        BOOLEAN opened_in_sync;
+
+        status = FsccIsOpenedInSync(extension, &opened_in_sync);
+
+        if (NT_SUCCESS(status)) {
+            if (opened_in_sync == TRUE)
+                return STATUS_NOT_SUPPORTED;
+            else
+                FsccEnableAsync(extension);
+        }
+    }
 
     //
     // We don't want the device to be removed or stopped when there is an handle
@@ -613,6 +627,9 @@ SerialFileCloseWorker(
     // were gone.
     //
     WdfDeviceSetStaticStopRemove(Device, TRUE);
+
+    if (FastcomGetCardType(extension) == CARD_TYPE_FSCC)
+        FsccDisableAsync(extension);
 
     return;
 

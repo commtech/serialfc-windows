@@ -1226,21 +1226,21 @@ Return Value:
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
-        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x200;
+        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar0) / 0x200;
         pDevExt->TxFifoAmount = 64;
         break;
 
     case CARD_TYPE_PCIe:
-        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - PConfigData->Bar0) / 0x400;
+        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar0) / 0x400;
         pDevExt->TxFifoAmount = 256;
         break;
 
 	case CARD_TYPE_FSCC:
-        /* Bar1 comes in 0x1 higher than expected for some reason. On 4 port cards it will repeat channels 1-2 twice */
-        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - (PConfigData->Bar1 - 1)) / 0x8;
+        pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar1) / 0x8;
         pDevExt->TxFifoAmount = 128;
 		break;
     }
+    
 
     /* The FCR value, not the actual trigger level. We are fixing this at 0xC0 so we can 
        use our custom trigger levels. */
@@ -1801,8 +1801,14 @@ Return Value:
    pdo = WdfDeviceWdmGetDeviceObject(Device);
 
    PCIReadConfigWord(pdo, 0x02, &pDevExt->DeviceID);
-   PCIReadConfigWord(pdo, 0x10, &PConfig->Bar0);
-   PCIReadConfigWord(pdo, 0x14, &PConfig->Bar1);
+   PCIReadConfigWord(pdo, 0x10, &pDevExt->Bar0);
+   PCIReadConfigWord(pdo, 0x14, &pDevExt->Bar1);
+   PCIReadConfigWord(pdo, 0x18, &pDevExt->Bar2);
+
+   //TODO: These should probably be under an FSCC section and Bar1 might need this also
+   pDevExt->Bar1 -= 1;
+   pDevExt->Bar2 -= 1;
+
 End:
 
    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP, "<-- SerialMapHWResources %x\n", status);
