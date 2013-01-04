@@ -21,7 +21,7 @@ signature="$CHICAGO$"
 Class=Ports
 ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
 Provider=%ManufacturerName%
-CatalogFile=serialfc.cat
+CatalogFile=fastcom.cat
 
 
 ; ================= Device Install section =====================
@@ -45,7 +45,7 @@ DefaultDestDir  = 12
 [Standard.NT$ARCH$]
 ; DisplayName           Section           DeviceId
 ; -----------           -------           --------
-%PNP0500.DevDesc%=       Serial_Inst,      SerialFC\Port
+%PNP0500.DevDesc%=       Serial_Inst,      SerialFC\Port1, SerialFC\Port2, SerialFC\Port3, SerialFC\Port4, SerialFC\Port5, SerialFC\Port6, SerialFC\Port7, SerialFC\Port8
 
 
 [Serial_Inst.NT]

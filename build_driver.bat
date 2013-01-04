@@ -34,6 +34,6 @@ Inf2cat.exe /driver:%TOP%\ /os:%5 > nul
 
 :sign_files
 echo Signing Files...
-signtool sign /v /ac MSCV-VSClass3.cer /s my /n "Commtech, Inc." /t http://timestamp.verisign.com/scripts/timestamp.dll %TOP%\serialfc.cat
+signtool sign /v /ac MSCV-VSClass3.cer /s my /n "Commtech, Inc." /t http://timestamp.verisign.com/scripts/timestamp.dll %TOP%\fastcom.cat
 
 exit
