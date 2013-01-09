@@ -1904,6 +1904,7 @@ Return Value:
             *rs485 = FastcomGetRS485(Extension);
 
             reqContext->Information = sizeof(*rs485);
+            break;
         }*/
         case IOCTL_FASTCOM_ENABLE_ECHO_CANCEL: {
 
@@ -1926,7 +1927,7 @@ Return Value:
             FastcomGetEchoCancel(Extension, (BOOLEAN *)buffer);
 
             reqContext->Information = sizeof(BOOLEAN);
-            reqContext->SystemBuffer = buffer;
+            break;
         }
         case IOCTL_FASTCOM_ENABLE_TERMINATION: {
 
@@ -1949,7 +1950,7 @@ Return Value:
             Status = FastcomGetTermination(Extension, buffer);
 
             reqContext->Information = sizeof(BOOLEAN);
-            reqContext->SystemBuffer = buffer;
+            break;
         }
         case IOCTL_FASTCOM_SET_SAMPLE_RATE: {
             Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
@@ -1972,7 +1973,7 @@ Return Value:
             FastcomGetSampleRate(Extension, buffer);
 
             reqContext->Information = sizeof(unsigned);
-            reqContext->SystemBuffer = buffer;
+            break;
         }
         case IOCTL_FASTCOM_SET_TX_TRIGGER: {
             Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
@@ -1982,6 +1983,7 @@ Return Value:
             }
 
             Status = FastcomSetTxTrigger(Extension, *((unsigned *)buffer));
+            break;
         }
         case IOCTL_FASTCOM_GET_TX_TRIGGER: {
 
@@ -1994,7 +1996,7 @@ Return Value:
             FastcomGetTxTrigger(Extension, buffer);
 
             reqContext->Information = sizeof(unsigned);
-            reqContext->SystemBuffer = buffer;
+            break;
         }
         case IOCTL_FASTCOM_SET_RX_TRIGGER: {
             Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
@@ -2004,6 +2006,7 @@ Return Value:
             }
 
             Status = FastcomSetRxTrigger(Extension, *((unsigned *)buffer));
+            break;
         }
         case IOCTL_FASTCOM_GET_RX_TRIGGER: {
 
@@ -2016,7 +2019,7 @@ Return Value:
             FastcomGetRxTrigger(Extension, buffer);
 
             reqContext->Information = sizeof(unsigned);
-            reqContext->SystemBuffer = buffer;
+            break;
         }
         default: {
 
