@@ -747,7 +747,7 @@ Return Value:
         break;
 
     case CARD_TYPE_FSCC:
-        defaultClockRate = 1843200;
+        defaultClockRate = 18432000;
         break;
     }
 
