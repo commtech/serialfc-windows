@@ -710,7 +710,7 @@ Return Value:
     NTSTATUS status;
     CONFIG_DATA config;
     PCONFIG_DATA pConfig = &config;
-    ULONG defaultClockRate = 14745600;
+    ULONG defaultClockRate = 18432000;
 
     PAGED_CODE();
 
@@ -738,17 +738,6 @@ Return Value:
 
     if (!NT_SUCCESS(status)) {
         goto End;
-    }
-
-    switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        defaultClockRate = 14745600;
-        break;
-
-    case CARD_TYPE_FSCC:
-        defaultClockRate = 18432000;
-        break;
     }
 
     //
@@ -1331,6 +1320,7 @@ Return Value:
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
     }
 
+    FastcomSetClockRate(pDevExt, PConfigData->ClockRate);
     FastcomSetRS485(pDevExt, (BOOLEAN)PConfigData->RS485);
     FastcomSetSampleRate(pDevExt, PConfigData->SampleRate);
     FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);

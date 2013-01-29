@@ -624,6 +624,8 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
 void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
 void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
 
+void FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate);
+
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status);
 NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);

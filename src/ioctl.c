@@ -700,7 +700,6 @@ Return Value:
                          &AppropriateDivisor
                          );
 
-
             if (NT_SUCCESS(Status)) {
 
                 SERIAL_IOCTL_SYNC S;
@@ -2019,6 +2018,16 @@ Return Value:
             FastcomGetRxTrigger(Extension, buffer);
 
             reqContext->Information = sizeof(unsigned);
+            break;
+        }
+        case IOCTL_FASTCOM_SET_CLOCK_RATE: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            FastcomSetClockRate(Extension, *((unsigned *)buffer)); //TODO: Check for returned value
             break;
         }
         default: {
