@@ -16,3 +16,4 @@ lib/c/docs
 *.bak
 *.ilk
 *.orig
+__pycache__
