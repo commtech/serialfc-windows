@@ -2015,7 +2015,7 @@ NTSTATUS FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     UCHAR current_8x_mode, new_8x_mode;
 
     if (value != 8 && value != 16)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
 
@@ -2040,7 +2040,7 @@ NTSTATUS FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned val
     UCHAR current_4x_mode, new_4x_mode;
 
     if (value != 4 && value != 8 && value != 16)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     current_4x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_4XMODE);
     current_8x_mode = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_8XMODE);
@@ -2073,7 +2073,7 @@ NTSTATUS FastcomSetSampleRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned val
     UCHAR orig_lcr;
 
     if (value < 4 || value > 16)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
 
@@ -2118,7 +2118,7 @@ void FastcomGetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 NTSTATUS FastcomSetTxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     if (value > 64)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, (UCHAR)value);
 
@@ -2128,7 +2128,7 @@ NTSTATUS FastcomSetTxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value
 NTSTATUS FastcomSetTxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     if (value > 255)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
     
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_TXTRG, (UCHAR)value);
 
@@ -2167,7 +2167,7 @@ void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 NTSTATUS FastcomSetRxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     if (value > 64)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
 
@@ -2177,7 +2177,7 @@ NTSTATUS FastcomSetRxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value
 NTSTATUS FastcomSetRxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     if (value > 255)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
     
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_RXTRG, (UCHAR)value);
 
@@ -2189,7 +2189,7 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     UCHAR orig_lcr;
 
     if (value < 1 || value > 127)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
 
@@ -3760,7 +3760,11 @@ void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
     case CARD_TYPE_PCIe:
         FastcomGetEchoCancelPCIe(pDevExt, enabled);
         break;
-    }    
+
+    case CARD_TYPE_FSCC:
+        //TODO
+        break;
+    }
 }
 
 void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
