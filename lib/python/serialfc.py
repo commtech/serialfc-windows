@@ -30,6 +30,8 @@ IOCTL_FASTCOM_GET_TX_TRIGGER = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80C, METHOD_BUFF
 IOCTL_FASTCOM_SET_RX_TRIGGER = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80D, METHOD_BUFFERED, FILE_ANY_ACCESS)
 IOCTL_FASTCOM_GET_RX_TRIGGER = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80E, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+IOCTL_FASTCOM_SET_CLOCK_RATE = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80F, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 class Port(serial.Serial):
 
     def _set_rs485(self, status):
@@ -133,6 +135,13 @@ class Port(serial.Serial):
         return value[0]
 
     rx_trigger = property(fset=_set_rx_trigger, fget=_get_rx_trigger)
+
+    def _set_clock_rate(self, rate):
+        """Sets the value of the clock_rate setting."""
+        value = struct.pack("I", rate)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_CLOCK_RATE, value, 0, None)
+
+    clock_rate = property(fset=_set_clock_rate, fget=None)
 
 if __name__ == '__main__':
     p = Port(5)
