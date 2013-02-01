@@ -804,7 +804,7 @@ Return Value:
         pConfig->ClockRate = defaultClockRate;
     }
 
-    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP, "Com Port ClockRate: %x\n",
+    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP, "Com Port ClockRate: %i\n",
                     pConfig->ClockRate);
 
     if(!SerialGetRegistryKeyValue(Device,
