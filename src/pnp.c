@@ -1624,6 +1624,7 @@ Return Value:
    ULONG gotMem = 0;
    BOOLEAN DebugPortInUse = FALSE;
    PDEVICE_OBJECT pdo;
+   UINT32 VendorID = 0;
 
    PAGED_CODE();
 
@@ -1791,14 +1792,29 @@ Return Value:
 
    pdo = WdfDeviceWdmGetDeviceObject(Device);
 
+   /* Zero these values as PCIReadConfigWord only writes over part of the variable. */
+   pDevExt->DeviceID = 0;
+   pDevExt->Bar0 = 0;
+   pDevExt->Bar1 = 0;
+   pDevExt->Bar2 = 0;
+
+   PCIReadConfigWord(pdo, 0x00, &VendorID);
    PCIReadConfigWord(pdo, 0x02, &pDevExt->DeviceID);
    PCIReadConfigWord(pdo, 0x10, &pDevExt->Bar0);
-   PCIReadConfigWord(pdo, 0x14, &pDevExt->Bar1);
-   PCIReadConfigWord(pdo, 0x18, &pDevExt->Bar2);
 
-   //TODO: These should probably be under an FSCC section and Bar1 might need this also
-   pDevExt->Bar1 -= 1;
-   pDevExt->Bar2 -= 1;
+   if (VendorID != 0x18f7 || FastcomGetCardType(pDevExt) == CARD_TYPE_UNKNOWN) {
+      status = STATUS_UNSUCCESSFUL;
+      goto End;
+   }
+
+   if (FastcomGetCardType(pDevExt) == CARD_TYPE_FSCC) {
+      PCIReadConfigWord(pdo, 0x14, &pDevExt->Bar1);
+      PCIReadConfigWord(pdo, 0x18, &pDevExt->Bar2);
+
+      pDevExt->Bar0 -= 1;
+      pDevExt->Bar1 -= 1;
+      pDevExt->Bar2 -= 1;
+   }
 
 End:
 

@@ -2007,7 +2007,7 @@ enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt)
     if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F)
         return CARD_TYPE_FSCC;
 
-    return CARD_TYPE_PCI; // TODO
+    return CARD_TYPE_UNKNOWN;
 }
 
 NTSTATUS FastcomSetSampleRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)

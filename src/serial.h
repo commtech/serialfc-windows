@@ -1295,7 +1295,7 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
 
     SERIAL_WMI_PERF_DATA WmiPerfData;
 
-    UINT32 DeviceID;
+    UINT16 DeviceID;
     unsigned SampleRate;
     unsigned Channel;
     UINT32 Bar0;
@@ -1838,7 +1838,7 @@ typedef struct   _SUPPORTED_BAUD_RATES {
 #define FC_422_4_PCIe_ID 0x0020
 #define FC_422_8_PCIe_ID 0x0021
 
-enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC };
+enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYPE_UNKNOWN };
 
 /* Normal registers */
 #define FCR_OFFSET 0x2
