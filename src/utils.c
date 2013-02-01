@@ -3305,7 +3305,7 @@ then choose the best loop filter with
 #define DTA_BASE 0x00000001
 #define CLK_BASE 0x00000002
 
-void FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
+NTSTATUS FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     UINT32 orig_fcr_value = 0;
     UINT32 new_fcr_value = 0;
@@ -3321,10 +3321,13 @@ void FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
     struct ResultStruct solutiona;  //final results for ResultStruct data calculations
     struct IcpRsStruct solutionb;   //final results for IcpRsStruct data calculations
 
+    if (value < 200 || value > 270000000)
+        return STATUS_NOT_SUPPORTED;
+
     memset(&solutiona,0,sizeof(struct ResultStruct));
     memset(&solutionb,0,sizeof(struct IcpRsStruct));
 
-    GetICS30703Data(rate, 2, &solutiona, &solutionb, clock_data);
+    GetICS30703Data(value, 2, &solutiona, &solutionb, clock_data);
 
 
 #if 0 // TODO
@@ -3347,7 +3350,7 @@ void FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
     if (data == NULL) {
         SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_WRITE,
                         "--> ExAllocatePoolWithTag failed\n");
-        return;
+        return STATUS_UNSUCCESSFUL;
     }
     
     if (pDevExt->Channel == 1) {
@@ -3385,6 +3388,8 @@ void FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
     WRITE_PORT_BUFFER_ULONG(ULongToPtr(pDevExt->Bar2), data, data_index);
     
     ExFreePoolWithTag (data, 'stiB');
+
+    return STATUS_SUCCESS;
 }
 
 // Copied from old code. Needs a major code cleanup. TODO
@@ -3394,7 +3399,7 @@ void FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
 #define MPIO_SSTB           0x04
 
 //WILL: Range 6MHz - 200MHz
-BOOLEAN FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
+NTSTATUS FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
 {
     #define STARTWRD 0x1e05
     #define MIDWRD   0x1e04
@@ -3432,8 +3437,8 @@ BOOLEAN FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
 
 
 
-    //if (value < 1 || value > 127)
-    //    return STATUS_NOT_SUPPORTED;
+    if (rate < 6000000 || rate > 200000000)
+        return STATUS_INVALID_PARAMETER;
 
     //DBGP("SerialSetClock Executing %d\n",*rate);
 
@@ -3444,33 +3449,9 @@ BOOLEAN FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
 
     saved = READ_REGISTER_UCHAR(base_add+MPIOLVL_OFFSET);  //Save MPIO pin state
     data = saved;
-//ICS307
-    //DBGP("Into ICS307 case\n");
-#if 0
-    while ((desired < 6000000 )||(desired>50000000))
-    {
-        if (desired == 0)
-        {
-            //DBGP("Cannot set rate to 0! Aborting.\n");
-            return FALSE;
-        }
-        else if (desired < 6000000 )
-        {
-            //DBGP("The rate is: %d\n",desired);
-            *rate=(*rate)*2;
-            desired = *rate;
-        }
-        else
-        {
-            //DBGP("The rate %d is too high.  Aborting.\n",desired);
-            return FALSE;
-        }
-    }
-#endif
-    hi=(rate+(rate/10));
-    low=(rate-(rate/10));
 
-//      DBGP("Hi = %d  Low = %d \n",hi, low);
+    hi = (rate + (rate / 10));
+    low = (rate - (rate / 10));
 
     od = 2;
     while (od <= 10)
@@ -3513,7 +3494,7 @@ BOOLEAN FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
             break;
         default:
             //DBGP("Case 1 Invalid OD = %ld.\n",od);
-            return FALSE;
+            return STATUS_UNSUCCESSFUL;
         }
 
         rdw = 1;
@@ -3640,7 +3621,7 @@ BOOLEAN FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
         break;
     default:
         //DBGP("Case 2 Invalid OD=%ld.\n",od);
-        return FALSE;
+        return STATUS_UNSUCCESSFUL;
         
     }
     range1 = (inFreq * 2 * ((bestVDW + 8)/(bestRDW + 2)));
@@ -3710,27 +3691,63 @@ BOOLEAN FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
     KeStallExecutionProcessor(20);
 
     WRITE_REGISTER_UCHAR(base_add+MPIOLVL_OFFSET,saved);   //Put MPIO pins back to saved state.
-    return TRUE;
+    return STATUS_SUCCESS;
 }
 
-void FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
+NTSTATUS FastcomSetClockRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
+    const unsigned input_freq = 125000000;
+    const unsigned prescaler = 1;
+    float divisor = 0;
+    UCHAR orig_lcr = 0;
+    UCHAR dlm = 0;
+    UCHAR dll = 0;
+    UCHAR dld = 0;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    divisor = (float)input_freq / prescaler / (value * 16);
+
+    dlm = (int)floor(divisor) >> 8;
+    dll = (int)floor(divisor) % 0xff;
+
+    dld = pDevExt->SerialReadUChar(pDevExt->Controller + DLD_OFFSET);
+    dld &= 0xf0;
+    dld |= (int)floor(((divisor - floor(divisor)) * 16) + 0.5);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr | 0x80);
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + DLM_OFFSET, dlm);  
+    pDevExt->SerialWriteUChar(pDevExt->Controller + DLL_OFFSET, dll);  
+    pDevExt->SerialWriteUChar(pDevExt->Controller + DLD_OFFSET, dld);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    NTSTATUS status = STATUS_UNSUCCESSFUL;
+
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
-        FastcomSetClockRatePCI(pDevExt, rate);
+        status = FastcomSetClockRatePCI(pDevExt, value);
         break;
 
     case CARD_TYPE_PCIe:
-        //TODO
-        return;
+        status = FastcomSetClockRatePCIe(pDevExt, value);
         break;
 
     case CARD_TYPE_FSCC:
-        FastcomSetClockRateFSCC(pDevExt, rate);
+        status = FastcomSetClockRateFSCC(pDevExt, value);
         break;
     }
 
-    pDevExt->ClockRate = rate;
+    if (NT_SUCCESS (status))
+        pDevExt->ClockRate = value;  
+
+    return status;
 }
 
 void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)

@@ -2027,7 +2027,7 @@ Return Value:
                 break;
             }
 
-            FastcomSetClockRate(Extension, *((unsigned *)buffer)); //TODO: Check for returned value
+            Status = FastcomSetClockRate(Extension, *((unsigned *)buffer)); //TODO: Check for returned value
             break;
         }
         default: {

@@ -1807,6 +1807,10 @@ typedef struct   _SUPPORTED_BAUD_RATES {
     ULONG Mask;
 }SUPPORTED_BAUD_RATES;
 
+#define DLL_OFFSET 0x0
+#define DLM_OFFSET 0x1
+#define DLD_OFFSET 0x2
+
 #define MPIOINT_OFFSET 0x8f
 #define MPIOLVL_OFFSET 0x90
 #define MPIO3T_OFFSET 0x91
