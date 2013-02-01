@@ -1,3 +1,11 @@
+version 2.1.0 (2/1/2013)
+--------------------------------------------------------------------------------
+    * Manually change clock frequency
+    * Fix changeing the sample rate and trigger levels from the python library
+    * Fix setting the clock rate on the 335 and FSCC cards
+    * Fix detecting of which card is present
+    * Add more intuitive IOCTL error messages
+
 version 2.0.0 (1/11/2013)
 --------------------------------------------------------------------------------
 This is the initial release of the 2.0.X driver series.
