@@ -96,7 +96,8 @@ class Port(serial.Serial):
 
     def _set_sample_rate(self, rate):
         """Sets the value of the sample_rate setting."""
-        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_SAMPLE_RATE, rate, 0, None)
+        value = struct.pack("I", rate)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_SAMPLE_RATE, value, 0, None)
 
     def _get_sample_rate(self):
         """Gets the value of the sample_rate setting."""
@@ -110,7 +111,8 @@ class Port(serial.Serial):
 
     def _set_tx_trigger(self, level):
         """Sets the value of the tx_trigger setting."""
-        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_TX_TRIGGER, level, 0, None)
+        value = struct.pack("I", level)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_TX_TRIGGER, value, 0, None)
 
     def _get_tx_trigger(self):
         """Gets the value of the tx_trigger setting."""
@@ -124,7 +126,8 @@ class Port(serial.Serial):
 
     def _set_rx_trigger(self, level):
         """Sets the value of the rx_trigger setting."""
-        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_RX_TRIGGER, level, 0, None)
+        value = struct.pack("I", level)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_RX_TRIGGER, value, 0, None)
 
     def _get_rx_trigger(self):
         """Gets the value of the rx_trigger setting."""
