@@ -285,7 +285,21 @@ int serialfc_disable_isochronous(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+int serialfc_get_isochronous(HANDLE h, BOOL *status, int *mode)
+{
+  DWORD temp;
+  BOOL result;
 
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_ISOCHRONOUS, 
+                           NULL, 0, 
+                           mode, sizeof(*mode), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  if (result == TRUE)
+    *status = (*mode == -1) ? FALSE : TRUE;
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
  
 /******************************************************************************/
 /*!
