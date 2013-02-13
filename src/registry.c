@@ -283,7 +283,7 @@ Return Value:
 
     if (!NT_SUCCESS (status)) {
 
-        DriverDefaultsPtr->EchoCancelDefault = SERIAL_ISOCHRONOUS_DEFAULT;
+        DriverDefaultsPtr->IsochronousDefault = SERIAL_ISOCHRONOUS_DEFAULT;
 
         status = WdfRegistryAssignULong(hKey,
                             &valueName,
