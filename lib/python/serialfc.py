@@ -32,6 +32,10 @@ IOCTL_FASTCOM_GET_RX_TRIGGER = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80E, METHOD_BUFF
 
 IOCTL_FASTCOM_SET_CLOCK_RATE = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80F, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+IOCTL_FASTCOM_ENABLE_ISOCHRONOUS = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x810, METHOD_BUFFERED, FILE_ANY_ACCESS)
+IOCTL_FASTCOM_DISABLE_ISOCHRONOUS = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x811, METHOD_BUFFERED, FILE_ANY_ACCESS)
+IOCTL_FASTCOM_GET_ISOCHRONOUS = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x812, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 class Port(serial.Serial):
 
     def _set_rs485(self, status):
@@ -146,8 +150,27 @@ class Port(serial.Serial):
 
     clock_rate = property(fset=_set_clock_rate, fget=None)
 
+    def enable_isochronous(self, mode):
+        """Enables isochronous mode."""
+        value = struct.pack("I", mode)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_ENABLE_ISOCHRONOUS, value, 0, None)
+
+    def disable_isochronous(self):
+        """Disables isochronous mode."""
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_DISABLE_ISOCHRONOUS, None, 0, None)
+
+        return value[0]
+
+    def get_isochronous(self):
+        """Gets the value of the isochronous setting."""
+        buf_size = struct.calcsize("i")
+        buf = win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_GET_ISOCHRONOUS, None, buf_size, None)
+        value = struct.unpack("i", buf)
+
+        return value[0]
+
 if __name__ == '__main__':
-    p = Port(5)
+    p = Port('COM3')
 
     try:
     	print("RS485", p.rs485)
@@ -159,7 +182,19 @@ if __name__ == '__main__':
     except:
     	pass
 
+    try:
+        print("Isochronous", p.get_isochronous())
+    except:
+        pass
+
     print("Echo Cancel", p.echo_cancel)
     print("Sample Rate", p.sample_rate)
     print("Tx Trigger", p.tx_trigger)
     print("Rx Trigger", p.rx_trigger)
+
+    p.echo_cancel = False
+    p.sample_rate = 16
+    p.clock_rate = 18432000
+    p.baud_rate = 115200
+
+    p.write("UUUUU".encode())
