@@ -2027,7 +2027,21 @@ Return Value:
                 break;
             }
 
-            Status = FastcomSetClockRate(Extension, *((unsigned *)buffer)); //TODO: Check for returned value
+            Status = FastcomSetClockRate(Extension, *((unsigned *)buffer));
+            break;
+        }
+        case IOCTL_FASTCOM_ENABLE_ISOCHRONOUS: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            Status = FastcomEnableIsochronous(Extension, *((unsigned *)buffer));
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_ISOCHRONOUS: {
+            Status = FastcomDisableIsochronous(Extension);
             break;
         }
         default: {
