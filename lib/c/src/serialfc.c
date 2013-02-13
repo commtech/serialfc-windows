@@ -285,7 +285,7 @@ int serialfc_disable_isochronous(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
-int serialfc_get_isochronous(HANDLE h, BOOL *status, int *mode)
+int serialfc_get_isochronous(HANDLE h, int *mode)
 {
   DWORD temp;
   BOOL result;
@@ -294,9 +294,6 @@ int serialfc_get_isochronous(HANDLE h, BOOL *status, int *mode)
                            NULL, 0, 
                            mode, sizeof(*mode), 
                            &temp, (LPOVERLAPPED)NULL);
-
-  if (result == TRUE)
-    *status = (*mode == -1) ? FALSE : TRUE;
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }

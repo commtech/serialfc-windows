@@ -59,7 +59,7 @@ __declspec(dllexport) int serialfc_get_rx_trigger(HANDLE h, unsigned *level);
 __declspec(dllexport) int serialfc_set_clock_rate(HANDLE h, unsigned rate);
 __declspec(dllexport) int serialfc_enable_isochronous(HANDLE h, unsigned mode);
 __declspec(dllexport) int serialfc_disable_isochronous(HANDLE h);
-__declspec(dllexport) int serialfc_get_isochronous(HANDLE h, BOOL *status, int *mode);
+__declspec(dllexport) int serialfc_get_isochronous(HANDLE h, int *mode);
 __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);
