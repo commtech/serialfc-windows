@@ -2044,6 +2044,19 @@ Return Value:
             Status = FastcomDisableIsochronous(Extension);
             break;
         }
+        case IOCTL_FASTCOM_GET_ISOCHRONOUS: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(int), &buffer, &bufSize);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            Status = FastcomGetIsochronous(Extension, buffer);
+
+            reqContext->Information = sizeof(int);
+            break;
+        }
         default: {
 
             Status = STATUS_INVALID_PARAMETER;

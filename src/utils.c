@@ -2382,6 +2382,67 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     return STATUS_SUCCESS;
 }
 
+void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
+{
+    UCHAR orig_lcr;
+    UCHAR cks;
+
+    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, CKS_OFFSET); /* To allow access to CLK */
+
+    cks = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get CKS through ICR */
+
+    switch (cks) {
+    case 0x00:
+        *mode = -1;
+        break;
+
+    case 0xC0:
+        *mode = 0;
+        break;
+
+    case 0x80:
+        *mode = 1;
+        break;
+
+    case 0x09:
+        *mode = 2;
+        break;
+
+    case 0xC9:
+        *mode = 3;
+        break;
+
+    case 0x89:
+        *mode = 4;
+        break;
+
+    case 0x0A:
+        *mode = 5;
+        break;
+
+    case 0xCA:
+        *mode = 6;
+        break;
+
+    case 0x8A:
+        *mode = 7;
+        break;
+
+    case 0xCB:
+        *mode = 8;
+        break;
+    }
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+}
+
 NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2391,6 +2452,21 @@ NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 
     case CARD_TYPE_FSCC:
         return FastcomSetIsochronousFSCC(pDevExt, mode);
+    }
+
+    return STATUS_UNSUCCESSFUL;
+}
+
+NTSTATUS FastcomGetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        return STATUS_NOT_SUPPORTED;
+
+    case CARD_TYPE_FSCC:
+        FastcomGetIsochronousFSCC(pDevExt, mode);
+        return STATUS_SUCCESS;
     }
 
     return STATUS_UNSUCCESSFUL;
