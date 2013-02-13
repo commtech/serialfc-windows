@@ -226,6 +226,34 @@ unsigned Port::GetRxTrigger(void) throw(SystemException)
 	return level;
 }
 
+void Port::EnableIsochronous(unsigned mode) throw(SystemException)
+{
+	int e = serialfc_enable_isochronous(_h, mode);
+
+	if (e)
+		throw SystemException(e);
+}
+
+void Port::DisableIsochronous() throw(SystemException)
+{
+	int e = serialfc_disable_isochronous(_h);
+
+	if (e)
+		throw SystemException(e);
+}
+
+int Port::GetIsochronous(void) throw(SystemException)
+{
+	int mode;
+
+	int e = serialfc_get_isochronous(_h, &mode);
+
+	if (e)
+		throw SystemException(e);
+
+	return mode;
+}
+
 unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
 {
         unsigned bytes_written;

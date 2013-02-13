@@ -35,6 +35,9 @@ namespace SerialFC {
 		unsigned GetTxTrigger(void) throw(SystemException);
 		void SetRxTrigger(unsigned level) throw(SystemException);
 		unsigned GetRxTrigger(void) throw(SystemException);
+		void EnableIsochronous(unsigned mode) throw(SystemException);
+		void DisableIsochronous() throw(SystemException);
+		int GetIsochronous(void) throw(SystemException);
 
 		unsigned Write(const char *buf, unsigned size, OVERLAPPED *o) throw(SystemException);
 		unsigned Write(const char *buf, unsigned size) throw(SystemException);
