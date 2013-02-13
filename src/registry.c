@@ -272,6 +272,29 @@ Return Value:
 
     }
 
+    status = RtlUnicodeStringPrintf(&valueName,L"Isochronous");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->IsochronousDefault);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->EchoCancelDefault = SERIAL_ISOCHRONOUS_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->IsochronousDefault
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
     status = RtlUnicodeStringPrintf(&valueName,L"PermitShare");
     if (!NT_SUCCESS (status)) {
             goto End;

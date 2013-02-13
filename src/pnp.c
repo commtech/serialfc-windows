@@ -763,7 +763,7 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
-                                   L"SampleRate",
+                                   L"SampleRate", //TODO
                                    &pConfig->RxTrigger)){
         pConfig->SampleRate = driverDefaults.SampleRateDefault;
     }
@@ -789,7 +789,13 @@ Return Value:
     if(!SerialGetRegistryKeyValue (Device,
                                    L"EchoCancel",
                                    &pConfig->EchoCancel)){
-        pConfig->Termination = driverDefaults.EchoCancelDefault;
+        pConfig->Termination = driverDefaults.EchoCancelDefault; //TODO
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
+                                   L"Isochronous",
+                                   &pConfig->Isochronous)){
+        pConfig->Isochronous = driverDefaults.IsochronousDefault;
     }
 
     if(!SerialGetRegistryKeyValue (Device,
@@ -1327,6 +1333,7 @@ Return Value:
     FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
     FastcomSetTermination(pDevExt, (BOOLEAN)PConfigData->Termination); /* This does nothing on the 335 cards */
     FastcomSetEchoCancel(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
+    FastcomSetIsochronous(pDevExt, PConfigData->Isochronous);
 
     //
     // If the user requested that we disable the port, then

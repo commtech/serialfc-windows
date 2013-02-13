@@ -2324,12 +2324,12 @@ void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt)
     FastcomSetRS485(pDevExt, FALSE);
 }
 
-NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable, unsigned mode)
+NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
     UCHAR orig_lcr;
     UCHAR new_cks = 0;
 
-    if (mode > 8)
+    if (mode > 8 || mode < -1)
         return STATUS_INVALID_PARAMETER;
 
     orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
@@ -2337,44 +2337,42 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN ena
     pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, CKS_OFFSET); /* To allow access to CKS */
 
-    if (enable) {
-        switch (mode) {
-        /* Enable receive using external DSR# */
-        case 2:
-        case 3:
-        case 4:
-            new_cks |= 0x09;
-            break;
+    switch (mode) {
+    /* Enable receive using external DSR# */
+    case 2:
+    case 3:
+    case 4:
+        new_cks |= 0x09;
+        break;
 
-        /* Enable receive using internal BRG */
-        case 5:
-        case 6:
-        case 7:
-            new_cks |= 0x0A;
-            break;
+    /* Enable receive using internal BRG */
+    case 5:
+    case 6:
+    case 7:
+        new_cks |= 0x0A;
+        break;
 
-        /* Enable receive using transmit clock */
-        case 8:
-            new_cks |= 0x0B;
-            break;
-        }
+    /* Enable receive using transmit clock */
+    case 8:
+        new_cks |= 0x0B;
+        break;
+    }
 
-        switch (mode) {
-        /* Enable transmit using external RI# */
-        case 0:
-        case 3:
-        case 6:
-        case 8:
-            new_cks |= 0xC0;
-            break;
+    switch (mode) {
+    /* Enable transmit using external RI# */
+    case 0:
+    case 3:
+    case 6:
+    case 8:
+        new_cks |= 0xC0;
+        break;
 
-        /* Transmit using internal BRG */
-        case 1:
-        case 4:
-        case 7:
-            new_cks |= 0x80;
-            break;
-        }
+    /* Transmit using internal BRG */
+    case 1:
+    case 4:
+    case 7:
+        new_cks |= 0x80;
+        break;
     }
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, new_cks); /* Set clock mode to CKS through ICR */
@@ -2384,7 +2382,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN ena
     return STATUS_SUCCESS;
 }
 
-NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable, int mode)
+NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
@@ -2392,7 +2390,7 @@ NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable,
         return STATUS_NOT_SUPPORTED;
 
     case CARD_TYPE_FSCC:
-        return FastcomSetIsochronousFSCC(pDevExt, enable, (unsigned)mode);
+        return FastcomSetIsochronousFSCC(pDevExt, mode);
     }
 
     return STATUS_UNSUCCESSFUL;
@@ -2400,12 +2398,12 @@ NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable,
 
 NTSTATUS FastcomEnableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned mode)
 {
-    return FastcomSetIsochronous(pDevExt, TRUE, mode);
+    return FastcomSetIsochronous(pDevExt, mode);
 }
 
 NTSTATUS FastcomDisableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt)
 {
-    return FastcomSetIsochronous(pDevExt, FALSE, -1);
+    return FastcomSetIsochronous(pDevExt, -1);
 }
 
 void FastcomSetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
