@@ -763,8 +763,8 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
-                                   L"SampleRate", //TODO
-                                   &pConfig->RxTrigger)){
+                                   L"SampleRate",
+                                   &pConfig->SampleRate)){
         pConfig->SampleRate = driverDefaults.SampleRateDefault;
     }
 
@@ -789,7 +789,7 @@ Return Value:
     if(!SerialGetRegistryKeyValue (Device,
                                    L"EchoCancel",
                                    &pConfig->EchoCancel)){
-        pConfig->Termination = driverDefaults.EchoCancelDefault; //TODO
+        pConfig->EchoCancel = driverDefaults.EchoCancelDefault;
     }
 
     if(!SerialGetRegistryKeyValue (Device,
