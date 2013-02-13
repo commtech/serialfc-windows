@@ -246,6 +246,20 @@ int serialfc_get_rx_trigger(HANDLE h, unsigned *level)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+int serialfc_set_clock_rate(HANDLE h, unsigned rate)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_SET_CLOCK_RATE, 
+                           &rate, sizeof(rate), 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+
  
 /******************************************************************************/
 /*!
