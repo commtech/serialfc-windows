@@ -35,6 +35,9 @@ extern "C"
 
 #define IOCTL_FASTCOM_SET_CLOCK_RATE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x80F, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+#define IOCTL_FASTCOM_ENABLE_ISOCHRONOUS CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x810, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_FASTCOM_DISABLE_ISOCHRONOUS CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x811, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 
 __declspec(dllexport) int serialfc_connect(unsigned port_num, BOOL overlapped, HANDLE *h);
 __declspec(dllexport) int serialfc_enable_rs485(HANDLE h);
@@ -53,6 +56,8 @@ __declspec(dllexport) int serialfc_get_tx_trigger(HANDLE h, unsigned *level);
 __declspec(dllexport) int serialfc_set_rx_trigger(HANDLE h, unsigned level);
 __declspec(dllexport) int serialfc_get_rx_trigger(HANDLE h, unsigned *level);
 __declspec(dllexport) int serialfc_set_clock_rate(HANDLE h, unsigned rate);
+__declspec(dllexport) int serialfc_enable_isochronous(HANDLE h, unsigned mode);
+__declspec(dllexport) int serialfc_disable_isochronous(HANDLE h);
 __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);

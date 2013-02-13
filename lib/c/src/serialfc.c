@@ -259,6 +259,32 @@ int serialfc_set_clock_rate(HANDLE h, unsigned rate)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+int serialfc_enable_isochronous(HANDLE h, unsigned mode)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_ISOCHRONOUS, 
+                           &mode, sizeof(mode), 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+int serialfc_disable_isochronous(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_ISOCHRONOUS, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
 
  
 /******************************************************************************/
