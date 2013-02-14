@@ -226,6 +226,14 @@ unsigned Port::GetRxTrigger(void) throw(SystemException)
 	return level;
 }
 
+void Port::SetClockRate(unsigned rate) throw(SystemException)
+{
+	int e = serialfc_set_clock_rate(_h, rate);
+
+	if (e)
+		throw SystemException(e);
+}
+
 void Port::EnableIsochronous(unsigned mode) throw(SystemException)
 {
 	int e = serialfc_enable_isochronous(_h, mode);

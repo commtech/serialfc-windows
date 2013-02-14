@@ -35,6 +35,7 @@ namespace SerialFC {
 		unsigned GetTxTrigger(void) throw(SystemException);
 		void SetRxTrigger(unsigned level) throw(SystemException);
 		unsigned GetRxTrigger(void) throw(SystemException);
+		void SetClockRate(unsigned rate) throw(SystemException);
 		void EnableIsochronous(unsigned mode) throw(SystemException);
 		void DisableIsochronous() throw(SystemException);
 		int GetIsochronous(void) throw(SystemException);
