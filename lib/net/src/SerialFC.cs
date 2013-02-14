@@ -219,5 +219,42 @@ namespace SerialFC
                 return level;
             }
         }
+
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_enable_isochronous(SafeFileHandle h, uint mode);
+
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_disable_isochronous(SafeFileHandle h);
+
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_get_isochronous(SafeFileHandle h, out int mode);
+
+        public void EnableIsochronous(uint mode)
+        {
+            int e = serialfc_enable_isochronous(this.Handle, mode);
+
+            if (e >= 1)
+                throw new Exception(e.ToString());
+        }
+
+        public void DisableIsochronous()
+        {
+            int e = serialfc_disable_isochronous(this.Handle);
+
+            if (e >= 1)
+                throw new Exception(e.ToString());
+        }
+
+        public int GetIsochronous()
+        {
+            int mode;
+
+            int e = serialfc_get_isochronous(this.Handle, out mode);
+
+            if (e >= 1)
+                throw new Exception(e.ToString());
+
+            return mode;
+        }
     }
 }
