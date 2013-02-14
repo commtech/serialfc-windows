@@ -7,10 +7,10 @@ all: $(TARGET).dll
 debug: $(TARGET)d.dll
 
 $(TARGET).dll:$(SOURCES) $(HEADERS)
-  cl $(SOURCES) /Fe$@ /LD
+  cl /W4 $(SOURCES) /Fe$@ /LD
 
 $(TARGET)d.dll:$(SOURCES) $(HEADERS)
-  cl $(SOURCES) /Fe$@ /LDd /Zi
+  cl /W4 $(SOURCES) /Fe$@ /LDd /Zi
   
 clean:
   del cserialfc* *.obj
