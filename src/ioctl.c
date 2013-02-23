@@ -233,6 +233,9 @@ Return Value:
         Appropriate
         );
 
+    if (FastcomGetCardType(Extension) == CARD_TYPE_PCIe)
+        PCIeSetBaudRate(Extension, Extension->CurrentBaud);
+
     return FALSE;
 }
 
@@ -694,6 +697,7 @@ Return Value:
             //
 
             Status = SerialGetDivisorFromBaud(
+                         Extension,
                          Extension->ClockRate,
                          Extension->SampleRate,
                          BaudRate,

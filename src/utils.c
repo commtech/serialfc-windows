@@ -1672,6 +1672,7 @@ Return Value:
 
 NTSTATUS
 SerialGetDivisorFromBaud(
+                        IN PSERIAL_DEVICE_EXTENSION Extension,
                         IN ULONG ClockRate,
                         IN ULONG SampleRate,
                         IN LONG DesiredBaud,
@@ -1724,6 +1725,9 @@ Return Value:
    //
    // Reject any non-positive bauds.
    //
+
+   if (FastcomGetCardType(Extension) == CARD_TYPE_PCIe)
+      return 1;
 
    denominator = DesiredBaud*SampleRate;
 
@@ -2063,7 +2067,7 @@ NTSTATUS FastcomSetSampleRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned val
     }
     
     pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_4XMODE, new_4x_mode); 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, new_8x_mode);  
+    pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_8XMODE, new_8x_mode);
 
     return STATUS_SUCCESS;
 }
@@ -3852,7 +3856,7 @@ NTSTATUS FastcomSetClockRatePCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
     return STATUS_SUCCESS;
 }
 
-NTSTATUS FastcomSetClockRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+NTSTATUS PCIeSetBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     const unsigned input_freq = 125000000;
     const unsigned prescaler = 1;
@@ -3864,16 +3868,16 @@ NTSTATUS FastcomSetClockRatePCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
 
     orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    divisor = (float)input_freq / prescaler / (value * 16);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr | 0x80);
+
+    divisor = (float)input_freq / prescaler / (value * pDevExt->SampleRate);
 
     dlm = (int)floor(divisor) >> 8;
     dll = (int)floor(divisor) % 0xff;
 
     dld = pDevExt->SerialReadUChar(pDevExt->Controller + DLD_OFFSET);
     dld &= 0xf0;
-    dld |= (int)floor(((divisor - floor(divisor)) * 16) + 0.5);
-
-    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr | 0x80);
+    dld |= (int)floor(((divisor - floor(divisor)) * pDevExt->SampleRate) + 0.5);
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + DLM_OFFSET, dlm);  
     pDevExt->SerialWriteUChar(pDevExt->Controller + DLL_OFFSET, dll);  
@@ -3894,8 +3898,7 @@ NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
         break;
 
     case CARD_TYPE_PCIe:
-        status = FastcomSetClockRatePCIe(pDevExt, value);
-        break;
+        return STATUS_NOT_SUPPORTED;
 
     case CARD_TYPE_FSCC:
         status = FastcomSetClockRateFSCC(pDevExt, value);

@@ -235,6 +235,7 @@ EVT_WDF_INTERRUPT_ISR SerialISR;
 
 NTSTATUS
 SerialGetDivisorFromBaud(
+    IN PSERIAL_DEVICE_EXTENSION Extension,
     IN ULONG ClockRate,
     IN ULONG SampleRate,
     IN LONG DesiredBaud,
@@ -634,5 +635,7 @@ NTSTATUS FastcomGetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode);
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status);
 NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);
+
+NTSTATUS PCIeSetBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 
 enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt);

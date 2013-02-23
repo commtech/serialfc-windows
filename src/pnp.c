@@ -740,6 +740,9 @@ Return Value:
         goto End;
     }
 
+    if (FastcomGetCardType(pDevExt) == CARD_TYPE_PCIe)
+        defaultClockRate = 125000000;
+
     //
     // Open the "Device Parameters" section of registry for this device and get parameters.
     //
@@ -1432,6 +1435,7 @@ Return Value:
     for(i=0; SupportedBaudRates[i].BaudRate != SERIAL_BAUD_INVALID; i++) {
 
         if (!NT_ERROR(SerialGetDivisorFromBaud(
+                                            pDevExt,
                                             pDevExt->ClockRate,
                                             pDevExt->SampleRate,
                                             (LONG)SupportedBaudRates[i].BaudRate,
@@ -2650,7 +2654,8 @@ Return Value:
       SHORT  appropriateDivisor;
       SERIAL_IOCTL_SYNC s;
 
-      SerialGetDivisorFromBaud( extension->ClockRate,
+      SerialGetDivisorFromBaud( extension,
+                                extension->ClockRate,
                                 extension->SampleRate,
                                 extension->CurrentBaud,
                                 &appropriateDivisor );
