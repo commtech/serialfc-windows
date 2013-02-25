@@ -5,7 +5,7 @@ echo off
 
 :reset_bin_folder
 echo Removing Old Drivers...
-rmdir /S /Q %TOP%\ 2> nul
+rmdir /S /Q bin\ 2> nul
 mkdir %TOP%\
 rmdir /S /Q tmp\production\ 2> nul
 mkdir tmp\production\
