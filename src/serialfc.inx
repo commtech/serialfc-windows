@@ -50,9 +50,14 @@ DefaultDestDir  = 12
 
 [Serial_Inst.NT]
 CopyFiles=Serial.CopyFiles
+AddReg=Serial.AddReg
 
 [Serial.CopyFiles]
 serialfc.sys
+
+[Serial.AddReg]
+HKR,,PortSubClass,1,01
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
 
 [Serial_Inst.NT.Services]
 AddService=Serial,0x00000002,Serial_Service 
