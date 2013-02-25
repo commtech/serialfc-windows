@@ -183,6 +183,7 @@ if __name__ == '__main__':
     	pass
 
     try:
+
         print("Isochronous", p.get_isochronous())
     except:
         pass
@@ -192,9 +193,9 @@ if __name__ == '__main__':
     print("Tx Trigger", p.tx_trigger)
     print("Rx Trigger", p.rx_trigger)
 
+    p.rs485 = False
     p.echo_cancel = False
     p.sample_rate = 16
-    p.clock_rate = 18432000
-    p.baud_rate = 115200
+    p.baudrate = 115200
 
     p.write("UUUUU".encode())
