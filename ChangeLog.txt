@@ -1,3 +1,11 @@
+version 2.1.1 (2/25/2013)
+--------------------------------------------------------------------------------
+	* Add FSCC isochronous mode
+	* Fix a bug where the baud rate wasn't being set correctly on the 
+	  422/X-PCIe cards
+	* Add library support for setting the clock rate
+	* Fix a bug where some settings were stored incorrectly in the registry
+
 version 2.1.0 (2/1/2013)
 --------------------------------------------------------------------------------
     * Manually change clock frequency
