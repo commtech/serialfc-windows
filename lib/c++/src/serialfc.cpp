@@ -264,41 +264,41 @@ int Port::GetIsochronous(void) throw(SystemException)
 
 unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
 {
-        unsigned bytes_written;
+    unsigned bytes_written;
 
-        int e = serialfc_write(_h, (char *)buf, size, &bytes_written, o);
+    int e = serialfc_write(_h, (char *)buf, size, &bytes_written, o);
 
-        if (e)
-                throw SystemException(e);
+    if (e)
+		throw SystemException(e);
 
-        return bytes_written;
+    return bytes_written;
 }
 
 unsigned Port::Write(const char *buf, unsigned size) 
 {
-        return Write(buf, size, 0);
+	return Write(buf, size, 0);
 }
 
 unsigned Port::Write(const std::string &s)
 {
-        return Write(s.c_str(), s.length());
+	return Write(s.c_str(), s.length());
 }
 
 unsigned Port::Read(char *buf, unsigned size, OVERLAPPED *o)
 {
-        unsigned bytes_read;
+    unsigned bytes_read;
 
-        int e = serialfc_read(_h, buf, size, &bytes_read, o);
+    int e = serialfc_read(_h, buf, size, &bytes_read, o);
 
-        if (e)
-                throw SystemException(e);
+    if (e)
+		throw SystemException(e);
 
-        return bytes_read;
+    return bytes_read;
 }
 
 unsigned Port::Read(char *buf, unsigned size)
 {
-        return Read(buf, size, (OVERLAPPED *)0);
+	return Read(buf, size, (OVERLAPPED *)0);
 }
 
 
