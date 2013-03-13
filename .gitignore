@@ -7,6 +7,7 @@ src/buildfre*
 src/buildchk*
 src/serial/buildfre*
 src/serial/buildchk*
+lib/c/examples/*.exe
 bin/
 lib/c/docs
 *.exp
