@@ -301,5 +301,9 @@ unsigned Port::Read(char *buf, unsigned size)
 	return Read(buf, size, (OVERLAPPED *)0);
 }
 
+Port::operator HANDLE()
+{
+	return _h;
+}
 
 } /* namespace SerialFC */

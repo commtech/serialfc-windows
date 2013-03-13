@@ -46,6 +46,8 @@ namespace SerialFC {
 		unsigned Read(char *buf, unsigned size, OVERLAPPED *o) throw(SystemException);
 		unsigned Read(char *buf, unsigned size) throw(SystemException);
 
+		operator HANDLE();
+
 	protected:
 		void init(unsigned port_num, bool overlapped) throw(SystemException);
 		void init(unsigned port_num, bool overlapped, HANDLE h) throw();
