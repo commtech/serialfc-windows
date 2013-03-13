@@ -10,10 +10,10 @@ all: $(TARGET).dll
 debug: $(TARGET)d.dll
 
 $(TARGET).dll:$(SOURCES) $(HEADERS) $(LIBS)
-  cl /W4 $(SOURCES) /I$(CFC_DIR)\src\ $(LIBS) /EHsc /Fe$@ /LD
+  cl /W4 /WX $(SOURCES) /I$(CFC_DIR)\src\ $(LIBS) /EHsc /Fe$@ /LD
 
 $(TARGET)d.dll:$(SOURCES) $(HEADERS) $(LIBSD)
-  cl /W4 $(SOURCES) /I$(CFC_DIR)\src\ $(LIBSD) /EHsc /Fe$@ /LDd /Zi
+  cl /W4 /WX $(SOURCES) /I$(CFC_DIR)\src\ $(LIBSD) /EHsc /Fe$@ /LDd /Zi
   
 $(LIBS):
   pushd $(CFC_DIR) & nmake & popd
