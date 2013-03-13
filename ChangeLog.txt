@@ -1,3 +1,10 @@
+version 2.1.2 (3/13/2013)
+--------------------------------------------------------------------------------
+	* Add a Port to HANDLE conversion operator in the C++ operator
+	* Add standard ports GUI to allow for changing COM port numbers
+	* Add VISA example code
+	* Add C example code
+
 version 2.1.1 (2/25/2013)
 --------------------------------------------------------------------------------
 	* Add FSCC isochronous mode
