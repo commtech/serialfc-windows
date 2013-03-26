@@ -13,11 +13,14 @@ mkdir tmp\production\
 :build_drivers
 echo Building Release Drivers...
 start /I /WAIT build_driver.bat "fre x86 WXP" objfre_wxp_x86 i386 production XP_X86
+if %errorlevel% neq 0 exit /b %errorlevel%
 start /I /WAIT build_driver.bat "fre x64 WNET" objfre_wnet_amd64 amd64 production Server2003_X64
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 :build_libs
 echo Building Libraries...
 start /I /WAIT build_libs.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 :create_directories
 echo Creating Directories...

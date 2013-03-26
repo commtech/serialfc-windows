@@ -8,6 +8,7 @@ cd %~dp0
 echo Building Driver...
 pushd src\
 build -cfeg
+if %errorlevel% neq 0 exit /b %errorlevel%
 popd
 
 :reset_tmp_folder
@@ -31,9 +32,11 @@ copy redist\%4\%3\WdfCoInstaller* %TOP%\ > nul
 :create_catalogs
 echo Creating Driver Catalogs...
 Inf2cat.exe /driver:%TOP%\ /os:%5 > nul
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 :sign_files
 echo Signing Files...
 signtool sign /n "Commtech, Inc." /t http://timestamp.digicert.com/ %TOP%\fastcom.cat
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 exit
