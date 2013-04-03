@@ -36,7 +36,7 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 
 :sign_files
 echo Signing Files...
-signtool sign /n "Commtech, Inc." /t http://timestamp.digicert.com/ %TOP%\fastcom.cat
+signtool sign /ac "DigiCert High Assurance EV Root CA.crt" /n "Commtech, Inc." /t http://timestamp.digicert.com/ %TOP%\fastcom.cat
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 exit
