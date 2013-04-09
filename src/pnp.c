@@ -1710,7 +1710,7 @@ Return Value:
 
             PConfig->Controller = pPartialRawResourceDesc->u.Memory.Start;
             PConfig->AddressSpace = CM_RESOURCE_PORT_MEMORY;
-            PConfig->SpanOfController = SERIAL_REGISTER_SPAN;
+            PConfig->SpanOfController = pPartialTrResourceDesc->u.Memory.Length;
             pDevExt->SerialReadUChar = SerialReadRegisterUChar;
             pDevExt->SerialWriteUChar = SerialWriteRegisterUChar;
             pDevExt->SerialWriteUChars = SerialWriteRegisterUChars;
@@ -1822,9 +1822,11 @@ Return Value:
       PCIReadConfigWord(pdo, 0x14, &pDevExt->Bar1);
       PCIReadConfigWord(pdo, 0x18, &pDevExt->Bar2);
 
-      pDevExt->Bar0 -= 1;
-      pDevExt->Bar1 -= 1;
-      pDevExt->Bar2 -= 1;
+      if (gotIO) {
+        pDevExt->Bar0 -= 1;
+        pDevExt->Bar1 -= 1;
+        pDevExt->Bar2 -= 1;
+      }
    }
 
 End:
