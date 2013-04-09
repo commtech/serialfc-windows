@@ -9,6 +9,7 @@ src/serial/buildfre*
 src/serial/buildchk*
 lib/c/examples/*.exe
 bin/
+htm/
 lib/c/docs
 *.exp
 *.obj
@@ -17,4 +18,6 @@ lib/c/docs
 *.bak
 *.ilk
 *.orig
+*.pdb
+*.zip*
 __pycache__
