@@ -606,10 +606,10 @@ NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 void FastcomGetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value);
 
 NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
-void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value);
+NTSTATUS FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value);
 
 NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
-void FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value);
+NTSTATUS FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value);
 
 NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
 NTSTATUS FastcomEnableTermination(SERIAL_DEVICE_EXTENSION *pDevExt);

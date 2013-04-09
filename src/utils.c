@@ -2155,17 +2155,19 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return STATUS_UNSUCCESSFUL;
 }
 
-void FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+NTSTATUS FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
     case CARD_TYPE_PCIe:
-        *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
-        break;
+        return STATUS_NOT_SUPPORTED;
+
     case CARD_TYPE_FSCC:
         *value = 1;
         break;
     }
+
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS FastcomSetRxTriggerPCI(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
@@ -2222,17 +2224,19 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     return STATUS_UNSUCCESSFUL;
 }
 
-void FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+NTSTATUS FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
     case CARD_TYPE_PCIe:
-        *value = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_RXTRG);
-        break;
+        return STATUS_NOT_SUPPORTED;
+
     case CARD_TYPE_FSCC:
         // TODO
         break;
     }
+
+    return STATUS_SUCCESS;
 }
 
 void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)

@@ -690,7 +690,6 @@ Return Value:
 
             BaudRate = ((PSERIAL_BAUD_RATE)(buffer))->BaudRate;
 
-
             //
             // Get the baud rate from the request.  We pass it
             // to a routine which will set the correct divisor.
@@ -1996,7 +1995,7 @@ Return Value:
                 break;
              }
 
-            FastcomGetTxTrigger(Extension, buffer);
+            Status = FastcomGetTxTrigger(Extension, buffer);
 
             reqContext->Information = sizeof(unsigned);
             break;
@@ -2019,7 +2018,7 @@ Return Value:
                 break;
              }
 
-            FastcomGetRxTrigger(Extension, buffer);
+            Status = FastcomGetRxTrigger(Extension, buffer);
 
             reqContext->Information = sizeof(unsigned);
             break;
