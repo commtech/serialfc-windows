@@ -1,7 +1,13 @@
-## Installation Instructions
+## Installation
+
+### Downloading Driver Package
+You will more than likely want to download our pre-built driver package from
+the [Commtech website](http://www.commtech-fastcom.com/CommtechSoftware.html).
+
+
 ### Downloading Source Code
-Most users will install from the binaries and won't require building the source 
-code. If this is you, you can skip ahead to the section on loading the driver.
+If you are installing from the pre-built driver packge you can skip ahead
+to the section on loading the driver.
 
 The source code for the Fastcom serial driver is hosted on Github code hosting.
 To check out the latest code you will need Git and to run the following in a
@@ -37,24 +43,34 @@ cd serialfc/src/
 BLD
 ```
 
-## Operating Instructions
+
+## Using The Serial Port
+
 The serialfc driver is a slightly modified version of the Windows serial driver
-with support for the extra features of the Fastcom asychronous cards. Since
-it is based on the standard Windows serial driver you get to leverage to full
-suite of options available in the Windows [Serial Communication]
+with support for extra features of the Fastcom asychronous cards. Since the
+driver is based on the standard Windows serial driver you get to leverage the
+full suite of options available in the Windows [Serial Communication]
 (http://msdn.microsoft.com/en-us/library/ff802693.aspx) API.
 
+Configuring the Fastcom specific features are documented below but we recommend
+studying the Windows 
+[Serial Communciation](http://msdn.microsoft.com/en-us/library/ff802693.aspx) 
+API for as it will contain the information for 99% of your code.
+
 ### Setting Baud Rate
-The Fastcom cards include a variable clock generator that can be used to create
-nearly any baud rate you would want. 
+The Fastcom cards have their baud rate configured using the standard Windows
+[DCB structure]
+(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx) 
+but require some tweaks to achieve non-standard baud rates.
 
 To get a non-standard baud rate there are a couple variables you need to setup
-before you can use the Windows [DCB structure]
+before you can use the Windows 
+[DCB structure]
 (http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx) 
 to specify the baud rate.
 
-First in the variable clock generator frequency and second is the variable
-sampling rate. The formula for determining the baud rate is as follows.
+First is the variable clock generator frequency and second is the variable
+sampling rate. The formula for determining a baud rate is as follows.
 
 ```
 Baud Rate = Clock Rate / Sampling Rate / Integer Divisor.
@@ -63,13 +79,35 @@ Baud Rate = Clock Rate / Sampling Rate / Integer Divisor.
 The 'Integer Divisor' value is determined in the driver and as long as the rest
 of the formula allows for an integer divisor it can be ignored.
 
-You can change the card's clock rate using a few different methods.
+Here is an example of some values that will work. We would like a baud rate of
+1 Mhz so we find a combination of a clock rate of 16 Mhz and a sampling rate of
+16 that can be divided by an integer to end up with 1 Mhz. Not if we configure
+these two values before using the 
+[DCB structure]
+(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx) 
+to specify the baud rate we will be able to achieve any supported rate we want.
 
-First is using the base IOCTL and the Windows API.
-fscc - 200 - 270,000,000
-pci -  6,000,000 - 200,000,000
+```
+1,000,000 = 16,000,000 / 16 / 1
+```
 
+All of the Fastcom released features can be configured using the basic Windows
+API or by using one of the included libraries (C, C++, .NET, Python).
+
+
+### Clock Rate
+
+##### Operating Ranges
+- FSCC Family (16c950): 200 Hz - 270 MHz
+- Async-335 Family (17D15X): 6 Mhz - 200 Mhz
+- Async-PCIe Family (17V35X): Not required
+
+###### Windows API
 ```c
+#include <serialfc.h>
+
+...
+
 unsigned rate = 18432000;
 
 DeviceIoControl(h, IOCTL_FASTCOM_SET_CLOCK_RATE, 
@@ -78,32 +116,51 @@ DeviceIoControl(h, IOCTL_FASTCOM_SET_CLOCK_RATE,
                 &temp, NULL);
 ```
 
-There is also a handful of libraries includes that wrap around the Windows
-DeviceIoControl call that allow you to ignore the implementation.
+###### C Library
+```
+#include <serialfc.h>
+...
 
-```c
 serialfc_set_clock_rate(h, 18432000);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 port.SetClockRate(18432000);
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.ClockRate = 18432000;
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.clock_rate = 18432000;
 ```
 
 
 ### Sample Rate
-pci - 8, 16
-pcie - 4, 8, 16
-fscc - 4 - 16
 
+##### Operating Ranges
+- FSCC Family (16c950): 4 - 16
+- Async-335 Family (17D15X): 8, 16
+- Async-PCIe Family (17V35X): 4, 8, 16
+
+###### Windows API
 ```c
+#include <serialfc.h>
+...
+
 unsigned rate = 16;
 
 DeviceIoControl(h, IOCTL_FASTCOM_SET_SAMPLE_RATE, 
@@ -117,28 +174,51 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_SAMPLE_RATE,
                 &temp, NULL);
 ```
 
+###### C Library
 ```c
+#include <serialfc.h>
+...
+
 unsigned rate;
 
 serialfc_set_sample_rate(h, 16);
 serialfc_get_sample_rate(h, &rate);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 port.SetSampleRate(16);
+
 unsigned rate = port.GetSampleRate();
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.SampleRate = 16;
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.sample_rate = 16;
 ```
 
+
 ### 485
+
+###### Windows API
 ```c
+#include <serialfc.h>
+...
+
 BOOL status;
 
 DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_RS485, 
@@ -157,7 +237,11 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_RS485,
                 &temp, NULL);
 ```
 
+###### C Library
 ```c
+#include <serialfc.h>
+...
+
 BOOL status;
 
 serialfc_enable_rs485(h);
@@ -166,24 +250,41 @@ serialfc_disable_sample_rate(h);
 serialfc_get_rs485(h, &status);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 port.EnableRS485();
 port.DisableRS485();
 
 bool status = port.GetRS485();
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.RS485 = True;
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.rs485 = True;
 ```
 
 
 ### Echo Cancel
+
+###### Windows API
 ```c
+#include <serialfc.h>
+...
+
 BOOL status;
 
 DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_ECHO_CANCEL, 
@@ -202,7 +303,11 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_ECHO_CANCEL,
                 &temp, NULL);
 ```
 
+###### C Library
 ```c
+#include <serialfc.h>
+...
+
 BOOL status;
 
 serialfc_enable_echo_cancel(h);
@@ -211,24 +316,42 @@ serialfc_disable_echo_cancel(h);
 serialfc_get_echo_cancel(h, &status);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 port.EnableEchoCancel();
 port.DisableEchoCancel();
 
 bool status = port.GetEchoCancel();
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.EchoCancel = True;
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.echo_cancel = True;
 ```
 
 
 ### Termination
+
+###### Windows API
 ```c
+#include <serialfc.h>
+
+...
+
 BOOL status;
 
 DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_TERMINATION, 
@@ -247,7 +370,11 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_TERMINATION,
                 &temp, NULL);
 ```
 
+###### C Library
 ```c
+#include <serialfc.h>
+...
+
 BOOL status;
 
 serialfc_enable_termination(h);
@@ -256,23 +383,40 @@ serialfc_disable_termination(h);
 serialfc_get_termination(h, &status);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 port.EnableTermination();
 port.DisableTermination();
 
 bool status = port.GetTermination();
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.Termination = True;
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.termination = True;
 ```
 
 ### Trigger Levels
+
+###### Windows API
 ```c
+#include <serialfc.h>
+...
+
 unsigned level = 32;
 
 DeviceIoControl(h, IOCTL_FASTCOM_SET_TX_TRIGGER, 
@@ -286,7 +430,11 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_TX_TRIGGER,
                 &temp, NULL);
 ```
 
+###### C Library
 ```c
+#include <serialfc.h>
+...
+
 unsigned level;
 
 serialfc_set_tx_trigger(h, 32);
@@ -296,7 +444,11 @@ serialfc_get_tx_trigger(h, &level);
 serialfc_get_rx_trigger(h, &level);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 unsigned level;
 
 port.SetTxTrigger(32);
@@ -306,18 +458,30 @@ level = port.GetTxTrigger();
 level = port.GetRxTrigger();
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.TxTrigger = 32;
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.tx_trigger = 32;
 port.rx_trigger = 32;
 ```
 
 ### Isochronous
 
+###### Windows API
 ```c
+#include <serialfc.h>
+...
+
 unsigned mode = TODO;
 
 DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_ISOCHRONOUS, 
@@ -336,7 +500,11 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_ISOCHRONOUS,
                 &temp, NULL);
 ```
 
+###### C Library
 ```c
+#include <serialfc.h>
+...
+
 unsigned mode;
 
 serialfc_enable_isochronous(h, TODO);
@@ -345,21 +513,33 @@ serialfc_disable_isochronous(h);
 serialfc_get_isochronousl(h, &mode);
 ```
 
-```c++
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
 port.EnableIsochronous(TODO);
 port.DisableIsochronous();
 
 unsigned mode = port.GetIsochronous();
 ```
 
-```c#
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
 port.EnableIsochronous(TODO);
 port.DisableIsochronous();
 
 int mode = port.GetIsochronous();
 ```
 
+###### Python Library
 ```python
+import serialfc
+...
+
 port.enable_isochronous(TODO)
 port.disable_isochrnous()
 
