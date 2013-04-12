@@ -23,8 +23,8 @@
     if the operation failed (see MSDN 'System Error Codes')
 
   \note
-    Opening a handle using this API will only give you access to the
-	asynchronous functionality of the card. You will need to use the FSCC ports
+    If using an FSCC device this handle will only give you access to the 
+	asynchronous functionality of the card. You will need to use the FSCC ports	
 	if you would like to use the synchronous functionality.
 
 */
@@ -51,6 +51,21 @@ int serialfc_connect(unsigned port_num, BOOL overlapped, HANDLE *h)
   return (*h != INVALID_HANDLE_VALUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Puts the port into RS485 mode
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+*/
+/******************************************************************************/
 int serialfc_enable_rs485(HANDLE h)
 {
   DWORD temp;
@@ -64,6 +79,21 @@ int serialfc_enable_rs485(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Takes the port out of RS485 mode
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+*/
+/******************************************************************************/
 int serialfc_disable_rs485(HANDLE h)
 {
   DWORD temp;
@@ -77,6 +107,27 @@ int serialfc_disable_rs485(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets whether the port is in RS485 mode
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] status 
+    whether the port is in rs485 mode
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+  \todo
+    This isn't currently supported in any of the cards. It will be added in a
+	future release.
+
+*/
+/******************************************************************************/
 int serialfc_get_rs485(HANDLE h, BOOL *status)
 {
   DWORD temp;
@@ -90,6 +141,21 @@ int serialfc_get_rs485(HANDLE h, BOOL *status)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Turns on echo cancellation for the port
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+*/
+/******************************************************************************/
 int serialfc_enable_echo_cancel(HANDLE h)
 {
   DWORD temp;
@@ -103,6 +169,21 @@ int serialfc_enable_echo_cancel(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Turns off echo cancellation for the port
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+*/
+/******************************************************************************/
 int serialfc_disable_echo_cancel(HANDLE h)
 {
   DWORD temp;
@@ -116,6 +197,23 @@ int serialfc_disable_echo_cancel(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets whether the port has echo cancel enabled
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] status 
+    whether the port has echo cancel enabled
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+*/
+/******************************************************************************/
 int serialfc_get_echo_cancel(HANDLE h, BOOL *status)
 {
   DWORD temp;
@@ -129,6 +227,24 @@ int serialfc_get_echo_cancel(HANDLE h, BOOL *status)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Turns on software termination for the port
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    Only supported in the Async-PCIe cards
+
+*/
+/******************************************************************************/
 int serialfc_enable_termination(HANDLE h)
 {
   DWORD temp;
@@ -142,6 +258,24 @@ int serialfc_enable_termination(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Turns off software termination for the port
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    Only supported in the Async-PCIe cards
+
+*/
+/******************************************************************************/
 int serialfc_disable_termination(HANDLE h)
 {
   DWORD temp;
@@ -155,6 +289,26 @@ int serialfc_disable_termination(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets whether the port is software terminated
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] status 
+    whether the port is software terminated
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    Only supported in the Async-PCIe cards
+
+*/
+/******************************************************************************/
 int serialfc_get_termination(HANDLE h, BOOL *status)
 {
   DWORD temp;
@@ -168,6 +322,30 @@ int serialfc_get_termination(HANDLE h, BOOL *status)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Sets the port's sample rate
+
+  \param[in] h 
+    HANDLE to the port
+  \param[in] rate 
+    The sample rate
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    Each card family has it's own supported values.
+	
+    - FSCC Family (16c950): 4 - 16
+    - Async-335 Family (17D15X): 8, 16
+    - Async-PCIe Family (17V35X): 4, 8, 16
+
+*/
+/******************************************************************************/
 int serialfc_set_sample_rate(HANDLE h, unsigned rate)
 {
   DWORD temp;
@@ -181,6 +359,23 @@ int serialfc_set_sample_rate(HANDLE h, unsigned rate)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets the port's sample rate
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] rate 
+    the port's sample rate
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+*/
+/******************************************************************************/
 int serialfc_get_sample_rate(HANDLE h, unsigned *rate)
 {
   DWORD temp;
@@ -194,6 +389,30 @@ int serialfc_get_sample_rate(HANDLE h, unsigned *rate)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Sets the port's transmit trigger level
+
+  \param[in] h 
+    HANDLE to the port
+  \param[in] level 
+    The trigger level
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    This is only supported on the Async-335 and Async-PCIe cards. Each also
+	has it's own supported range.
+	
+    - Async-335 Family (17D15X): 0 - 64
+    - Async-PCIe Family (17V35X): 0 - 255
+
+*/
+/******************************************************************************/
 int serialfc_set_tx_trigger(HANDLE h, unsigned level)
 {
   DWORD temp;
@@ -207,6 +426,26 @@ int serialfc_set_tx_trigger(HANDLE h, unsigned level)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets the ports transmit trigger level
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] level 
+    the port's transmit trigger level
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
 int serialfc_get_tx_trigger(HANDLE h, unsigned *level)
 {
   DWORD temp;
@@ -220,6 +459,30 @@ int serialfc_get_tx_trigger(HANDLE h, unsigned *level)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Sets the port's receive trigger level
+
+  \param[in] h 
+    HANDLE to the port
+  \param[in] level 
+    The receive level
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    Each card has it's own supported range.
+	
+    - FSCC Family (16c950): 1 - 127
+    - Async-335 Family (17D15X): 0 - 64
+    - Async-PCIe Family (17V35X): 0 - 255
+
+*/
+/******************************************************************************/
 int serialfc_set_rx_trigger(HANDLE h, unsigned level)
 {
   DWORD temp;
@@ -233,6 +496,26 @@ int serialfc_set_rx_trigger(HANDLE h, unsigned level)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets the ports receive trigger level
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] level 
+    the port's receive trigger level
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+
+  \todo
+    This is only supported in the FSCC cards but isn't currently implemented.
+
+*/
+/******************************************************************************/
 int serialfc_get_rx_trigger(HANDLE h, unsigned *level)
 {
   DWORD temp;
@@ -246,6 +529,33 @@ int serialfc_get_rx_trigger(HANDLE h, unsigned *level)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Sets the ports clock rate
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] rate 
+    the port's clock rate
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    This is only supported on the Async-335 and FSCC cards. Each also has it's 
+	own supported range.
+	
+    - FSCC Family (16c950): 200 Hz - 270 MHz
+    - Async-335 Family (17D15X): 6 MHz - 200 MHz
+	
+	The Async-PCIe family doesn't use a variable clock generator to achieve
+	baud rates so this is not required.
+
+*/
+/******************************************************************************/
 int serialfc_set_clock_rate(HANDLE h, unsigned rate)
 {
   DWORD temp;
@@ -259,6 +569,38 @@ int serialfc_set_clock_rate(HANDLE h, unsigned rate)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Turns on isochronous mode for the port
+
+  \param[in] h 
+    HANDLE to the port
+  \param[in] mode 
+    which isochronous mode
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    This is only supported on the FSCC cards.
+	
+  \note
+	There are 8 different isochronous combinations you can use.
+	
+	0: Transmit using external RI#
+	1: Transmit using internal BRG
+	2: Receive using external DSR#
+	3: Transmit using external RI#, receive using external DSR#
+	4: Transmit using internal BRG, receive using external DSR#
+	5: Receive using internal BRG
+	6: Transmit using external RI#, receive using internal BRG
+	7: Transmit using internal BRG, receive using internal BRG
+
+*/
+/******************************************************************************/
 int serialfc_enable_isochronous(HANDLE h, unsigned mode)
 {
   DWORD temp;
@@ -272,6 +614,24 @@ int serialfc_enable_isochronous(HANDLE h, unsigned mode)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Turns off isochronous mode for the port
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
 int serialfc_disable_isochronous(HANDLE h)
 {
   DWORD temp;
@@ -285,6 +645,26 @@ int serialfc_disable_isochronous(HANDLE h)
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
 
+/******************************************************************************/
+/*!
+
+  \brief Gets the port's isochronous mode
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] mode 
+    the port's isochronous mode
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+	
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
 int serialfc_get_isochronous(HANDLE h, int *mode)
 {
   DWORD temp;
@@ -321,7 +701,8 @@ int serialfc_get_isochronous(HANDLE h, int *mode)
 
 */
 /******************************************************************************/
-int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o)
+int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, 
+                   OVERLAPPED *o)
 {
   BOOL result;
         
@@ -353,7 +734,8 @@ int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, 
 
 */
 /******************************************************************************/
-int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o)
+int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, 
+                  OVERLAPPED *o)
 {
   BOOL result;
 
