@@ -2581,6 +2581,31 @@ void FastcomSetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
 }
 
+void FastcomSetEchoCancelFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    UINT32 current_fcr, new_fcr;
+	UINT32 bit_mask;
+
+    current_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+
+	switch (pDevExt->Channel) {
+	case 0:
+		bit_mask = 0x00010000;
+		break;
+
+	case 1:
+		bit_mask = 0x00100000;
+		break;
+	}
+
+	if (enable)
+		new_fcr = current_fcr | bit_mask;
+	else
+		new_fcr = current_fcr & ~bit_mask;
+
+    WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
+}
+
 void FastcomGetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
     UCHAR mpio_lvl;
@@ -2599,6 +2624,26 @@ void FastcomGetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled
     *enabled = mpio_lvl & (0x1 << pDevExt->Channel) ? TRUE : FALSE;
 }
 
+void FastcomGetEchoCancelFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    UINT32 fcr;
+	UINT32 bit_mask;
+
+    fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+
+	switch (pDevExt->Channel) {
+	case 0:
+		bit_mask = 0x00010000;
+		break;
+
+	case 1:
+		bit_mask = 0x00100000;
+		break;
+	}
+
+	*enabled = (fcr & bit_mask) ? TRUE : FALSE;
+}
+
 void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     switch (FastcomGetCardType(pDevExt)) {
@@ -2609,9 +2654,11 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     case CARD_TYPE_PCIe:
         FastcomSetEchoCancelPCIe(pDevExt, enable);
         break;
-    }
 
-    //TODO: Does the FSCC support this?
+	case CARD_TYPE_FSCC:
+		FastcomSetEchoCancelFSCC(pDevExt, enable);
+		break;
+    }
 }
 
 struct ResultStruct {
@@ -3927,7 +3974,7 @@ void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
         break;
 
     case CARD_TYPE_FSCC:
-        //TODO
+        FastcomGetEchoCancelFSCC(pDevExt, enabled);
         break;
     }
 }
