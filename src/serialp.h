@@ -624,6 +624,7 @@ void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled);
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
 void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
 void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
+NTSTATUS FastcomGetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled);
 
 NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate);
 

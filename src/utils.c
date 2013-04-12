@@ -2322,6 +2322,12 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     }
 }
 
+NTSTATUS FastcomGetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+	// TODO
+    return STATUS_NOT_SUPPORTED;
+}
+
 void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt) 
 {
     FastcomSetRS485(pDevExt, TRUE);

@@ -1894,20 +1894,19 @@ Return Value:
             FastcomDisableRS485(Extension);
             break;
         }
-        /*case IOCTL_FASTCOM_GET_RS485: {
-            BOOLEAN *rs485 = 0;
+        case IOCTL_FASTCOM_GET_RS485: {
 
-            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(*rs485), (PVOID *)&rs485, NULL);
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(BOOLEAN), &buffer, &bufSize);
              if( !NT_SUCCESS(Status) ) {
                 SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
                 break;
              }
 
-            *rs485 = FastcomGetRS485(Extension);
+            Status = FastcomGetRS485(Extension, (BOOLEAN *)buffer);
 
-            reqContext->Information = sizeof(*rs485);
+            reqContext->Information = sizeof(BOOLEAN);
             break;
-        }*/
+        }
         case IOCTL_FASTCOM_ENABLE_ECHO_CANCEL: {
 
             FastcomEnableEchoCancel(Extension);
