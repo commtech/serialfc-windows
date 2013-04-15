@@ -266,7 +266,7 @@ bool status = port.GetRS485();
 using SerialFC;
 ...
 
-port.RS485 = True;
+port.RS485 = true;
 ```
 
 ###### Python Library
@@ -332,7 +332,7 @@ bool status = port.GetEchoCancel();
 using SerialFC;
 ...
 
-port.EchoCancel = True;
+port.EchoCancel = true;
 ```
 
 ###### Python Library
@@ -399,7 +399,7 @@ bool status = port.GetTermination();
 using SerialFC;
 ...
 
-port.Termination = True;
+port.Termination = true;
 ```
 
 ###### Python Library
