@@ -145,7 +145,7 @@ port.ClockRate = 18432000;
 import serialfc
 ...
 
-port.clock_rate = 18432000;
+port.clock_rate = 18432000
 ```
 
 
@@ -208,7 +208,7 @@ port.SampleRate = 16;
 import serialfc
 ...
 
-port.sample_rate = 16;
+port.sample_rate = 16
 ```
 
 
@@ -274,7 +274,7 @@ port.RS485 = True;
 import serialfc
 ...
 
-port.rs485 = True;
+port.rs485 = True
 ```
 
 
@@ -340,7 +340,7 @@ port.EchoCancel = True;
 import serialfc
 ...
 
-port.echo_cancel = True;
+port.echo_cancel = True
 ```
 
 
@@ -407,7 +407,7 @@ port.Termination = True;
 import serialfc
 ...
 
-port.termination = True;
+port.termination = True
 ```
 
 ### Trigger Levels
@@ -471,8 +471,8 @@ port.TxTrigger = 32;
 import serialfc
 ...
 
-port.tx_trigger = 32;
-port.rx_trigger = 32;
+port.tx_trigger = 32
+port.rx_trigger = 32
 ```
 
 ### Isochronous
