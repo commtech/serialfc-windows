@@ -2059,6 +2059,16 @@ Return Value:
             reqContext->Information = sizeof(int);
             break;
         }
+        case IOCTL_THALES_ENABLE_MASTER_MODE: {
+
+            Status = FastcomDisableIsochronous(Extension);
+            break;
+        }
+        case IOCTL_THALES_ENABLE_SLAVE_MODE: {
+
+            Status = FastcomEnableIsochronous(Extension, 3);
+            break;
+        }
         default: {
 
             Status = STATUS_INVALID_PARAMETER;
