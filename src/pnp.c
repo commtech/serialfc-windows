@@ -710,7 +710,7 @@ Return Value:
     NTSTATUS status;
     CONFIG_DATA config;
     PCONFIG_DATA pConfig = &config;
-    ULONG defaultClockRate = 18432000;
+    ULONG defaultClockRate = 64000000;
 
     PAGED_CODE();
 
@@ -1158,6 +1158,7 @@ Return Value:
     NTSTATUS status = STATUS_SUCCESS;
     SHORT junk;
     int i;
+    SHORT AppropriateDivisor;
 
     PAGED_CODE();
 
@@ -1337,6 +1338,7 @@ Return Value:
     FastcomSetTermination(pDevExt, (BOOLEAN)PConfigData->Termination); /* This does nothing on the 335 cards */
     FastcomSetEchoCancel(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
     FastcomSetIsochronous(pDevExt, PConfigData->Isochronous);
+
 
     //
     // If the user requested that we disable the port, then
@@ -1572,6 +1574,26 @@ Return Value:
     pDevExt->WmiCommData.SettableParityCheck = TRUE;
     pDevExt->WmiCommData.SettableStopBits = TRUE;
     pDevExt->WmiCommData.IsBusy = FALSE;
+
+    status = SerialGetDivisorFromBaud(
+                 pDevExt,
+                 pDevExt->ClockRate,
+                 pDevExt->SampleRate,
+                 16000000,
+                 &AppropriateDivisor
+                 );
+
+    if (NT_SUCCESS(status)) {
+        SERIAL_IOCTL_SYNC S;
+
+        pDevExt->CurrentBaud = 16000000;
+        pDevExt->WmiCommData.BaudRate = 16000000;
+
+        S.Extension = pDevExt;
+        S.Data = (PVOID) (ULONG_PTR) AppropriateDivisor;
+        SerialSetBaud(pDevExt->WdfInterrupt, &S);
+
+    }
 
     //
     // Common error path cleanup.  If the status is
