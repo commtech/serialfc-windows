@@ -106,7 +106,7 @@ Return Value:
     WPP_INIT_TRACING( DriverObject, RegistryPath );
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_INIT,
-                    "Serial Sample (WDF Version) - Built %s %s\n",
+                    "SerialFC (WDF Version) - Built %s %s\n",
                      __DATE__, __TIME__);
     //
     // Register a cleanup callback so that we can call WPP_CLEANUP when
