@@ -1,20 +1,22 @@
-;/*++
 ;
-;Copyright (c) Microsoft Corporation.  All rights reserved.
+;    Copyright (C) 2013  Commtech, Inc.
 ;
-;   THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-;   KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-;   IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR
-;   PURPOSE.
+;    This file is part of fscc-windows.
 ;
-;Module Name:
+;    fscc-windows is free software: you can redistribute it and/or modify it
+;    under the terms of the GNU General Public License as published bythe Free
+;    Software Foundation, either version 3 of the License, or (at your option)
+;    any later version.
 ;
-;    SERIAL.INF
+;    fscc-windows is distributed in the hope that it will be useful, but WITHOUT
+;    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+;    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+;    more details.
 ;
-;Abstract:
-;    INF file for the WDF serial driver sample
+;    You should have received a copy of the GNU General Public License along
+;    with fscc-windows.  If not, see <http://www.gnu.org/licenses/>.
 ;
-;--*/
+;
 
 [version]
 signature="$CHICAGO$"
