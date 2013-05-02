@@ -586,6 +586,12 @@ int serialfc_set_clock_rate(HANDLE h, unsigned rate)
 	
   \note
     This is only supported on the FSCC cards.
+
+  \note
+    If you apply an external clock to the card before turning on isochronous
+    mode your system will freeze due to too many serial interrupts. Make sure 
+    and apply the clock after you are the isochronous mode (so the interrupts 
+    are disabled).
 	
   \note
 	There are 8 different isochronous combinations you can use.
@@ -630,6 +636,12 @@ int serialfc_enable_isochronous(HANDLE h, unsigned mode)
 	
   \note
     This is only supported on the FSCC cards.
+
+  \note
+    If you have an external clock applied to the card while turning off 
+    isochronous mode your system will freeze due to too many serial interrupts. 
+    Make sure and remove the clock before you disable isochronous mode (while 
+    the interrupts are disabled).
 
 */
 /******************************************************************************/
@@ -767,4 +779,66 @@ int serialfc_disconnect(HANDLE h)
 	result = CloseHandle(h);
 
 	return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Turns on Thales master mode
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported with the Thales custom firmware/driver.
+
+*/
+/******************************************************************************/
+int serialfc_thales_enable_master_mode(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_THALES_ENABLE_MASTER_MODE, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Turns on Thales slave mode
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported with the Thales custom firmware/driver.
+
+*/
+/******************************************************************************/
+int serialfc_thales_enable_slave_mode(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_THALES_ENABLE_SLAVE_MODE, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }

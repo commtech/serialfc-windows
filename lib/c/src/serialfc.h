@@ -39,6 +39,9 @@ extern "C"
 #define IOCTL_FASTCOM_DISABLE_ISOCHRONOUS CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x811, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_FASTCOM_GET_ISOCHRONOUS CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x812, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+#define IOCTL_THALES_ENABLE_MASTER_MODE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x900, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_THALES_ENABLE_SLAVE_MODE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x901, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 
 __declspec(dllexport) int serialfc_connect(unsigned port_num, BOOL overlapped, HANDLE *h);
 __declspec(dllexport) int serialfc_enable_rs485(HANDLE h);
@@ -63,6 +66,9 @@ __declspec(dllexport) int serialfc_get_isochronous(HANDLE h, int *mode);
 __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);
+
+__declspec(dllexport) int serialfc_thales_enable_master_mode(HANDLE h);
+__declspec(dllexport) int serialfc_thales_enable_slave_mode(HANDLE h);
 
 #ifdef __cplusplus
 }
