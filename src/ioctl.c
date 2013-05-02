@@ -2066,7 +2066,7 @@ Return Value:
         }
         case IOCTL_THALES_ENABLE_SLAVE_MODE: {
 
-            Status = FastcomEnableIsochronous(Extension, 3);
+            Status = FastcomEnableIsochronous(Extension, 8);
             break;
         }
         default: {
