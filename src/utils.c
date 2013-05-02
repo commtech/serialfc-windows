@@ -2444,15 +2444,15 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
     cks = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get CKS through ICR */
 
     switch (cks) {
-    case 0x00:
+    case 0x04:
         *mode = -1;
         break;
 
-    case 0xD0:
+    case 0xD4:
         *mode = 0;
         break;
 
-    case 0x90:
+    case 0x94:
         *mode = 1;
         break;
 
