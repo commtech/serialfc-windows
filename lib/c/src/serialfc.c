@@ -598,6 +598,7 @@ int serialfc_set_clock_rate(HANDLE h, unsigned rate)
 	5: Receive using internal BRG
 	6: Transmit using external RI#, receive using internal BRG
 	7: Transmit using internal BRG, receive using internal BRG
+	8: Transmit and receive using external RI#
 
 */
 /******************************************************************************/
@@ -637,7 +638,7 @@ int serialfc_disable_isochronous(HANDLE h)
   DWORD temp;
   BOOL result;
 
-  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_ISOCHRONOUS, 
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_DISABLE_ISOCHRONOUS, 
                            NULL, 0, 
                            NULL, 0, 
                            &temp, (LPOVERLAPPED)NULL);

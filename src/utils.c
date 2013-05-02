@@ -2368,7 +2368,8 @@ void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt)
 NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
     UCHAR orig_lcr;
-    UCHAR new_cks = 0;
+    UCHAR new_cks = 0x04; /* Always disable BDOUT as it isn't used */
+    UCHAR new_mdm = 0;
 
     if (mode > 8 || mode < -1)
         return STATUS_INVALID_PARAMETER;
@@ -2376,7 +2377,6 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
-    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, CKS_OFFSET); /* To allow access to CKS */
 
     switch (mode) {
     /* Enable receive using external DSR# */
@@ -2384,6 +2384,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     case 3:
     case 4:
         new_cks |= 0x09;
+        new_mdm |= 0x02;
         break;
 
     /* Enable receive using internal BRG */
@@ -2405,17 +2406,22 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     case 3:
     case 6:
     case 8:
-        new_cks |= 0xC0;
+        new_cks |= 0xD0;
+        new_mdm |= 0x04;
         break;
 
     /* Transmit using internal BRG */
     case 1:
     case 4:
     case 7:
-        new_cks |= 0x80;
+        new_cks |= 0x90;
         break;
     }
 
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, MDM_OFFSET); /* To allow access to MDM */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, new_mdm); /* Set interrupts to MDM through ICR */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, CKS_OFFSET); /* To allow access to CKS */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, new_cks); /* Set clock mode to CKS through ICR */
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
@@ -2442,39 +2448,39 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
         *mode = -1;
         break;
 
-    case 0xC0:
+    case 0xD0:
         *mode = 0;
         break;
 
-    case 0x80:
+    case 0x90:
         *mode = 1;
         break;
 
-    case 0x09:
+    case 0x0D:
         *mode = 2;
         break;
 
-    case 0xC9:
+    case 0xDD:
         *mode = 3;
         break;
 
-    case 0x89:
+    case 0x9D:
         *mode = 4;
         break;
 
-    case 0x0A:
+    case 0x0E:
         *mode = 5;
         break;
 
-    case 0xCA:
+    case 0xDE:
         *mode = 6;
         break;
 
-    case 0x8A:
+    case 0x9E:
         *mode = 7;
         break;
 
-    case 0xCB:
+    case 0xDF:
         *mode = 8;
         break;
     }
