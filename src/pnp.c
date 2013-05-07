@@ -710,7 +710,7 @@ Return Value:
     NTSTATUS status;
     CONFIG_DATA config;
     PCONFIG_DATA pConfig = &config;
-    ULONG defaultClockRate = 18432000;
+    ULONG defaultClockRate = 1843200;
 
     PAGED_CODE();
 
@@ -740,8 +740,16 @@ Return Value:
         goto End;
     }
 
-    if (FastcomGetCardType(pDevExt) == CARD_TYPE_PCIe)
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_FSCC:
+        defaultClockRate = 18432000;
+        break;
+
+    case CARD_TYPE_PCIe:
         defaultClockRate = 125000000;
+        break;
+    }
 
     //
     // Open the "Device Parameters" section of registry for this device and get parameters.
@@ -1224,6 +1232,18 @@ Return Value:
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+    case CARD_TYPE_FSCC:
+        pDevExt->RxFifoTrigger = SERIAL_14_BYTE_HIGH_WATER;
+        break;
+
+    default:
+        pDevExt->RxFifoTrigger = SERIAL_8_BYTE_HIGH_WATER;
+        break;
+    }
+
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar0) / 0x200;
         pDevExt->TxFifoAmount = 64;
         break;
@@ -1237,12 +1257,11 @@ Return Value:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar1) / 0x8;
         pDevExt->TxFifoAmount = 128;
 		break;
-    }
-    
 
-    /* The FCR value, not the actual trigger level. We are fixing this at 0xC0 so we can 
-       use our custom trigger levels. */
-    pDevExt->RxFifoTrigger = SERIAL_14_BYTE_HIGH_WATER;
+	default:
+        pDevExt->Channel = 0;
+        pDevExt->TxFifoAmount = 14;
+    }
 
     //
     // Save off the interface type and the bus number.
@@ -1635,7 +1654,6 @@ Return Value:
    ULONG gotMem = 0;
    BOOLEAN DebugPortInUse = FALSE;
    PDEVICE_OBJECT pdo;
-   UINT32 VendorID = 0;
 
    PAGED_CODE();
 
@@ -1664,7 +1682,6 @@ Return Value:
             ASSERT(!(pPartialTrResourceDesc->u.Port.Length == SERIAL_STATUS_LENGTH));
 
             if (gotIO == 0) {
-
                 if (curIoIndex == ioResIndex) {
 
                     gotIO = 1;
@@ -1809,14 +1826,8 @@ Return Value:
    pDevExt->Bar1 = 0;
    pDevExt->Bar2 = 0;
 
-   PCIReadConfigWord(pdo, 0x00, &VendorID);
    PCIReadConfigWord(pdo, 0x02, &pDevExt->DeviceID);
    PCIReadConfigWord(pdo, 0x10, &pDevExt->Bar0);
-
-   if (VendorID != 0x18f7 || FastcomGetCardType(pDevExt) == CARD_TYPE_UNKNOWN) {
-      status = STATUS_UNSUCCESSFUL;
-      goto End;
-   }
 
    if (FastcomGetCardType(pDevExt) == CARD_TYPE_FSCC) {
       PCIReadConfigWord(pdo, 0x14, &pDevExt->Bar1);

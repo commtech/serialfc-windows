@@ -2106,6 +2106,11 @@ NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     case CARD_TYPE_FSCC:
         status = FastcomSetSampleRateFSCC(pDevExt, value);
         break;
+
+	default:
+		/* This makes sure the sample rate value is set for the non Fastcom ports. */
+		status = STATUS_SUCCESS;
+		break;
     }
 
     if (NT_SUCCESS (status)) {
