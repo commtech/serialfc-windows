@@ -2373,7 +2373,7 @@ void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt)
 NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
     UCHAR orig_lcr;
-    UCHAR new_cks = 0x04; /* Always disable BDOUT as it isn't used */
+    UCHAR new_cks = 0;
     UCHAR new_mdm = 0;
 
     if (mode > 8 || mode < -1)
@@ -2449,43 +2449,43 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
     cks = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get CKS through ICR */
 
     switch (cks) {
-    case 0x04:
+    case 0x00:
         *mode = -1;
         break;
 
-    case 0xD4:
+    case 0xD0:
         *mode = 0;
         break;
 
-    case 0x94:
+    case 0x90:
         *mode = 1;
         break;
 
-    case 0x0D:
+    case 0x09:
         *mode = 2;
         break;
 
-    case 0xDD:
+    case 0xD9:
         *mode = 3;
         break;
 
-    case 0x9D:
+    case 0x99:
         *mode = 4;
         break;
 
-    case 0x0E:
+    case 0x0A:
         *mode = 5;
         break;
 
-    case 0xDE:
+    case 0xDA:
         *mode = 6;
         break;
 
-    case 0x9E:
+    case 0x9A:
         *mode = 7;
         break;
 
-    case 0xDF:
+    case 0xDB:
         *mode = 8;
         break;
     }
