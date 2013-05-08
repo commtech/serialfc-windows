@@ -4083,7 +4083,19 @@ NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
     orig_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
 
     if ((orig_fcr & (0x01000000 << pDevExt->Channel)) == FALSE) {
+        /* UART_{A,B} */
         new_fcr = orig_fcr | (0x01000000 << pDevExt->Channel);
+
+        /* FSTDTR{A,B} */
+        switch (pDevExt->Channel) {
+        case 0:
+            new_fcr |= 0x00080000;
+            break;
+
+        case 1:
+            new_fcr |= 0x00800000;
+            break;
+        }
 
         WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
     }
@@ -4099,7 +4111,20 @@ NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
         return STATUS_NOT_SUPPORTED;
 
     orig_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+
+    /* UART_{A,B} */
     new_fcr = orig_fcr & ~(0x01000000 << pDevExt->Channel);
+
+    /* FSTDTR{A,B} */
+    switch (pDevExt->Channel) {
+    case 0:
+        new_fcr &= ~0x00080000;
+        break;
+
+    case 1:
+        new_fcr &= ~0x00800000;
+        break;
+    }
 
     WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
 
