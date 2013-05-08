@@ -545,3 +545,6 @@ port.disable_isochrnous()
 
 mode = port.get_isochronous()
 ```
+
+### How to change boot defaults
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\Serial\Parameters
