@@ -4059,6 +4059,109 @@ void FastcomDisableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt)
     FastcomSetEchoCancel(pDevExt, FALSE);
 }
 
+NTSTATUS FastcomSetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars)
+{
+    UCHAR orig_lcr;
+
+    if (num_chars > 8191)
+        return STATUS_INVALID_PARAMETER;
+
+    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+
+
+    if (num_chars != 0) {
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXTH_OFFSET); /* To allow access to EXTH */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x80 | (num_chars >> 8)); /* Actually writing to EXTH through ICR */
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXT_OFFSET); /* To allow access to EXTH */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (char)num_chars); /* Actually writing to EXT through ICR */
+    }
+    else {
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXTH_OFFSET); /* To allow access to EXTH */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x00); /* Actually writing to EXTH through ICR */
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXT_OFFSET); /* To allow access to EXTH */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x00); /* Actually writing to EXT through ICR */
+    }
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+
+    return STATUS_SUCCESS;
+}
+
+void FastcomGetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars)
+{
+    UCHAR orig_lcr;
+    UCHAR ext, exth;
+
+    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXT_OFFSET); /* To allow access to EXT */
+    ext = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get EXT through ICR */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXTH_OFFSET); /* To allow access to EXTH */
+    exth = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get EXTH through ICR */
+
+    *num_chars = ((exth & 0x1F) << 8) + ext;
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+}
+
+NTSTATUS FastcomGetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        return STATUS_NOT_SUPPORTED;
+
+    case CARD_TYPE_FSCC:
+        FastcomGetExternalTransmitFSCC(pDevExt, num_chars);
+        break;
+    }
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS FastcomSetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars)
+{
+    NTSTATUS status = STATUS_UNSUCCESSFUL;
+
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        status = STATUS_NOT_SUPPORTED;
+        break;
+
+    case CARD_TYPE_FSCC:
+        status = FastcomSetExternalTransmitFSCC(pDevExt, num_chars);
+        break;
+    }
+
+    if (NT_SUCCESS (status)) {
+        SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
+                         "External Transmit = %i\n", num_chars); 
+    }
+
+    return status;
+}
+
+NTSTATUS FastcomEnableExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars) 
+{
+    return FastcomSetExternalTransmit(pDevExt, num_chars);
+}
+
+NTSTATUS FastcomDisableExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    return FastcomSetExternalTransmit(pDevExt, 0);
+}
+
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status)
 {
     UINT32 orig_fcr;

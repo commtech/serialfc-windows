@@ -1856,8 +1856,10 @@ enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYP
 #define ICR_OFFSET 0x5
 
 /* Indexed control register set */
-#define ACR_OFFSET 0x0
-#define TCR_OFFSET 0x2
-#define CKS_OFFSET 0x3
-#define RTL_OFFSET 0x5
-#define MDM_OFFSET 0xe
+#define ACR_OFFSET 0x00
+#define TCR_OFFSET 0x02
+#define CKS_OFFSET 0x03
+#define RTL_OFFSET 0x05
+#define MDM_OFFSET 0x0e
+#define EXT_OFFSET 0x16
+#define EXTH_OFFSET 0x17
