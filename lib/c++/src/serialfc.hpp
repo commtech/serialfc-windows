@@ -39,6 +39,9 @@ namespace SerialFC {
 		void EnableIsochronous(unsigned mode) throw(SystemException);
 		void DisableIsochronous() throw(SystemException);
 		int GetIsochronous(void) throw(SystemException);
+		void EnableExternalTransmit(unsigned num_chars) throw(SystemException);
+		void DisableExternalTransmit() throw(SystemException);
+		unsigned GetExternalTransmit(void) throw(SystemException);
 
 		unsigned Write(const char *buf, unsigned size, OVERLAPPED *o) throw(SystemException);
 		unsigned Write(const char *buf, unsigned size) throw(SystemException);

@@ -2059,6 +2059,33 @@ Return Value:
             reqContext->Information = sizeof(int);
             break;
         }
+        case IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            Status = FastcomEnableExternalTransmit(Extension, *((unsigned *)buffer));
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT: {
+            Status = FastcomDisableExternalTransmit(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            Status = FastcomGetExternalTransmit(Extension, buffer);
+
+            reqContext->Information = sizeof(int);
+            break;
+        }
         case IOCTL_THALES_ENABLE_MASTER_MODE: {
 
             Status = FastcomDisableIsochronous(Extension);

@@ -47,7 +47,7 @@ DefaultDestDir  = 12
 [Standard.NT$ARCH$]
 ; DisplayName           Section           DeviceId
 ; -----------           -------           --------
-%PNP0500.DevDesc%=       Serial_Inst,      SerialFC\Port1, SerialFC\Port2, SerialFC\Port3, SerialFC\Port4, SerialFC\Port5, SerialFC\Port6, SerialFC\Port7, SerialFC\Port8
+%Serial.DevDesc%=       Serial_Inst,      SerialFC\Port1, SerialFC\Port2, SerialFC\Port3, SerialFC\Port4, SerialFC\Port5, SerialFC\Port6, SerialFC\Port7, SerialFC\Port8
 
 
 [Serial_Inst.NT]
@@ -65,7 +65,7 @@ HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
 AddService=Serial,0x00000002,Serial_Service 
 
 [Serial_Service]
-DisplayName    = %Serial.SVCDESC%                            
+DisplayName    = %Serial.SvcDesc%                            
 ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
 StartType      = 3                  ; SERVICE_DEMAND_START
 ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
@@ -90,12 +90,13 @@ HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfC
 
 [Serial_Inst.NT.Wdf]
 KmdfService = Serial, Serial_wdfsect
+
 [Serial_wdfsect]
 KmdfLibraryVersion = $KMDFVERSION$
 
 [Strings]
 ManufacturerName = "Commtech, Inc."
-Serial.SVCDESC = "Fastcom 422 serial driver"
-PNP0500.DevDesc = "Communications Port"
+Serial.SvcDesc = "Fastcom 422 serial driver"
+Serial.DevDesc = "Communications Port"
 DISK_NAME = "Serial Install Disk"
 
