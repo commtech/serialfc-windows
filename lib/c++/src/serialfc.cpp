@@ -262,6 +262,34 @@ int Port::GetIsochronous(void) throw(SystemException)
 	return mode;
 }
 
+void Port::EnableExternalTransmit(unsigned num_chars) throw(SystemException)
+{
+	int e = serialfc_enable_external_transmit(_h, num_chars);
+
+	if (e)
+		throw SystemException(e);
+}
+
+void Port::DisableExternalTransmit() throw(SystemException)
+{
+	int e = serialfc_disable_external_transmit(_h);
+
+	if (e)
+		throw SystemException(e);
+}
+
+unsigned Port::GetExternalTransmit(void) throw(SystemException)
+{
+	unsigned num_chars;
+
+	int e = serialfc_get_external_transmit(_h, &num_chars);
+
+	if (e)
+		throw SystemException(e);
+
+	return num_chars;
+}
+
 unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
 {
     unsigned bytes_written;
