@@ -690,6 +690,103 @@ int serialfc_get_isochronous(HANDLE h, int *mode)
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
+
+/******************************************************************************/
+/*!
+
+  \brief Turns on external transmit mode for the port
+
+  \param[in] h 
+    HANDLE to the port
+  \param[in] mode 
+    the number of characters to send on external signal
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_enable_external_transmit(HANDLE h, unsigned num_chars)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT, 
+                           &num_chars, sizeof(num_chars), 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Turns off external transmit mode for the port
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_disable_external_transmit(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Gets the port's external transmit mode
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] num_chars 
+    the number of characters to send on external signal
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_get_external_transmit(HANDLE h, unsigned *num_chars)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT, 
+                           NULL, 0, 
+                           num_chars, sizeof(*num_chars), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
  
 /******************************************************************************/
 /*!
