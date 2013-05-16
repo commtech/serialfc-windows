@@ -698,7 +698,7 @@ int serialfc_get_isochronous(HANDLE h, int *mode)
 
   \param[in] h 
     HANDLE to the port
-  \param[in] mode 
+  \param[in] num_chars 
     the number of characters to send on external signal
       
   \return 0 
