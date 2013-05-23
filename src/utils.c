@@ -2150,7 +2150,7 @@ NTSTATUS FastcomSetTxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
 
 NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
+    NTSTATUS status;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
@@ -2161,9 +2161,8 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
         status = FastcomSetTxTriggerPCIe(pDevExt, value);
         break;
 
-    case CARD_TYPE_FSCC:
+    default:
         status = STATUS_NOT_SUPPORTED;
-        break;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2177,13 +2176,12 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 NTSTATUS FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         *value = 1;
         break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_SUCCESS;
@@ -2229,7 +2227,7 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
 
 NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
+    NTSTATUS status;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
@@ -2243,6 +2241,9 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     case CARD_TYPE_FSCC:
         status = FastcomSetRxTriggerFSCC(pDevExt, value);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2256,13 +2257,12 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 NTSTATUS FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         // TODO
         break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_SUCCESS;
@@ -2348,6 +2348,9 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     case CARD_TYPE_FSCC:
         FastcomSetRS485FSCC(pDevExt, enable);
         break;
+
+    default:
+        break; // TODO
     }
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
@@ -2497,17 +2500,15 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
 
 NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
+    NTSTATUS status;
 
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_FSCC:
         status =  FastcomSetIsochronousFSCC(pDevExt, mode);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2521,13 +2522,12 @@ NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 NTSTATUS FastcomGetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         FastcomGetIsochronousFSCC(pDevExt, mode);
         return STATUS_SUCCESS;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_UNSUCCESSFUL;
@@ -2571,15 +2571,13 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     NTSTATUS status = STATUS_UNSUCCESSFUL;
 
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_FSCC:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_PCIe:
         FastcomSetTerminationPCIe(pDevExt, enable);
         status = STATUS_SUCCESS;
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2593,13 +2591,12 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 NTSTATUS FastcomGetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_FSCC:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_PCIe:
         FastcomGetTerminationPCIe(pDevExt, enabled);
         return STATUS_SUCCESS;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_UNSUCCESSFUL;
@@ -2682,6 +2679,9 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     case CARD_TYPE_FSCC:
         FastcomSetEchoCancelFSCC(pDevExt, enable);
         break;
+
+    default:
+        break; //TODO
     }
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
@@ -4013,13 +4013,12 @@ NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
         status = FastcomSetClockRatePCI(pDevExt, value);
         break;
 
-    case CARD_TYPE_PCIe:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_FSCC:
         status = FastcomSetClockRateFSCC(pDevExt, value);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -4046,6 +4045,9 @@ void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
     case CARD_TYPE_FSCC:
         FastcomGetEchoCancelFSCC(pDevExt, enabled);
         break;
+
+    default:
+        break; //TODO
     }
 }
 
@@ -4117,13 +4119,12 @@ void FastcomGetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *
 NTSTATUS FastcomGetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         FastcomGetExternalTransmitFSCC(pDevExt, num_chars);
         break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_SUCCESS;
@@ -4134,14 +4135,12 @@ NTSTATUS FastcomSetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned n
     NTSTATUS status = STATUS_UNSUCCESSFUL;
 
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_FSCC:
         status = FastcomSetExternalTransmitFSCC(pDevExt, num_chars);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
