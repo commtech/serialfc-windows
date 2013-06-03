@@ -4074,7 +4074,7 @@ NTSTATUS FastcomSetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsign
 
     if (num_chars != 0) {
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXTH_OFFSET); /* To allow access to EXTH */
-        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x80 | (num_chars >> 8)); /* Actually writing to EXTH through ICR */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, num_chars >> 8); /* Actually writing to EXTH through ICR */
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXT_OFFSET); /* To allow access to EXTH */
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (char)num_chars); /* Actually writing to EXT through ICR */
