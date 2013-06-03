@@ -743,7 +743,7 @@ Return Value:
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
     case CARD_TYPE_FSCC:
-        defaultClockRate = 18432000;
+        defaultClockRate = 64000000;
         break;
 
     case CARD_TYPE_PCIe:

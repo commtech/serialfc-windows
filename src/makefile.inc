@@ -1,6 +1,6 @@
 _LNG=$(LANGUAGE)
 _INX=.
-STAMP=stampinf -f $@ -a $(_BUILDARCH) -v 2.1.4 -k $(KMDF_VERSION_MAJOR).$(KMDF_VERSION_MINOR)
+STAMP=stampinf -f $@ -a $(_BUILDARCH) -v 2.1.4.1-lehman -k $(KMDF_VERSION_MAJOR).$(KMDF_VERSION_MINOR)
 
 
 
