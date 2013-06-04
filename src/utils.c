@@ -2079,13 +2079,13 @@ NTSTATUS FastcomSetSampleRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned val
     if (value < 4 || value > 16)
         return STATUS_INVALID_PARAMETER;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, TCR_OFFSET); /* To allow access to TCR */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Actually writing to TCR through ICR */
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
     return STATUS_SUCCESS;
 }
@@ -2182,7 +2182,7 @@ NTSTATUS FastcomSetTxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
 
 NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
+    NTSTATUS status;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
@@ -2193,9 +2193,8 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
         status = FastcomSetTxTriggerPCIe(pDevExt, value);
         break;
 
-    case CARD_TYPE_FSCC:
+    default:
         status = STATUS_NOT_SUPPORTED;
-        break;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2209,13 +2208,12 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 NTSTATUS FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         *value = 1;
         break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_SUCCESS;
@@ -2248,20 +2246,20 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     if (value < 1 || value > 127)
         return STATUS_INVALID_PARAMETER;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, RTL_OFFSET); /* To allow access to RTL */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Set the trigger level to RTL through ICR */
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
     return STATUS_SUCCESS;
 }
 
 NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
+    NTSTATUS status;
 
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
@@ -2275,6 +2273,9 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     case CARD_TYPE_FSCC:
         status = FastcomSetRxTriggerFSCC(pDevExt, value);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2288,13 +2289,12 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 NTSTATUS FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         // TODO
         break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_SUCCESS;
@@ -2313,12 +2313,12 @@ void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     if (enable) {
         new_mcr = current_mcr | 0x3;  /* Force RTS/DTS to low (not sure why yet) */
         new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
-        new_mpio_lvl = new_mpio_lvl & ~(0x8 << pDevExt->Channel); /* Enable 485 on transmitters */
+        new_mpio_lvl = current_mpio_lvl & ~(0x8 << pDevExt->Channel); /* Enable 485 on transmitters */
     }
     else {
         new_mcr = current_mcr & ~0x3;  /* Force RTS/DTS to high (not sure why yet) */
         new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
-        new_mpio_lvl = new_mpio_lvl | (0x8 << pDevExt->Channel); /* Disable 485 on transmitters */
+        new_mpio_lvl = current_mpio_lvl | (0x8 << pDevExt->Channel); /* Disable 485 on transmitters */
     }
 
     WRITE_MODEM_CONTROL(pDevExt, pDevExt->Controller, new_mcr);
@@ -2351,9 +2351,9 @@ void FastcomSetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     UCHAR orig_lcr;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
 
     if (enable)
@@ -2363,7 +2363,7 @@ void FastcomSetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Enable 950 trigger to ACR through ICR */
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+   WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 }
 
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2380,6 +2380,9 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     case CARD_TYPE_FSCC:
         FastcomSetRS485FSCC(pDevExt, enable);
         break;
+
+    default:
+        break; // TODO
     }
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
@@ -2411,9 +2414,9 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     if (mode > 8 || mode < -1)
         return STATUS_INVALID_PARAMETER;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
 
     switch (mode) {
     /* Enable receive using external DSR# */
@@ -2461,7 +2464,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, CKS_OFFSET); /* To allow access to CKS */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, new_cks); /* Set clock mode to CKS through ICR */
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
     return STATUS_SUCCESS;
 }
@@ -2471,9 +2474,9 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
     UCHAR orig_lcr;
     UCHAR cks;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, CKS_OFFSET); /* To allow access to CLK */
@@ -2524,22 +2527,20 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 }
 
 NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 {
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
+    NTSTATUS status;
 
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_FSCC:
         status =  FastcomSetIsochronousFSCC(pDevExt, mode);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2553,13 +2554,12 @@ NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 NTSTATUS FastcomGetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         FastcomGetIsochronousFSCC(pDevExt, mode);
         return STATUS_SUCCESS;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_UNSUCCESSFUL;
@@ -2603,15 +2603,13 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     NTSTATUS status = STATUS_UNSUCCESSFUL;
 
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_FSCC:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_PCIe:
         FastcomSetTerminationPCIe(pDevExt, enable);
         status = STATUS_SUCCESS;
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -2625,13 +2623,12 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 NTSTATUS FastcomGetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_FSCC:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_PCIe:
         FastcomGetTerminationPCIe(pDevExt, enabled);
         return STATUS_SUCCESS;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_UNSUCCESSFUL;
@@ -2714,6 +2711,9 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     case CARD_TYPE_FSCC:
         FastcomSetEchoCancelFSCC(pDevExt, enable);
         break;
+
+    default:
+        break; //TODO
     }
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
@@ -4045,13 +4045,12 @@ NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
         status = FastcomSetClockRatePCI(pDevExt, value);
         break;
 
-    case CARD_TYPE_PCIe:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_FSCC:
         status = FastcomSetClockRateFSCC(pDevExt, value);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -4078,6 +4077,9 @@ void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
     case CARD_TYPE_FSCC:
         FastcomGetEchoCancelFSCC(pDevExt, enabled);
         break;
+
+    default:
+        break; //TODO
     }
 }
 
@@ -4098,13 +4100,13 @@ NTSTATUS FastcomSetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsign
     if (num_chars > 8191)
         return STATUS_INVALID_PARAMETER;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
 
 
     if (num_chars != 0) {
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXTH_OFFSET); /* To allow access to EXTH */
-        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x80 | (num_chars >> 8)); /* Actually writing to EXTH through ICR */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, num_chars >> 8); /* Actually writing to EXTH through ICR */
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, EXT_OFFSET); /* To allow access to EXTH */
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (char)num_chars); /* Actually writing to EXT through ICR */
@@ -4117,7 +4119,7 @@ NTSTATUS FastcomSetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsign
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, 0x00); /* Actually writing to EXT through ICR */
     }
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
     return STATUS_SUCCESS;
 }
@@ -4127,9 +4129,9 @@ void FastcomGetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *
     UCHAR orig_lcr;
     UCHAR ext, exth;
 
-    orig_lcr = pDevExt->SerialReadUChar(pDevExt->Controller + LCR_OFFSET);
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
 
@@ -4143,19 +4145,18 @@ void FastcomGetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
-    pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 }
 
 NTSTATUS FastcomGetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars)
 {
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        return STATUS_NOT_SUPPORTED;
-
     case CARD_TYPE_FSCC:
         FastcomGetExternalTransmitFSCC(pDevExt, num_chars);
         break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
     }
 
     return STATUS_SUCCESS;
@@ -4166,14 +4167,12 @@ NTSTATUS FastcomSetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned n
     NTSTATUS status = STATUS_UNSUCCESSFUL;
 
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-    case CARD_TYPE_PCIe:
-        status = STATUS_NOT_SUPPORTED;
-        break;
-
     case CARD_TYPE_FSCC:
         status = FastcomSetExternalTransmitFSCC(pDevExt, num_chars);
         break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
     }
 
     if (NT_SUCCESS (status)) {
@@ -4221,17 +4220,6 @@ NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
         /* UART_{A,B} */
         new_fcr = orig_fcr | (0x01000000 << pDevExt->Channel);
 
-        /* FSTDTR{A,B} */
-        switch (pDevExt->Channel) {
-        case 0:
-            new_fcr |= 0x00080000;
-            break;
-
-        case 1:
-            new_fcr |= 0x00800000;
-            break;
-        }
-
         WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
     }
 
@@ -4249,17 +4237,6 @@ NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
 
     /* UART_{A,B} */
     new_fcr = orig_fcr & ~(0x01000000 << pDevExt->Channel);
-
-    /* FSTDTR{A,B} */
-    switch (pDevExt->Channel) {
-    case 0:
-        new_fcr &= ~0x00080000;
-        break;
-
-    case 1:
-        new_fcr &= ~0x00800000;
-        break;
-    }
 
     WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
 
