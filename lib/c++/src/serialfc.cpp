@@ -290,6 +290,26 @@ unsigned Port::GetExternalTransmit(void) throw(SystemException)
 	return num_chars;
 }
 
+void Port::SetFrameLength(unsigned num_chars) throw(SystemException)
+{
+	int e = serialfc_set_frame_length(_h, num_chars);
+
+	if (e)
+		throw SystemException(e);
+}
+
+unsigned Port::GetFrameLength(void) throw(SystemException)
+{
+	unsigned num_chars;
+
+	int e = serialfc_get_frame_length(_h, &num_chars);
+
+	if (e)
+		throw SystemException(e);
+
+	return num_chars;
+}
+
 unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
 {
     unsigned bytes_written;

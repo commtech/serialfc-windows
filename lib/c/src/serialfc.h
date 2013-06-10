@@ -43,6 +43,9 @@ extern "C"
 #define IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x814, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x815, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+#define IOCTL_FASTCOM_SET_FRAME_LENGTH CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x816, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_FASTCOM_GET_FRAME_LENGTH CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x817, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 
 __declspec(dllexport) int serialfc_connect(unsigned port_num, BOOL overlapped, HANDLE *h);
 __declspec(dllexport) int serialfc_enable_rs485(HANDLE h);
@@ -67,6 +70,8 @@ __declspec(dllexport) int serialfc_get_isochronous(HANDLE h, int *mode);
 __declspec(dllexport) int serialfc_enable_external_transmit(HANDLE h, unsigned num_chars);
 __declspec(dllexport) int serialfc_disable_external_transmit(HANDLE h);
 __declspec(dllexport) int serialfc_get_external_transmit(HANDLE h, unsigned *num_chars);
+__declspec(dllexport) int serialfc_set_frame_length(HANDLE h, unsigned num_chars);
+__declspec(dllexport) int serialfc_get_frame_length(HANDLE h, unsigned *num_chars);
 __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);

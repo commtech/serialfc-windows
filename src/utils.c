@@ -4161,6 +4161,80 @@ NTSTATUS FastcomDisableExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt)
     return FastcomSetExternalTransmit(pDevExt, 0);
 }
 
+NTSTATUS FastcomSetFrameLengthFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars)
+{
+    UCHAR orig_lcr;
+
+    if (num_chars == 0 || num_chars > 256)
+        return STATUS_INVALID_PARAMETER;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, FLR_OFFSET); /* To allow access to FLR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, num_chars - 1); /* Actually writing to EXTH through ICR */
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+
+    return STATUS_SUCCESS;
+}
+
+void FastcomGetFrameLengthFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars)
+{
+    UCHAR orig_lcr;
+    UCHAR flr;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, FLR_OFFSET); /* To allow access to FLR */
+    flr = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get EXT through ICR */
+
+    *num_chars = flr + 1;
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+}
+
+NTSTATUS FastcomSetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars)
+{
+    NTSTATUS status = STATUS_UNSUCCESSFUL;
+
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_FSCC:
+        status = FastcomSetFrameLengthFSCC(pDevExt, num_chars);
+        break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
+    }
+
+    if (NT_SUCCESS (status)) {
+        SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
+                         "Frame Length = %i\n", num_chars); 
+    }
+
+    return status;
+}
+
+NTSTATUS FastcomGetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_FSCC:
+        FastcomGetFrameLengthFSCC(pDevExt, num_chars);
+        break;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
+    }
+
+    return STATUS_SUCCESS;
+}
+
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status)
 {
     UINT32 orig_fcr;

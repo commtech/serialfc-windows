@@ -787,6 +787,73 @@ int serialfc_get_external_transmit(HANDLE h, unsigned *num_chars)
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
+
+/******************************************************************************/
+/*!
+
+  \brief Sets how many characters are transmitted per frame.
+  
+
+  \param[in] h 
+    HANDLE to the port
+  \param[in] num_chars 
+    the number of characters per frame
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_set_frame_length(HANDLE h, unsigned num_chars)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_SET_FRAME_LENGTH, 
+                           &num_chars, sizeof(num_chars), 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Gets the frame length.
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] num_chars 
+    the number of characters sent per frame
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_get_frame_length(HANDLE h, unsigned *num_chars)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_FRAME_LENGTH, 
+                           NULL, 0, 
+                           num_chars, sizeof(*num_chars), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
  
 /******************************************************************************/
 /*!
