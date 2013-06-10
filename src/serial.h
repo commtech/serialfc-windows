@@ -28,6 +28,7 @@ iver
 #define SERIAL_TERMINATION_DEFAULT      1
 #define SERIAL_ECHO_CANCEL_DEFAULT      0
 #define SERIAL_ISOCHRONOUS_DEFAULT      -1
+#define SERIAL_FRAME_LENGTH_DEFAULT     1
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
 
@@ -455,6 +456,7 @@ typedef struct _CONFIG_DATA {
     ULONG               Termination;
     ULONG               EchoCancel;
     ULONG               Isochronous;
+    ULONG               FrameLength;
     ULONG               PermitShare;
     ULONG               PermitSystemWideShare;
     ULONG               LogFifo;
@@ -483,6 +485,7 @@ typedef struct _SERIAL_FIRMWARE_DATA {
     ULONG           TerminationDefault;
     ULONG           EchoCancelDefault;
     ULONG           IsochronousDefault;
+    ULONG           FrameLengthDefault;
     ULONG           PermitShareDefault;
     ULONG           PermitSystemWideShare;
     ULONG           LogFifoDefault;
@@ -1863,3 +1866,4 @@ enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYP
 #define MDM_OFFSET 0x0e
 #define EXT_OFFSET 0x16
 #define EXTH_OFFSET 0x17
+#define FLR_OFFSET 0x20
