@@ -2086,6 +2086,29 @@ Return Value:
             reqContext->Information = sizeof(int);
             break;
         }
+        case IOCTL_FASTCOM_SET_FRAME_LENGTH: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            Status = FastcomSetFrameLength(Extension, *((unsigned *)buffer));
+            break;
+        }
+        case IOCTL_FASTCOM_GET_FRAME_LENGTH: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            Status = FastcomGetFrameLength(Extension, buffer);
+
+            reqContext->Information = sizeof(int);
+            break;
+        }
         case IOCTL_THALES_ENABLE_MASTER_MODE: {
 
             Status = FastcomDisableIsochronous(Extension);

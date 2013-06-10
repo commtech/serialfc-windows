@@ -307,5 +307,34 @@ namespace SerialFC
 
             return num_chars;
         }
+
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_set_frame_length(SafeFileHandle h, uint num_chars);
+
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_get_frame_length(SafeFileHandle h, out uint num_chars);
+
+        public uint FrameLength
+        {
+            set
+            {
+                int e = serialfc_set_frame_length(this.Handle, value);
+
+                if (e >= 1)
+                    throw new Exception(e.ToString());
+            }
+
+            get
+            {
+                uint num_chars;
+
+                int e = serialfc_get_frame_length(this.Handle, out num_chars);
+
+                if (e >= 1)
+                    throw new Exception(e.ToString());
+
+                return num_chars;
+            }
+        }
     }
 }

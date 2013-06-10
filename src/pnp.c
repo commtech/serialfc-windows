@@ -799,6 +799,12 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
+                                   L"FrameLength",
+                                   &pConfig->FrameLength)){
+        pConfig->FrameLength = driverDefaults.FrameLengthDefault;
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
                                    L"Share System Interrupt",
                                    &pConfig->PermitShare)){
         pConfig->PermitShare = driverDefaults.PermitShareDefault;
@@ -1346,6 +1352,7 @@ Return Value:
     FastcomSetTermination(pDevExt, (BOOLEAN)PConfigData->Termination); /* This does nothing on the 335 cards */
     FastcomSetEchoCancel(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
     FastcomSetIsochronous(pDevExt, PConfigData->Isochronous);
+    FastcomSetFrameLength(pDevExt, PConfigData->FrameLength);
 
 
     //
