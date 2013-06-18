@@ -36,6 +36,13 @@ IOCTL_FASTCOM_ENABLE_ISOCHRONOUS = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x810, METHOD_
 IOCTL_FASTCOM_DISABLE_ISOCHRONOUS = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x811, METHOD_BUFFERED, FILE_ANY_ACCESS)
 IOCTL_FASTCOM_GET_ISOCHRONOUS = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x812, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x813, METHOD_BUFFERED, FILE_ANY_ACCESS)
+IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x814, METHOD_BUFFERED, FILE_ANY_ACCESS)
+IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x815, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+IOCTL_FASTCOM_SET_FRAME_LENGTH = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x816, METHOD_BUFFERED, FILE_ANY_ACCESS)
+IOCTL_FASTCOM_GET_FRAME_LENGTH = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x817, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 class Port(serial.Serial):
 
     def _set_rs485(self, status):
@@ -168,6 +175,40 @@ class Port(serial.Serial):
         value = struct.unpack("i", buf)
 
         return value[0]
+
+    def enable_external_transmit(self, num_frames):
+        """Enables external transmit mode."""
+        value = struct.pack("I", num_frames)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT, value, 0, None)
+
+    def disable_external_transmit(self):
+        """Disables external transmit mode."""
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT, None, 0, None)
+
+        return value[0]
+
+    def get_external_transmit(self):
+        """Gets the value of the external transmit setting."""
+        buf_size = struct.calcsize("i")
+        buf = win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT, None, buf_size, None)
+        value = struct.unpack("i", buf)
+
+        return value[0]
+
+    def _set_frame_length(self, num_chars):
+        """Sets the value of the frame length setting."""
+        value = struct.pack("I", num_chars)
+        win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_SET_FRAME_LENGTH, value, 0, None)
+
+    def _get_frame_length(self):
+        """Gets the value of the frame length setting."""
+        buf_size = struct.calcsize("I")
+        buf = win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_GET_FRAME_LENGTH, None, buf_size, None)
+        value = struct.unpack("I", buf)
+
+        return value[0]
+
+    frame_length = property(fset=_set_frame_length, fget=_get_frame_length)
 
 if __name__ == '__main__':
     p = Port('COM3')
