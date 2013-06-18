@@ -633,10 +633,10 @@ NTSTATUS FastcomEnableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned mod
 NTSTATUS FastcomDisableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FastcomGetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode);
 
-NTSTATUS FastcomSetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars);
-NTSTATUS FastcomEnableExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars);
+NTSTATUS FastcomSetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_frames);
+NTSTATUS FastcomEnableExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_frames);
 NTSTATUS FastcomDisableExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt);
-NTSTATUS FastcomGetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars);
+NTSTATUS FastcomGetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_frames);
 
 NTSTATUS FastcomSetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars);
 NTSTATUS FastcomGetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars);

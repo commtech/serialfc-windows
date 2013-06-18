@@ -698,7 +698,7 @@ int serialfc_get_isochronous(HANDLE h, int *mode)
 
   \param[in] h 
     HANDLE to the port
-  \param[in] num_chars 
+  \param[in] num_frames 
     the number of characters to send on external signal
       
   \return 0 
@@ -711,13 +711,13 @@ int serialfc_get_isochronous(HANDLE h, int *mode)
 
 */
 /******************************************************************************/
-int serialfc_enable_external_transmit(HANDLE h, unsigned num_chars)
+int serialfc_enable_external_transmit(HANDLE h, unsigned num_frames)
 {
   DWORD temp;
   BOOL result;
 
   result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT, 
-                           &num_chars, sizeof(num_chars), 
+                           &num_frames, sizeof(num_frames), 
                            NULL, 0, 
                            &temp, (LPOVERLAPPED)NULL);
 
@@ -762,7 +762,7 @@ int serialfc_disable_external_transmit(HANDLE h)
 
   \param[in] h 
     HANDLE to the port
-  \param[out] num_chars 
+  \param[out] num_frames 
     the number of characters to send on external signal
       
   \return 0 
@@ -775,14 +775,14 @@ int serialfc_disable_external_transmit(HANDLE h)
 
 */
 /******************************************************************************/
-int serialfc_get_external_transmit(HANDLE h, unsigned *num_chars)
+int serialfc_get_external_transmit(HANDLE h, unsigned *num_frames)
 {
   DWORD temp;
   BOOL result;
 
   result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT, 
                            NULL, 0, 
-                           num_chars, sizeof(*num_chars), 
+                           num_frames, sizeof(*num_frames), 
                            &temp, (LPOVERLAPPED)NULL);
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
