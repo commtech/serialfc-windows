@@ -21,3 +21,5 @@ lib/c/docs
 *.pdb
 *.zip*
 __pycache__
+*.pnps
+*.pnproj

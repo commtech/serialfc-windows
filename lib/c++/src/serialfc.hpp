@@ -39,7 +39,7 @@ namespace SerialFC {
 		void EnableIsochronous(unsigned mode) throw(SystemException);
 		void DisableIsochronous() throw(SystemException);
 		int GetIsochronous(void) throw(SystemException);
-		void EnableExternalTransmit(unsigned num_chars) throw(SystemException);
+		void EnableExternalTransmit(unsigned num_frames) throw(SystemException);
 		void DisableExternalTransmit() throw(SystemException);
 		unsigned GetExternalTransmit(void) throw(SystemException);
 		void SetFrameLength(unsigned num_chars) throw(SystemException);

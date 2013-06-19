@@ -262,9 +262,9 @@ int Port::GetIsochronous(void) throw(SystemException)
 	return mode;
 }
 
-void Port::EnableExternalTransmit(unsigned num_chars) throw(SystemException)
+void Port::EnableExternalTransmit(unsigned num_frames) throw(SystemException)
 {
-	int e = serialfc_enable_external_transmit(_h, num_chars);
+	int e = serialfc_enable_external_transmit(_h, num_frames);
 
 	if (e)
 		throw SystemException(e);
@@ -280,14 +280,14 @@ void Port::DisableExternalTransmit() throw(SystemException)
 
 unsigned Port::GetExternalTransmit(void) throw(SystemException)
 {
-	unsigned num_chars;
+	unsigned num_frames;
 
-	int e = serialfc_get_external_transmit(_h, &num_chars);
+	int e = serialfc_get_external_transmit(_h, &num_frames);
 
 	if (e)
 		throw SystemException(e);
 
-	return num_chars;
+	return num_frames;
 }
 
 void Port::SetFrameLength(unsigned num_chars) throw(SystemException)

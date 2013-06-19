@@ -280,9 +280,9 @@ namespace SerialFC
         [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
         private static extern int serialfc_get_external_transmit(SafeFileHandle h, out uint external_transmit);
 
-        public void EnableExternalTransmit(uint num_chars)
+        public void EnableExternalTransmit(uint num_frames)
         {
-            int e = serialfc_enable_external_transmit(this.Handle, num_chars);
+            int e = serialfc_enable_external_transmit(this.Handle, num_frames);
 
             if (e >= 1)
                 throw new Exception(e.ToString());
@@ -298,14 +298,14 @@ namespace SerialFC
 
         public uint GetExternalTransmit()
         {
-            uint num_chars;
+            uint num_frames;
 
-            int e = serialfc_get_external_transmit(this.Handle, out num_chars);
+            int e = serialfc_get_external_transmit(this.Handle, out num_frames);
 
             if (e >= 1)
                 throw new Exception(e.ToString());
 
-            return num_chars;
+            return num_frames;
         }
 
         [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
