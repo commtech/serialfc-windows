@@ -10,4 +10,8 @@ pushd %TOP%\c\ & nmake clean & nmake & nmake DEBUG & popd > nul
 pushd "%TOP%\c++\" & nmake clean & nmake & nmake DEBUG & popd > nul
 pushd %TOP%\net\ & nmake clean & nmake & nmake DEBUG & popd > nul
 
+:building_exes
+echo Building EXEs...
+pushd %TOP%\c\test & nmake clean & nmake & popd > nul
+
 exit
