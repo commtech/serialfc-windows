@@ -1,3 +1,11 @@
+version 2.1.5 (6/21/2013)
+--------------------------------------------------------------------------------
+    * Add support for configuring frame length (variable data length between
+      start and stop bits)
+    * Add support for external transmit mode on the FSCC UARTs
+	* Fixed a bug that occasionally prevented rs485 from being setup correctly
+      on 335 cards
+
 version 2.1.4 (5/8/2013)
 --------------------------------------------------------------------------------
 	* Add echo cancellation support to the FSCC line
