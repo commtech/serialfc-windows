@@ -8,6 +8,7 @@ src/buildchk*
 src/serial/buildfre*
 src/serial/buildchk*
 lib/c/examples/*.exe
+lib/c/test/*.exe
 bin/
 htm/
 lib/c/docs
