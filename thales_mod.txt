@@ -19,6 +19,11 @@ SRS_FIRM_RS644S_CAP_REQ_03 - Isochronous mode
 
  When in slave mode, you will both transmit and receive using the external
  clock supplied to the RI pin.
+ 
+ If you apply an external clock to the card before turning on slave mode
+ your system will freeze due to too many serial interrupts on the RI pin. 
+ Make sure and apply the clock after you are the isochronous mode (so the 
+ interrupts are disabled).
 
 SRS_FIRM_RS644S_CAP_REQ_04 - Message frequency
  The firmware is built to send data out sequentially without delay. The only
