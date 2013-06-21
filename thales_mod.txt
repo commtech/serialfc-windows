@@ -6,7 +6,7 @@ SRS_FIRM_RS644S_CAP_REQ_01 - Message-Word Management
  transmission will wait until the full 4 characters are added to the FIFO.
 
 SRS_FIRM_RS644S_CAP_REQ_02 - Baud-rate
- The range of rates are already supported on our card, but the default rate has
+ The range of data rates is already supported by our card, but the default rate has
  changed to 16 MHz by setting the clock rate to 64 MHz and the sampling rate to
  4.
 
@@ -17,12 +17,12 @@ SRS_FIRM_RS644S_CAP_REQ_03 - Isochronous mode
  IOCTL_THALES_ENABLE_MASTER_MODE - disables isochronous mode
  IOCTL_THALES_ENABLE_SLAVE_MODE - enables our isochronous mode 8
 
- When in slave mode, you will both transmit and receive using the external
+ When in slave mode, you will transmit and receive using the external
  clock supplied to the RI pin.
  
  If you apply an external clock to the card before turning on slave mode
  your system will freeze due to too many serial interrupts on the RI pin. 
- Make sure and apply the clock after you are the isochronous mode (so the 
+ Make sure to apply the clock after you are already in slave mode (so the 
  interrupts are disabled).
 
 SRS_FIRM_RS644S_CAP_REQ_04 - Message frequency
@@ -43,7 +43,7 @@ SRS_FIRM_RS644S_CAP_REQ_06 - Write/Transmission FIFO
 SRS_FIRM_RS644S_CAP_REQ_07 - Synchronized transmission
  This is now configured using the EXT{H} registers, IOCTL's or C functions.
  It allows you to specify the number of "frames" that will be transmitted when
- there is a toggle on the FSR pins. You set this value to 1 if you want one
+ there is a toggle on the FSR pins. Set this value to 1 if you want one
  32-bit frame to be sent when the signal event happens.
  
  IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT
@@ -63,4 +63,3 @@ SRS_FIRM_RS644S_INST_REQ_01 - Windows driver
  https://github.com/commtech/serialfc-windows/tree/thales-mod
  This is a branch of our mainline driver. It contains all of the Thales
  specific code.
-
