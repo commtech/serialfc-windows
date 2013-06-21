@@ -1,0 +1,61 @@
+Thales Mod
+--------------------------------------------------------------------------------
+SRS_FIRM_RS644S_CAP_REQ_01 - Message-Word Management
+ This is now configured using the FLR register for variable length frames. Your 
+ custom driver will be pre-configured to send 32 bit data frames. Each
+ transmission will wait until the full 4 characters are added to the FIFO.
+
+SRS_FIRM_RS644S_CAP_REQ_02 - Baud-rate
+ The range of rates are already supported on our card, but the default rate has
+ changed to 16 MHz by setting the clock rate to 64 MHz and the sampling rate to
+ 4.
+
+SRS_FIRM_RS644S_CAP_REQ_03 - Isochronous mode
+ We have added a wrapper function and IOCTL calls around our typical 
+ isochronous mode.
+
+ IOCTL_THALES_ENABLE_MASTER_MODE - disables isochronous mode
+ IOCTL_THALES_ENABLE_SLAVE_MODE - enables our isochronous mode 8
+
+ When in slave mode, you will both transmit and receive using the external
+ clock supplied to the RI pin.
+
+SRS_FIRM_RS644S_CAP_REQ_04 - Message frequency
+ The firmware is built to send data out sequentially without delay. The only
+ bottle neck will be OS dependent. With your custom RTOS driver the firmware
+ will be able to transmit as quickly as the data is supplied.
+
+SRS_FIRM_RS644S_CAP_REQ_05 - Read/Reception FIFO
+ This value can be read using the RFL register and the 950 interface. An
+ example can be seen in the Windows source code (ThalesGetRFL() in the Windows
+ driver).
+
+SRS_FIRM_RS644S_CAP_REQ_06 - Write/Transmission FIFO
+ This value can be read using the TFL register and the 950 interface. An
+ example can be seen in the Windows source code (ThalesGetTFL() in the Windows
+ driver).
+
+SRS_FIRM_RS644S_CAP_REQ_07 - Synchronized transmission
+ This is now configured using the EXT{H} registers, IOCTL's or C functions.
+ It allows you to specify the number of "frames" that will be transmitted when
+ there is a toggle on the FSR pins. You set this value to 1 if you want one
+ 32-bit frame to be sent when the signal event happens.
+ 
+ IOCTL_FASTCOM_ENABLE_EXTERNAL_TRANSMIT
+ IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT
+
+SRS_FIRM_RS644S_CAP_REQ_08 - Registers
+ The firmware exposes the full 16950 UART register set with some additional
+ registers for extra features. If an additional register is used it will
+ be described in the respective requirements description.
+
+SRS_FIRM_RS644S_INST_REQ_01 - Linux driver
+ https://github.com/commtech/serialfc-linux/tree/thales-mod
+ This is a branch of our mainline driver. It contains all of the Thales
+ specific code.
+
+SRS_FIRM_RS644S_INST_REQ_01 - Windows driver
+ https://github.com/commtech/serialfc-windows/tree/thales-mod
+ This is a branch of our mainline driver. It contains all of the Thales
+ specific code.
+
