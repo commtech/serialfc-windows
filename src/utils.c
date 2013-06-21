@@ -2008,8 +2008,11 @@ enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt)
         return CARD_TYPE_PCIe;
     }
 
-    if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F)
+    if ((pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F) || 
+        (pDevExt->DeviceID >= 0x22 && pDevExt->DeviceID <= 0x26)
+       ) {
         return CARD_TYPE_FSCC;
+    }
 
     return CARD_TYPE_UNKNOWN;
 }
