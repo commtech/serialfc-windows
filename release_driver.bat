@@ -61,6 +61,7 @@ copy tmp\production\amd64\* %TOP%\64\ > nul
 :copy_changelog
 echo Copying Changelog...
 copy ChangeLog.txt %TOP% > nul
+copy thales_mod.txt %TOP% > nul
 
 :zip_packages
 echo Zipping Drivers...
