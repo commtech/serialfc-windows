@@ -295,6 +295,29 @@ Return Value:
 
     }
 
+    status = RtlUnicodeStringPrintf(&valueName,L"FrameLength");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->FrameLengthDefault);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->FrameLengthDefault = SERIAL_FRAME_LENGTH_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->FrameLengthDefault
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
     status = RtlUnicodeStringPrintf(&valueName,L"PermitShare");
     if (!NT_SUCCESS (status)) {
             goto End;
