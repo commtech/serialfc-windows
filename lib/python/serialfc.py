@@ -166,8 +166,6 @@ class Port(serial.Serial):
         """Disables isochronous mode."""
         win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_DISABLE_ISOCHRONOUS, None, 0, None)
 
-        return value[0]
-
     def get_isochronous(self):
         """Gets the value of the isochronous setting."""
         buf_size = struct.calcsize("i")
