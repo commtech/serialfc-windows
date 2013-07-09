@@ -183,13 +183,13 @@ class Port(serial.Serial):
         """Disables external transmit mode."""
         win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_DISABLE_EXTERNAL_TRANSMIT, None, 0, None)
 
-        return value[0]
-
     def get_external_transmit(self):
         """Gets the value of the external transmit setting."""
         buf_size = struct.calcsize("i")
         buf = win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT, None, buf_size, None)
         value = struct.unpack("i", buf)
+
+        return value[0]
 
     def _set_frame_length(self, num_chars):
         """Sets the value of the frame length setting."""
