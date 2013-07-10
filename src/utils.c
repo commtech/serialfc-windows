@@ -2360,6 +2360,15 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
                      "RS485 = %i\n", enable);
 }
 
+void FastcomGetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    UCHAR current_fctr;
+
+    current_fctr = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_FCTR);
+
+    *enabled = (current_fctr & 0x20) ? TRUE : FALSE;
+}
+
 void FastcomGetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
     *enabled = (pDevExt->ACR & 0x10) ? TRUE : FALSE;
@@ -2368,6 +2377,11 @@ void FastcomGetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 NTSTATUS FastcomGetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
     switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        FastcomGetRS485PCI(pDevExt, enabled); // Same process for the PCIe card
+        return STATUS_SUCCESS;
+
     case CARD_TYPE_FSCC:
         FastcomGetRS485FSCC(pDevExt, enabled);
         return STATUS_SUCCESS;
