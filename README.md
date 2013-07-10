@@ -54,8 +54,8 @@ full suite of options available in the Windows [Serial Communication]
 
 Configuring the Fastcom specific features are documented below but we recommend
 studying the Windows 
-[Serial Communciation](http://msdn.microsoft.com/en-us/library/ff802693.aspx) 
-API for as it will contain the information for 99% of your code.
+[Serial Communciation API](http://msdn.microsoft.com/en-us/library/ff802693.aspx) 
+for as it will contain the information for 99% of your code.
 
 ### Setting Baud Rate
 The Fastcom cards have their baud rate configured using the standard Windows
@@ -64,10 +64,7 @@ The Fastcom cards have their baud rate configured using the standard Windows
 but require some tweaks to achieve non-standard baud rates.
 
 To get a non-standard baud rate there are a couple variables you need to setup
-before you can use the Windows 
-[DCB structure]
-(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214.aspx) 
-to specify the baud rate.
+before you can use the DCB structure to specify the baud rate.
 
 First is the variable clock generator frequency and second is the variable
 sampling rate. The formula for determining a baud rate is as follows.
@@ -81,15 +78,32 @@ of the formula allows for an integer divisor it can be ignored.
 
 Here is an example of some values that will work. We would like a baud rate of
 1 Mhz so we find a combination of a clock rate of 16 Mhz and a sampling rate of
-16 that can be divided by an integer to end up with 1 Mhz. Not if we configure
-these two values before using the 
-[DCB structure]
-(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214.aspx) 
-to specify the baud rate we will be able to achieve any supported rate we want.
+16 that can be divided by an integer to end up with 1 Mhz. Now if we configure
+these two values before using the DCB structure to specify the baud rate we will 
+be able to achieve any supported rate we want.
 
 ```
 1,000,000 = 16,000,000 / 16 / 1
 ```
+
+If you are using a card from our 335 product line things get a little trickier
+if you want to use multiple non-standard rates at the same time. This is due
+to the card's clock frequency being a board-wide (not channel by channel) setting.
+
+To simplify calculating a clock frequency in these situations you can use a tool
+that computes the least common multiple of your desired rates.
+
+Here is an [example link](http://www.wolframalpha.com/input/?i=lcm%282000000%2C+9600%29+*+8)
+that computes the least common multiple of 2 MHz and 9600 with a sampling rate
+of 8. This shows that you can use a clock frequency of 48 MHz and come up with
+integer divisors for both of those baud rates.
+
+```
+lcm(2000000, 9600) * 8 = 48000000
+```
+
+
+
 
 All of the Fastcom released features can be configured using the basic Windows
 API or by using one of the included libraries (C, C++, .NET, Python).
