@@ -60,13 +60,13 @@ API for as it will contain the information for 99% of your code.
 ### Setting Baud Rate
 The Fastcom cards have their baud rate configured using the standard Windows
 [DCB structure]
-(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx) 
+(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214.aspx) 
 but require some tweaks to achieve non-standard baud rates.
 
 To get a non-standard baud rate there are a couple variables you need to setup
 before you can use the Windows 
 [DCB structure]
-(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx) 
+(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214.aspx) 
 to specify the baud rate.
 
 First is the variable clock generator frequency and second is the variable
@@ -84,7 +84,7 @@ Here is an example of some values that will work. We would like a baud rate of
 16 that can be divided by an integer to end up with 1 Mhz. Not if we configure
 these two values before using the 
 [DCB structure]
-(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214(v=vs.85).aspx) 
+(http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214.aspx) 
 to specify the baud rate we will be able to achieve any supported rate we want.
 
 ```
