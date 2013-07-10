@@ -2360,10 +2360,23 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
                      "RS485 = %i\n", enable);
 }
 
+void FastcomGetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    *enabled = (pDevExt->ACR & 0x10) ? TRUE : FALSE;
+}
+
 NTSTATUS FastcomGetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
-	// TODO
-    return STATUS_NOT_SUPPORTED;
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_FSCC:
+        FastcomGetRS485FSCC(pDevExt, enabled);
+        return STATUS_SUCCESS;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
+    }
+
+    return STATUS_UNSUCCESSFUL;
 }
 
 void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt) 
