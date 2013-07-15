@@ -2109,6 +2109,19 @@ Return Value:
             reqContext->Information = sizeof(int);
             break;
         }
+        case IOCTL_FASTCOM_GET_CARD_TYPE: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            *((unsigned *)buffer) = FastcomGetCardType(Extension);
+
+            reqContext->Information = sizeof(int);
+            break;
+        }
         default: {
 
             Status = STATUS_INVALID_PARAMETER;

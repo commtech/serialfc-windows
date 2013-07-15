@@ -43,6 +43,12 @@ IOCTL_FASTCOM_GET_EXTERNAL_TRANSMIT = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x815, METH
 IOCTL_FASTCOM_SET_FRAME_LENGTH = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x816, METHOD_BUFFERED, FILE_ANY_ACCESS)
 IOCTL_FASTCOM_GET_FRAME_LENGTH = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x817, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+IOCTL_FASTCOM_GET_CARD_TYPE = CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x818, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+
+CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYPE_UNKNOWN = range(4)
+
+
 class Port(serial.Serial):
 
     def _set_rs485(self, status):
@@ -205,6 +211,15 @@ class Port(serial.Serial):
         return value[0]
 
     frame_length = property(fset=_set_frame_length, fget=_get_frame_length)
+
+    def _get_card_type(self):
+        buf_size = struct.calcsize("I")
+        buf = win32file.DeviceIoControl(self.hComPort, IOCTL_FASTCOM_GET_CARD_TYPE, None, buf_size, None)
+        value = struct.unpack("I", buf)
+
+        return value[0]
+
+    _card_type = property(fget=_get_card_type)
 
 if __name__ == '__main__':
     p = Port('COM3')
