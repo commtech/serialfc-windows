@@ -2099,10 +2099,10 @@ Return Value:
         case IOCTL_FASTCOM_GET_FRAME_LENGTH: {
 
             Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
-             if( !NT_SUCCESS(Status) ) {
+            if( !NT_SUCCESS(Status) ) {
                 SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
                 break;
-             }
+            }
 
             Status = FastcomGetFrameLength(Extension, buffer);
 
