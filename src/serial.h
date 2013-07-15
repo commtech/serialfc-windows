@@ -1303,6 +1303,8 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
 
     UINT16 DeviceID;
     unsigned SampleRate;
+    unsigned TxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
+    unsigned RxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
     unsigned Channel;
     UINT32 Bar0;
 
