@@ -2151,6 +2151,24 @@ NTSTATUS FastcomSetTxTriggerPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     return STATUS_SUCCESS;
 }
 
+NTSTATUS FastcomSetTxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
+{
+    UCHAR orig_lcr;
+
+    if (value > 127)
+        return STATUS_INVALID_PARAMETER;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, TTL_OFFSET); /* To allow access to TTL */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Set the trigger level to TTL through ICR */
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+
+    return STATUS_SUCCESS;
+}
+
 NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 {
     NTSTATUS status;
@@ -2164,6 +2182,11 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
         status = FastcomSetTxTriggerPCIe(pDevExt, value);
         break;
 
+    case CARD_TYPE_FSCC:
+        status = FastcomSetTxTriggerFSCC(pDevExt, value);
+        break;
+
+
     default:
         status = STATUS_NOT_SUPPORTED;
     }
@@ -2171,16 +2194,44 @@ NTSTATUS FastcomSetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     if (NT_SUCCESS (status)) {
         SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                          "Transmit trigger level = %i\n", value); 
+
+        pDevExt->TxTrigger = value;
     }
 
     return status;
 }
 
+void FastcomGetTxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+{
+    UCHAR orig_lcr;
+    UCHAR ttl;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, TTL_OFFSET); /* To allow access to TTL */
+
+    ttl = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get TTL through ICR */
+
+    *value = ttl & 0x7F;
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+}
+
 NTSTATUS FastcomGetTxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        *value = pDevExt->TxTrigger; // The register is write-only so we have to use this variable
+        break;
+
     case CARD_TYPE_FSCC:
-        *value = 1;
+        FastcomGetTxTriggerFSCC(pDevExt, value);
         break;
 
     default:
@@ -2214,7 +2265,7 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
 {
     UCHAR orig_lcr;
 
-    if (value < 1 || value > 127)
+    if (value > 127)
         return STATUS_INVALID_PARAMETER;
 
     orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
@@ -2226,6 +2277,27 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
     return STATUS_SUCCESS;
+}
+
+void FastcomGetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
+{
+    UCHAR orig_lcr;
+    UCHAR rtl;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, RTL_OFFSET); /* To allow access to RTL */
+
+    rtl = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get RTL through ICR */
+
+    *value = rtl & 0x7F;
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 }
 
 NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
@@ -2252,6 +2324,8 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     if (NT_SUCCESS (status)) {
         SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                          "Receive trigger level = %i\n", value); 
+
+        pDevExt->RxTrigger = value;
     }
 
     return status;
@@ -2260,8 +2334,13 @@ NTSTATUS FastcomSetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
 NTSTATUS FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
 {
     switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe:
+        *value = pDevExt->RxTrigger; // The register is write-only so we have to use this variable
+        break;
+
     case CARD_TYPE_FSCC:
-        // TODO
+        FastcomGetRxTriggerFSCC(pDevExt, value);
         break;
 
     default:

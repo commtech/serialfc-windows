@@ -405,9 +405,9 @@ int serialfc_get_sample_rate(HANDLE h, unsigned *rate)
     if the operation failed (see MSDN 'System Error Codes')
 	
   \note
-    This is only supported on the Async-335 and Async-PCIe cards. Each also
-	has it's own supported range.
+    Each family of cards has it's own supported range.
 	
+    - FSCC Family: 0 - 127
     - Async-335 Family (17D15X): 0 - 64
     - Async-PCIe Family (17V35X): 0 - 255
 
@@ -440,9 +440,6 @@ int serialfc_set_tx_trigger(HANDLE h, unsigned level)
     if the operation completed successfully
   \return >= 1 
     if the operation failed (see MSDN 'System Error Codes')
-	
-  \note
-    This is only supported on the FSCC cards.
 
 */
 /******************************************************************************/
@@ -477,7 +474,7 @@ int serialfc_get_tx_trigger(HANDLE h, unsigned *level)
   \note
     Each card has it's own supported range.
 	
-    - FSCC Family (16c950): 1 - 127
+    - FSCC Family (16c950): 0 - 127
     - Async-335 Family (17D15X): 0 - 64
     - Async-PCIe Family (17V35X): 0 - 255
 
