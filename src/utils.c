@@ -2400,20 +2400,27 @@ void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 void FastcomSetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
     UCHAR orig_lcr;
+    UINT32 current_fcr, new_fcr;
 
     orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+    current_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
 
     WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
 
-    if (enable)
-        pDevExt->ACR |= 0x10;
-    else
+    if (enable) {
+        pDevExt->ACR |= 0x10; /* DTR is active during transmission to turn on drivers */
+        new_fcr = current_fcr | (0x00040000 << pDevExt->Channel);
+    }
+    else {
         pDevExt->ACR &= ~0x10;
+        new_fcr = current_fcr & ~(0x00040000 << pDevExt->Channel);
+    }
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Enable 950 trigger to ACR through ICR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR);
+    WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
 
-   WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 }
 
 void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2450,7 +2457,14 @@ void FastcomGetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 
 void FastcomGetRS485FSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
-    *enabled = (pDevExt->ACR & 0x10) ? TRUE : FALSE;
+    UINT32 current_fcr;
+    BOOLEAN dtr_enable_active, transmitter_485_active;
+
+    current_fcr = READ_PORT_ULONG(ULongToPtr(pDevExt->Bar2));
+    dtr_enable_active = (pDevExt->ACR & 0x10) ? TRUE : FALSE; /* DTR is active during transmission to turn on drivers */
+    transmitter_485_active = (current_fcr & (0x00040000 << pDevExt->Channel)) ? TRUE : FALSE;
+
+    *enabled = (dtr_enable_active && transmitter_485_active) ? TRUE : FALSE;
 }
 
 NTSTATUS FastcomGetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
