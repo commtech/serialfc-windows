@@ -2811,6 +2811,16 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
                      "Echo cancel = %i\n", enable);
 }
 
+void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    FastcomSetEchoCancel(pDevExt, TRUE);
+}
+
+void FastcomDisableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
+{
+    FastcomSetEchoCancel(pDevExt, FALSE);
+}
+
 void FastcomGetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
     UCHAR mpio_lvl;
@@ -2847,6 +2857,26 @@ void FastcomGetEchoCancelFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled
 	}
 
 	*enabled = (fcr & bit_mask) ? TRUE : FALSE;
+}
+
+void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        FastcomGetEchoCancelPCI(pDevExt, enabled);
+        break;
+
+    case CARD_TYPE_PCIe:
+        FastcomGetEchoCancelPCIe(pDevExt, enabled);
+        break;
+
+    case CARD_TYPE_FSCC:
+        FastcomGetEchoCancelFSCC(pDevExt, enabled);
+        break;
+
+    default:
+        break; //TODO
+    }
 }
 
 struct ResultStruct {
@@ -4152,36 +4182,6 @@ NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     }
 
     return status;
-}
-
-void FastcomGetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
-{
-    switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_PCI:
-        FastcomGetEchoCancelPCI(pDevExt, enabled);
-        break;
-
-    case CARD_TYPE_PCIe:
-        FastcomGetEchoCancelPCIe(pDevExt, enabled);
-        break;
-
-    case CARD_TYPE_FSCC:
-        FastcomGetEchoCancelFSCC(pDevExt, enabled);
-        break;
-
-    default:
-        break; //TODO
-    }
-}
-
-void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
-{
-    FastcomSetEchoCancel(pDevExt, TRUE);
-}
-
-void FastcomDisableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
-{
-    FastcomSetEchoCancel(pDevExt, FALSE);
 }
 
 NTSTATUS FastcomSetExternalTransmitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_frames)
