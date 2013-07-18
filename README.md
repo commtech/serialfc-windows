@@ -560,13 +560,20 @@ port.disable_isochrnous()
 mode = port.get_isochronous()
 ```
 
-### How to change boot defaults
-To change the boot default settings you will need to modify the various registry 
-keys in the following section.
+### How to change the default boot settings?
+There are two locations in the registry where settings can be stored. The first location is
+where you will assign the default settings computer wide.
 
-HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\Serial\Parameters
+`HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\Serial\Parameters`
 
-In addition to the keys listed, you can also set the default clock frequency by 
-adding a [ClockRate] DWORD to the [Parameters] section and set it to your desired rate.
-For example, 20 MHz would be 20000000.
+You will see many different options available in this section that can be changed.
+
+If you would like to change settings on a port-by-port basis you can do so by adding one of the
+parameters from the section above to the following key.
+
+`HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\MF\<DEVICE>\<PORT>\Device Parameters`
+
+In addition to the parameters above, you can also set the default clock frequency in the device
+specific key by adding a `ClockRate` DWORD. For example, if you want a specific port to default to
+20 MHz you would set the value to `20000000`.
 
