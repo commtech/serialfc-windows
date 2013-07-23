@@ -1,3 +1,13 @@
+version 2.1.6 (7/23/2013)
+--------------------------------------------------------------------------------
+    * Fixed a bug that prevented original FSCC devices (0x0f) from being 
+      detected correctly.
+    * Fixed a bug where RS485 wasn't being fully setup on FSCC devices.
+    * Added remaining get/set functions for the trigger levels.
+    * Added support for getting the RS485 value.
+    * Fixed Python bugs where disable_external_transmit and 
+      disable_isocchronous were failing.
+
 version 2.1.5 (6/21/2013)
 --------------------------------------------------------------------------------
     * Added support for configuring frame length (variable data length between
