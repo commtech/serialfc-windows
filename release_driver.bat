@@ -27,7 +27,7 @@ doxygen > nul
 
 :create_directories
 echo Creating Directories...
-for %%A in (32, 64, lib) do mkdir %TOP%\%%A\
+for %%A in (32, 64, lib, terminal, gui) do mkdir %TOP%\%%A\
 for %%A in (c, c++, net, python) do mkdir %TOP%\lib\%%A\
 
 :copy_dll_files
@@ -53,6 +53,14 @@ copy lib\python\serialfc.py %TOP%\lib\python\ > nul
 echo Copying Driver Files...
 copy tmp\production\i386\* %TOP%\32\ > nul
 copy tmp\production\amd64\* %TOP%\64\ > nul
+
+:copy_terminal_files
+echo Copying Terminal Files...
+xcopy redist\production\terminal\* %TOP%\terminal\ /e /i > nul
+
+:copy_gui_files
+echo Copying GUI Files...
+xcopy redist\production\gui\* %TOP%\gui\ /e /i > nul
 
 :copy_setup_files
 :echo Copying Setup Files...
