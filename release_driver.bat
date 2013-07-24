@@ -62,10 +62,6 @@ xcopy redist\production\terminal\* %TOP%\terminal\ /e /i > nul
 echo Copying GUI Files...
 xcopy redist\production\gui\* %TOP%\gui\ /e /i > nul
 
-:copy_setup_files
-:echo Copying Setup Files...
-:copy redist\production\i386\dpinst.exe %TOP%\32\setup.exe > nul
-:copy redist\production\amd64\dpinst.exe %TOP%\64\setup.exe > nul
 :copy_changelog
 echo Copying Changelog...
 copy ChangeLog.txt %TOP% > nul
