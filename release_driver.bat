@@ -1,6 +1,7 @@
 set NAME=serialfc
 set TOP=bin\%NAME%
 set QSERIALFC=..\qserialfc\build\exe.win32-3.3
+set PYSERIALFC=..\pyserialfc\dist
 
 echo off
 
@@ -48,12 +49,15 @@ copy lib\net\netserialfc*.dll %TOP%\lib\net\ > nul
 copy lib\c\cserialfc*.dll %TOP%\lib\net\ > nul
 copy lib\net\src\*.cs %TOP%\lib\net\ > nul
 copy lib\net\makefile %TOP%\lib\net\ > nul
-copy lib\python\serialfc.py %TOP%\lib\python\ > nul
 
 :copy_sys_files
 echo Copying Driver Files...
 copy tmp\production\i386\* %TOP%\32\ > nul
 copy tmp\production\amd64\* %TOP%\64\ > nul
+
+:copy_python_files
+echo Copying Python Files...
+copy %PYSERIALFC%\pyserialfc*.exe* %TOP%\lib\python\ > nul
 
 :copy_terminal_files
 echo Copying Terminal Files...
