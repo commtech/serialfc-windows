@@ -24,3 +24,4 @@ lib/c/docs
 __pycache__
 *.pnps
 *.pnproj
+redist/
