@@ -1,6 +1,6 @@
 set NAME=serialfc
 set TOP=bin\%NAME%
-set GUI=..\qserialfc\build\exe.win32-3.3
+set QSERIALFC=..\qserialfc\build\exe.win32-3.3
 
 echo off
 
@@ -61,7 +61,7 @@ xcopy redist\production\terminal\* %TOP%\terminal\ /e /i > nul
 
 :copy_gui_files
 echo Copying GUI Files...
-xcopy %GUI%\* %TOP%\gui\ /e /i > nul
+xcopy %QSERIALFC%\* %TOP%\gui\ /e /i > nul
 
 :copy_changelog
 echo Copying Changelog...
