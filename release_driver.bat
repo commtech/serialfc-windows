@@ -24,9 +24,6 @@ echo Building Libraries...
 start /I /WAIT build_libs.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-:build_docs
-doxygen > nul
-
 :create_directories
 echo Creating Directories...
 for %%A in (32, 64, lib, terminal, gui) do mkdir %TOP%\%%A\
