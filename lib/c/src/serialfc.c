@@ -851,6 +851,101 @@ int serialfc_get_frame_length(HANDLE h, unsigned *num_chars)
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
+
+/******************************************************************************/
+/*!
+
+  \brief Puts the port into 9-bit protocol mode
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_enable_9bit(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_9BIT, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Takes the port out of 9-bit protocol
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_disable_9bit(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_DISABLE_9BIT, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Gets whether the port is in 9-bit protocol mode
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] status 
+    whether the port is in rs485 mode
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_get_9bit(HANDLE h, BOOL *status)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_9BIT, 
+                           NULL, 0, 
+                           status, sizeof(*status), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
  
 /******************************************************************************/
 /*!

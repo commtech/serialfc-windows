@@ -310,6 +310,34 @@ unsigned Port::GetFrameLength(void) throw(SystemException)
 	return num_chars;
 }
 
+void Port::Enable9Bit(void) throw(SystemException)
+{
+	int e = serialfc_enable_9bit(_h);
+
+	if (e)
+		throw SystemException(e);
+}
+
+void Port::Disable9Bit(void) throw(SystemException)
+{
+	int e = serialfc_disable_9bit(_h);
+
+	if (e)
+		throw SystemException(e);
+}
+
+bool Port::Get9Bit(void) throw(SystemException)
+{
+	BOOL status;
+
+	int e = serialfc_get_9bit(_h, &status);
+
+	if (e)
+		throw SystemException(e);
+
+	return status != 0;
+}
+
 unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
 {
     unsigned bytes_written;
