@@ -2122,6 +2122,29 @@ Return Value:
             reqContext->Information = sizeof(int);
             break;
         }
+        case IOCTL_FASTCOM_ENABLE_9BIT: {
+
+            FastcomEnable9Bit(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_9BIT: {
+
+            FastcomDisable9Bit(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_GET_9BIT: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(BOOLEAN), &buffer, &bufSize);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            Status = FastcomGet9Bit(Extension, (BOOLEAN *)buffer);
+
+            reqContext->Information = sizeof(BOOLEAN);
+            break;
+        }
         default: {
 
             Status = STATUS_INVALID_PARAMETER;

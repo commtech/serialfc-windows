@@ -641,6 +641,11 @@ NTSTATUS FastcomGetExternalTransmit(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *
 NTSTATUS FastcomSetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_chars);
 NTSTATUS FastcomGetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_chars);
 
+NTSTATUS FastcomSet9Bit(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable);
+NTSTATUS FastcomEnable9Bit(SERIAL_DEVICE_EXTENSION *pDevExt);
+NTSTATUS FastcomDisable9Bit(SERIAL_DEVICE_EXTENSION *pDevExt);
+NTSTATUS FastcomGet9Bit(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled);
+
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status);
 NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);

@@ -29,6 +29,7 @@ iver
 #define SERIAL_ECHO_CANCEL_DEFAULT      0
 #define SERIAL_ISOCHRONOUS_DEFAULT      -1
 #define SERIAL_FRAME_LENGTH_DEFAULT     1
+#define SERIAL_9BIT_DEFAULT             0
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
 
@@ -457,6 +458,7 @@ typedef struct _CONFIG_DATA {
     ULONG               EchoCancel;
     ULONG               Isochronous;
     ULONG               FrameLength;
+    ULONG               NineBit;
     ULONG               PermitShare;
     ULONG               PermitSystemWideShare;
     ULONG               LogFifo;
@@ -486,6 +488,7 @@ typedef struct _SERIAL_FIRMWARE_DATA {
     ULONG           EchoCancelDefault;
     ULONG           IsochronousDefault;
     ULONG           FrameLengthDefault;
+    ULONG           NineBitDefault;
     ULONG           PermitShareDefault;
     ULONG           PermitSystemWideShare;
     ULONG           LogFifoDefault;
@@ -1305,6 +1308,7 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
     unsigned SampleRate;
     unsigned TxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
     unsigned RxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
+    unsigned NineBit; /* 9-bit mode can be retrieved on the FSCC but we store the info to avoid register calls */
     unsigned Channel;
     UINT32 Bar0;
 
@@ -1851,6 +1855,7 @@ enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYP
 /* Normal registers */
 #define FCR_OFFSET 0x2
 #define LCR_OFFSET 0x3
+#define LSR_OFFSET 0x5
 #define SPR_OFFSET 0x7
 
 /* Extended 650 registers when LCR = 0xbf */
@@ -1865,6 +1870,7 @@ enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYP
 #define TCR_OFFSET 0x02
 #define CKS_OFFSET 0x03
 #define RTL_OFFSET 0x05
+#define NMR_OFFSET 0x0d
 #define MDM_OFFSET 0x0e
 #define EXT_OFFSET 0x16
 #define EXTH_OFFSET 0x17

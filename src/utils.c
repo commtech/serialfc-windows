@@ -4359,6 +4359,96 @@ NTSTATUS FastcomGetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *num_c
     return STATUS_SUCCESS;
 }
 
+void FastcomSet9BitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    UCHAR orig_lcr;
+    UCHAR new_nmr;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, NMR_OFFSET); /* To allow access to NMR */
+
+    if (enable)
+        new_nmr = 0x01;
+    else
+        new_nmr = 0x00;
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, new_nmr);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+}
+
+NTSTATUS FastcomSet9Bit(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
+{
+    NTSTATUS status = STATUS_UNSUCCESSFUL;
+
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_FSCC:
+        FastcomSet9BitFSCC(pDevExt, enable);
+        status = STATUS_SUCCESS;
+        break;
+
+    default:
+        status = STATUS_NOT_SUPPORTED;
+        pDevExt->NineBit = FALSE;
+    }
+
+    if (NT_SUCCESS (status)) {
+        SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
+                         "9-Bit = %i\n", enable);
+
+        pDevExt->NineBit = enable;
+    }
+
+    return status;
+}
+
+void FastcomGet9BitFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    UCHAR orig_lcr;
+    UCHAR nmr;
+
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x40); /* Enable ICR read enable */
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, NMR_OFFSET); /* To allow access to FLR */
+    nmr = pDevExt->SerialReadUChar(pDevExt->Controller + ICR_OFFSET); /* Get NMR through ICR */
+
+    *enabled = nmr & 0x01;
+
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
+}
+
+NTSTATUS FastcomGet9Bit(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
+{
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_FSCC:
+        FastcomGet9BitFSCC(pDevExt, enabled);
+        return STATUS_SUCCESS;
+
+    default:
+        return STATUS_NOT_SUPPORTED;
+    }
+
+    return STATUS_UNSUCCESSFUL;
+}
+
+NTSTATUS FastcomEnable9Bit(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    return FastcomSet9Bit(pDevExt, TRUE);
+}
+
+NTSTATUS FastcomDisable9Bit(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    return FastcomSet9Bit(pDevExt, FALSE);
+}
+
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status)
 {
     UINT32 orig_fcr;
