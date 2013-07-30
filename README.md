@@ -59,6 +59,7 @@ for as it will contain the information for 99% of your code.
 
 ### Setting Baud Rate
 ##### Max Supported Speeds
+- FSCC Family (16c950): 15 MHz
 - Async-335 Family (17D15X): 6.25 MHz
 - Async-PCIe Family (17V35X): 25 MHz
 
