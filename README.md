@@ -58,6 +58,12 @@ studying the Windows
 for as it will contain the information for 99% of your code.
 
 ### Setting Baud Rate
+##### Max Supported Speeds
+- FSCC Family (16c950): 15 MHz
+- Async-335 Family (17D15X): 6.25 MHz
+- Async-PCIe Family (17V35X): 25 MHz
+
+
 The Fastcom cards have their baud rate configured using the standard Windows
 [DCB structure]
 (http://msdn.microsoft.com/en-us/library/windows/desktop/aa363214.aspx) 
@@ -259,7 +265,7 @@ DeviceIoControl(h, IOCTL_FASTCOM_GET_RS485,
 BOOL status;
 
 serialfc_enable_rs485(h);
-serialfc_disable_sample_rate(h);
+serialfc_disable_rs485(h);
 
 serialfc_get_rs485(h, &status);
 ```
@@ -559,6 +565,79 @@ port.disable_isochrnous()
 
 mode = port.get_isochronous()
 ```
+
+
+### 9-Bit Protocol
+Enabling 9-Bit protocol has a couple of effects.
+
+- Transmitting with 9-bit protocol enabled automatically sets the 1st byte's 9th bit to MARK, 
+  and all remaining bytes's 9th bits to SPACE.
+- Receiving with 9-bit protocol enabled will return two bytes per each 9-bits of data. 
+  The second of each byte-duo contains the 9th bit.
+
+###### Windows API
+```c
+#include <serialfc.h>
+...
+
+BOOL status;
+
+DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_9BIT, 
+                NULL, 0, 
+                NULL, 0, 
+                &temp, NULL);
+
+DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_9BIT, 
+                NULL, 0, 
+                NULL, 0, 
+                &temp, NULL);
+				
+DeviceIoControl(h, IOCTL_FASTCOM_GET_9BIT, 
+                NULL, 0, 
+                &status, sizeof(status), 
+                &temp, NULL);
+```
+
+###### C Library
+```c
+#include <serialfc.h>
+...
+
+BOOL status;
+
+serialfc_enable_9bit(h);
+serialfc_disable_9bit(h);
+
+serialfc_get_9bit(h, &status);
+```
+
+###### C++ Library
+```cpp
+#include <serialfc.hpp>
+...
+
+port.Enable9Bit();
+port.Disable9Bit();
+
+bool status = port.Get9Bit();
+```
+
+###### .NET Library
+```csharp
+using SerialFC;
+...
+
+port.NineBit = true;
+```
+
+###### Python Library
+```python
+import serialfc
+...
+
+port.nine_bit = True
+```
+
 
 ### How to change the default boot settings?
 There are two locations in the registry where settings can be stored. The first location is
