@@ -4135,6 +4135,7 @@ NTSTATUS PCIeSetBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     UCHAR dlm = 0;
     UCHAR dll = 0;
     UCHAR dld = 0;
+    UCHAR tmp = 0;
 
     orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
 
@@ -4143,11 +4144,11 @@ NTSTATUS PCIeSetBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value)
     divisor = (float)input_freq / prescaler / (value * pDevExt->SampleRate);
 
     dlm = (int)floor(divisor) >> 8;
-    dll = (int)floor(divisor) % 0xff;
+    dll = (int)floor(divisor) & 0xff;
 
     dld = pDevExt->SerialReadUChar(pDevExt->Controller + DLD_OFFSET);
     dld &= 0xf0;
-    dld |= (int)floor(((divisor - floor(divisor)) * pDevExt->SampleRate) + 0.5);
+    dld |= (int)floor(((divisor - floor(divisor)) * 16) + 0.5);
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + DLM_OFFSET, dlm);  
     pDevExt->SerialWriteUChar(pDevExt->Controller + DLL_OFFSET, dll);  
