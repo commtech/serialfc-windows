@@ -2099,19 +2099,55 @@ Return Value:
         case IOCTL_FASTCOM_GET_FRAME_LENGTH: {
 
             Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
-             if( !NT_SUCCESS(Status) ) {
+            if( !NT_SUCCESS(Status) ) {
                 SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
                 break;
-             }
+            }
 
             Status = FastcomGetFrameLength(Extension, buffer);
 
             reqContext->Information = sizeof(int);
             break;
         }
+        case IOCTL_FASTCOM_GET_CARD_TYPE: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            *((unsigned *)buffer) = FastcomGetCardType(Extension);
+
+            reqContext->Information = sizeof(int);
+            break;
+        }
+        case IOCTL_FASTCOM_ENABLE_9BIT: {
+
+            FastcomEnable9Bit(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_9BIT: {
+
+            FastcomDisable9Bit(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_GET_9BIT: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(BOOLEAN), &buffer, &bufSize);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            Status = FastcomGet9Bit(Extension, (BOOLEAN *)buffer);
+
+            reqContext->Information = sizeof(BOOLEAN);
+            break;
+        }
         case IOCTL_THALES_ENABLE_MASTER_MODE: {
 
-            Status = FastcomDisableIsochronous(Extension);
+            Status = FastcomEnableIsochronous(Extension, 9);
             break;
         }
         case IOCTL_THALES_ENABLE_SLAVE_MODE: {

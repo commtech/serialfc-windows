@@ -278,8 +278,14 @@ Return Value:
                     // It may also reveal a new interrupt cause.
                     //
                     UCHAR ReceivedChar;
+                    UCHAR NinthBit;
 
                     do {
+                        BOOLEAN NinthBit;
+                        if (Extension->NineBit) {
+                            UCHAR lsr = Extension->SerialReadUChar(Extension->Controller + LSR_OFFSET);
+                            NinthBit = (lsr & 0x04) >> 2; // LSR[2] = 9th bit
+                        }
 
                         ReceivedChar =
                             READ_RECEIVE_BUFFER(Extension, Extension->Controller);
@@ -400,6 +406,13 @@ Return Value:
                             Extension,
                             ReceivedChar
                             );
+
+                        if (Extension->NineBit) {
+                            SerialPutChar(
+                                Extension,
+                                NinthBit
+                            );
+                        }
 
                         //
                         // If we're doing line status and modem
@@ -756,11 +769,18 @@ doTrasmitStuff:;
                                     )?Extension->CountOfTryingToLowerRTS++:0;
 
                             } else {
+                                UCHAR spr;
 
                                 if (amountToWrite == 1) {
 
                                     Extension->PerfStats.TransmittedCount++;
                                     Extension->WmiPerfData.TransmittedCount++;
+
+                                    if (Extension->NineBit) {
+                                        /* 9-bit usually uses multiple bytes so the first can be an address, this is here just in case */
+                                        Extension->SerialWriteUChar(Extension->Controller + SPR_OFFSET, 0x01);
+                                    }
+
                                     WRITE_TRANSMIT_HOLDING(Extension,
                                         Extension->Controller,
                                         *(Extension->WriteCurrentChar));
@@ -785,6 +805,11 @@ doTrasmitStuff:;
 									*/
 
                                     for (i = 0; i < amountToWrite; i++) {
+                                        if (Extension->NineBit) {
+                                            spr = (i == 0) ? 0x01 : 0x00; /* Set the 9th bit to 1 on the first byte, 0 on the remaining */
+                                            Extension->SerialWriteUChar(Extension->Controller + SPR_OFFSET, spr);
+                                        }
+
                                         WRITE_TRANSMIT_HOLDING(Extension,
                                             Extension->Controller,
                                             *(Extension->WriteCurrentChar+i));

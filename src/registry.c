@@ -318,6 +318,29 @@ Return Value:
 
     }
 
+    status = RtlUnicodeStringPrintf(&valueName,L"9Bit");
+    if (!NT_SUCCESS (status)) {
+            goto End;
+    }
+
+    status = WdfRegistryQueryULong (hKey,
+              &valueName,
+              &DriverDefaultsPtr->NineBitDefault);
+
+    if (!NT_SUCCESS (status)) {
+
+        DriverDefaultsPtr->NineBitDefault = SERIAL_9BIT_DEFAULT;
+
+        status = WdfRegistryAssignULong(hKey,
+                            &valueName,
+                            DriverDefaultsPtr->NineBitDefault
+                            );
+        if (!NT_SUCCESS (status)) {
+            goto End;
+        }
+
+    }
+
     status = RtlUnicodeStringPrintf(&valueName,L"PermitShare");
     if (!NT_SUCCESS (status)) {
             goto End;

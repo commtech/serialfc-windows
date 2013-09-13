@@ -336,5 +336,42 @@ namespace SerialFC
                 return num_chars;
             }
         }
+        
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_enable_9bit(SafeFileHandle h);
+        
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_disable_9bit(SafeFileHandle h);
+
+        [DllImport(DLL_PATH, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int serialfc_get_9bit(SafeFileHandle h, out bool status);
+
+        public bool NineBit
+        {
+            set
+            {
+                int e = 0;
+
+                if (value == true)
+                    e = serialfc_enable_9bit(this.Handle);
+                else
+                    e = serialfc_disable_9bit(this.Handle);
+
+                if (e >= 1)
+                    throw new Exception(e.ToString());
+            }
+
+            get
+            {
+                bool status;
+
+                int e = serialfc_get_9bit(this.Handle, out status);
+
+                if (e >= 1)
+                    throw new Exception(e.ToString());
+
+                return status;
+            }
+        }
     }
 }

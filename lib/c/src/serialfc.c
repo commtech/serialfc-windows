@@ -405,9 +405,9 @@ int serialfc_get_sample_rate(HANDLE h, unsigned *rate)
     if the operation failed (see MSDN 'System Error Codes')
 	
   \note
-    This is only supported on the Async-335 and Async-PCIe cards. Each also
-	has it's own supported range.
+    Each family of cards has it's own supported range.
 	
+    - FSCC Family: 0 - 127
     - Async-335 Family (17D15X): 0 - 64
     - Async-PCIe Family (17V35X): 0 - 255
 
@@ -440,9 +440,6 @@ int serialfc_set_tx_trigger(HANDLE h, unsigned level)
     if the operation completed successfully
   \return >= 1 
     if the operation failed (see MSDN 'System Error Codes')
-	
-  \note
-    This is only supported on the FSCC cards.
 
 */
 /******************************************************************************/
@@ -477,7 +474,7 @@ int serialfc_get_tx_trigger(HANDLE h, unsigned *level)
   \note
     Each card has it's own supported range.
 	
-    - FSCC Family (16c950): 1 - 127
+    - FSCC Family (16c950): 0 - 127
     - Async-335 Family (17D15X): 0 - 64
     - Async-PCIe Family (17V35X): 0 - 255
 
@@ -850,6 +847,101 @@ int serialfc_get_frame_length(HANDLE h, unsigned *num_chars)
   result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_FRAME_LENGTH, 
                            NULL, 0, 
                            num_chars, sizeof(*num_chars), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Puts the port into 9-bit protocol mode
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_enable_9bit(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_9BIT, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Takes the port out of 9-bit protocol
+
+  \param[in] h 
+    HANDLE to the port
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_disable_9bit(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_DISABLE_9BIT, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+/******************************************************************************/
+/*!
+
+  \brief Gets whether the port is in 9-bit protocol mode
+
+  \param[in] h 
+    HANDLE to the port
+  \param[out] status 
+    whether the port is in rs485 mode
+      
+  \return 0 
+    if the operation completed successfully
+  \return >= 1 
+    if the operation failed (see MSDN 'System Error Codes')
+  
+  \note
+    This is only supported on the FSCC cards.
+
+*/
+/******************************************************************************/
+int serialfc_get_9bit(HANDLE h, BOOL *status)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_9BIT, 
+                           NULL, 0, 
+                           status, sizeof(*status), 
                            &temp, (LPOVERLAPPED)NULL);
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();

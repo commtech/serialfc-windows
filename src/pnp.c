@@ -805,6 +805,12 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
+                                   L"9Bit",
+                                   &pConfig->NineBit)){
+        pConfig->NineBit = driverDefaults.NineBitDefault;
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
                                    L"Share System Interrupt",
                                    &pConfig->PermitShare)){
         pConfig->PermitShare = driverDefaults.PermitShareDefault;
@@ -1353,6 +1359,7 @@ Return Value:
     FastcomSetEchoCancel(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
     FastcomSetIsochronous(pDevExt, PConfigData->Isochronous);
     FastcomSetFrameLength(pDevExt, PConfigData->FrameLength);
+    FastcomSet9Bit(pDevExt, (BOOLEAN)PConfigData->NineBit);
 
 
     //

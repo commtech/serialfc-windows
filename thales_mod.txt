@@ -22,12 +22,15 @@ SRS_FIRM_RS644S_CAP_REQ_03 - Isochronous mode
  (lib\serialfc\c\serialfc.c)
 
  When in slave mode, you will transmit and receive using the external
- clock supplied to the RI pin.
+ clock supplied to the RI pin. The transmit clock will be outputted on the DTR 
+ pin.
  
  If you apply an external clock to the card before turning on slave mode
  your system will freeze due to too many serial interrupts on the RI pin. 
  Make sure to apply the clock after you are already in slave mode (so the 
  interrupts are disabled).
+ 
+ When in master mode the clock frequency will be outputted on the DTR pin.
 
 SRS_FIRM_RS644S_CAP_REQ_04 - Message frequency
  The firmware is built to send data out sequentially without delay. The only

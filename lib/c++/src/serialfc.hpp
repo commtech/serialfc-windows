@@ -44,6 +44,9 @@ namespace SerialFC {
 		unsigned GetExternalTransmit(void) throw(SystemException);
 		void SetFrameLength(unsigned num_chars) throw(SystemException);
 		unsigned GetFrameLength(void) throw(SystemException);
+		void Enable9Bit(void) throw(SystemException);
+		void Disable9Bit(void) throw(SystemException);
+		bool Get9Bit(void) throw(SystemException);
 
 		unsigned Write(const char *buf, unsigned size, OVERLAPPED *o) throw(SystemException);
 		unsigned Write(const char *buf, unsigned size) throw(SystemException);

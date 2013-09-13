@@ -46,6 +46,10 @@ extern "C"
 #define IOCTL_FASTCOM_SET_FRAME_LENGTH CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x816, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_FASTCOM_GET_FRAME_LENGTH CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x817, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+#define IOCTL_FASTCOM_ENABLE_9BIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x819, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_FASTCOM_DISABLE_9BIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81A, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_FASTCOM_GET_9BIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81B, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 #define IOCTL_THALES_ENABLE_MASTER_MODE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x900, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_THALES_ENABLE_SLAVE_MODE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x901, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
@@ -75,6 +79,9 @@ __declspec(dllexport) int serialfc_disable_external_transmit(HANDLE h);
 __declspec(dllexport) int serialfc_get_external_transmit(HANDLE h, unsigned *num_frames);
 __declspec(dllexport) int serialfc_set_frame_length(HANDLE h, unsigned num_chars);
 __declspec(dllexport) int serialfc_get_frame_length(HANDLE h, unsigned *num_chars);
+__declspec(dllexport) int serialfc_enable_9bit(HANDLE h);
+__declspec(dllexport) int serialfc_disable_9bit(HANDLE h);
+__declspec(dllexport) int serialfc_get_9bit(HANDLE h, BOOL *status);
 __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);

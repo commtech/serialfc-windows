@@ -1,5 +1,7 @@
 set NAME=serialfc
 set TOP=bin\%NAME%
+set QSERIALFC=..\qserialfc\build\exe.win32-3.3
+set PYSERIALFC=..\pyserialfc\dist
 
 echo off
 
@@ -22,12 +24,9 @@ echo Building Libraries...
 start /I /WAIT build_libs.bat
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-:build_docs
-doxygen > nul
-
 :create_directories
 echo Creating Directories...
-for %%A in (32, 64, lib) do mkdir %TOP%\%%A\
+for %%A in (32, 64, lib, terminal, gui) do mkdir %TOP%\%%A\
 for %%A in (c, c++, net, python) do mkdir %TOP%\lib\%%A\
 
 :copy_dll_files
@@ -47,17 +46,24 @@ copy lib\net\netserialfc*.dll %TOP%\lib\net\ > nul
 copy lib\c\cserialfc*.dll %TOP%\lib\net\ > nul
 copy lib\net\src\*.cs %TOP%\lib\net\ > nul
 copy lib\net\makefile %TOP%\lib\net\ > nul
-copy lib\python\serialfc.py %TOP%\lib\python\ > nul
 
 :copy_sys_files
 echo Copying Driver Files...
 copy tmp\production\i386\* %TOP%\32\ > nul
 copy tmp\production\amd64\* %TOP%\64\ > nul
 
-:copy_setup_files
-:echo Copying Setup Files...
-:copy redist\production\i386\dpinst.exe %TOP%\32\setup.exe > nul
-:copy redist\production\amd64\dpinst.exe %TOP%\64\setup.exe > nul
+:copy_python_files
+echo Copying Python Files...
+copy %PYSERIALFC%\pyserialfc*.exe* %TOP%\lib\python\ > nul
+
+:copy_terminal_files
+echo Copying Terminal Files...
+xcopy redist\production\terminal\* %TOP%\terminal\ /e /i > nul
+
+:copy_gui_files
+echo Copying GUI Files...
+xcopy %QSERIALFC%\* %TOP%\gui\ /e /i > nul
+
 :copy_changelog
 echo Copying Changelog...
 copy ChangeLog.txt %TOP% > nul
