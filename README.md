@@ -119,7 +119,7 @@ API or by using one of the included libraries (C, C++, .NET, Python).
 
 ##### Operating Ranges
 - FSCC Family (16c950): 200 Hz - 270 MHz
-- Async-335 Family (17D15X): 6 Mhz - 200 Mhz
+- Async-335 Family (17D15X): 6 Mhz - 180 Mhz
 - Async-PCIe Family (17V35X): Not required
 
 ###### Windows API

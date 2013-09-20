@@ -546,7 +546,7 @@ int serialfc_get_rx_trigger(HANDLE h, unsigned *level)
 	own supported range.
 	
     - FSCC Family (16c950): 200 Hz - 270 MHz
-    - Async-335 Family (17D15X): 6 MHz - 200 MHz
+    - Async-335 Family (17D15X): 6 MHz - 180 MHz
 	
 	The Async-PCIe family doesn't use a variable clock generator to achieve
 	baud rates so this is not required.
