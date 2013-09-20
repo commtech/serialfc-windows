@@ -195,6 +195,8 @@ Return Value:
        ENABLE_ALL_INTERRUPTS(deviceExtension, deviceExtension->Controller);
     }
 
+    SerialFcInit(deviceExtension, 0);
+
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_POWER, "<--SerialEvtDeviceD0Entry\n");
 
     return STATUS_SUCCESS;

@@ -653,3 +653,7 @@ NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS PCIeSetBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 
 enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt);
+
+void SerialFcInit(
+    IN PSERIAL_DEVICE_EXTENSION pDevExt,
+    IN PCONFIG_DATA PConfigData);

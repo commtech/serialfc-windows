@@ -1305,10 +1305,15 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
     SERIAL_WMI_PERF_DATA WmiPerfData;
 
     UINT16 DeviceID;
+    BOOLEAN RS485;
+    BOOLEAN Termination;
+    BOOLEAN EchoCancel;
+    unsigned Isochronous;
+    unsigned FrameLength;
     unsigned SampleRate;
     unsigned TxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
     unsigned RxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
-    unsigned NineBit; /* 9-bit mode can be retrieved on the FSCC but we store the info to avoid register calls */
+    BOOLEAN NineBit; /* 9-bit mode can be retrieved on the FSCC but we store the info to avoid register calls */
     unsigned Channel;
     UINT32 Bar0;
 
