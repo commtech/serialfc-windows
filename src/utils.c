@@ -2673,16 +2673,17 @@ NTSTATUS FastcomDisableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt)
 
 void FastcomSetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
-    UCHAR current_mpio_lvlh, new_mpio_lvlh;
+
+    UCHAR current_mpio_lvl, new_mpio_lvl;
     
-    current_mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
+    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
 
     if (enable)
-        new_mpio_lvlh = current_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable termination */
+        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel); /* Enable termination */
     else
-        new_mpio_lvlh = current_mpio_lvlh & (0x1 << pDevExt->Channel); /* Disable termination */
+        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Disable termination */
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
 }
 
 void FastcomGetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
@@ -2758,16 +2759,16 @@ void FastcomSetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
 void FastcomSetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
-    UCHAR current_mpio_lvl, new_mpio_lvl;
+    UCHAR current_mpio_lvlh, new_mpio_lvlh;
     
-    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+    current_mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
 
-    if (enable) 
-        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel); /* Enable echo cancel */
+    if (enable)
+        new_mpio_lvlh = current_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable echo cancel */
     else
-        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Disable echo cancel */
+        new_mpio_lvlh = current_mpio_lvlh & (0x1 << pDevExt->Channel); /* Disable echo cancel */
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
 }
 
 void FastcomSetEchoCancelFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
