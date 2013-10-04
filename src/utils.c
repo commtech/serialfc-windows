@@ -2766,7 +2766,7 @@ void FastcomSetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     if (enable)
         new_mpio_lvlh = current_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable echo cancel */
     else
-        new_mpio_lvlh = current_mpio_lvlh & (0x1 << pDevExt->Channel); /* Disable echo cancel */
+        new_mpio_lvlh = current_mpio_lvlh & ~(0x1 << pDevExt->Channel); /* Disable echo cancel */
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
 }
