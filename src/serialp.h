@@ -646,6 +646,11 @@ NTSTATUS FastcomEnable9Bit(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FastcomDisable9Bit(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FastcomGet9Bit(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled);
 
+void FastcomSetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int rate);
+void FastcomEnableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate);
+void FastcomDisableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt);
+void FastcomGetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int *rate);
+
 NTSTATUS FsccIsOpenedInSync(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *status);
 NTSTATUS FsccEnableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt);

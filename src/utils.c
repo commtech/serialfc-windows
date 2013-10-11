@@ -4512,6 +4512,29 @@ NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
     return STATUS_SUCCESS;
 }
 
+void FastcomGetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int *rate)
+{
+    *rate = pDevExt->FixedBaudRate;
+}
+
+void FastcomSetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int rate)
+{
+    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
+                     "Fixed Baud Rate = %i\n", rate);
+
+    pDevExt->FixedBaudRate = rate;
+}
+
+void FastcomEnableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
+{
+    FastcomSetFixedBaudRate(pDevExt, rate);
+}
+
+void FastcomDisableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    FastcomSetFixedBaudRate(pDevExt, -1);
+}
+
 void SerialFcInit(
     IN PSERIAL_DEVICE_EXTENSION pDevExt,
     IN PCONFIG_DATA PConfigData)
@@ -4577,6 +4600,7 @@ void SerialFcInit(
         FastcomSetIsochronous(pDevExt, PConfigData->Isochronous);
         FastcomSetFrameLength(pDevExt, PConfigData->FrameLength);
         FastcomSet9Bit(pDevExt, (BOOLEAN)PConfigData->NineBit);
+        FastcomSetFixedBaudRate(pDevExt, PConfigData->FixedBaudRate);
     }
     else {
         FastcomSetClockRate(pDevExt, pDevExt->ClockRate);
@@ -4589,5 +4613,6 @@ void SerialFcInit(
         FastcomSetIsochronous(pDevExt, pDevExt->Isochronous);
         FastcomSetFrameLength(pDevExt, pDevExt->FrameLength);
         FastcomSet9Bit(pDevExt, pDevExt->NineBit);
+        FastcomSetFixedBaudRate(pDevExt, pDevExt->FixedBaudRate);
     }
 }

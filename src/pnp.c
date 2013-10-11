@@ -822,6 +822,12 @@ Return Value:
     }
 
     if(!SerialGetRegistryKeyValue (Device,
+                                   L"FixedBaudRate",
+                                   &pConfig->FixedBaudRate)){
+        pConfig->FixedBaudRate = driverDefaults.FixedBaudRateDefault;
+    }
+
+    if(!SerialGetRegistryKeyValue (Device,
                                    L"Share System Interrupt",
                                    &pConfig->PermitShare)){
         pConfig->PermitShare = driverDefaults.PermitShareDefault;
