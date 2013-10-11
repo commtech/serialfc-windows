@@ -1311,7 +1311,7 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
     BOOLEAN RS485;
     BOOLEAN Termination;
     BOOLEAN EchoCancel;
-    unsigned Isochronous;
+    int Isochronous;
     unsigned FrameLength;
     unsigned SampleRate;
     unsigned TxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
