@@ -2582,9 +2582,9 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
         break;
     }
 
-    // Thales specific mode to output the clock on DTR#.
+    // Thales specific mode to output the clock on DTR#
     if (mode == 9)
-        new_cks = 0x20;
+        new_cks = 0x10;
 
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, MDM_OFFSET); /* To allow access to MDM */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, new_mdm); /* Set interrupts to MDM through ICR */
@@ -2652,7 +2652,8 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
         *mode = 8;
         break;
 
-    case 0x20:
+    // Thales specific mode to output the clock on DTR#
+    case 0x10:
         *mode = 9;
         break;
     }
