@@ -710,7 +710,7 @@ Return Value:
     NTSTATUS status;
     CONFIG_DATA config;
     PCONFIG_DATA pConfig = &config;
-    ULONG defaultClockRate = 64000000;
+    ULONG defaultClockRate = 1843200;
 
     PAGED_CODE();
 
@@ -738,6 +738,17 @@ Return Value:
 
     if (!NT_SUCCESS(status)) {
         goto End;
+    }
+
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_FSCC:
+        defaultClockRate = 18432000;
+        break;
+
+    case CARD_TYPE_PCIe:
+        defaultClockRate = 125000000;
+        break;
     }
 
     //
@@ -1173,7 +1184,6 @@ Return Value:
     NTSTATUS status = STATUS_SUCCESS;
     SHORT junk;
     int i;
-    SHORT AppropriateDivisor;
 
     PAGED_CODE();
 
@@ -1309,7 +1319,6 @@ Return Value:
     }
 
     SerialFcInit(pDevExt, PConfigData);
-
 
     //
     // If the user requested that we disable the port, then
@@ -1545,26 +1554,6 @@ Return Value:
     pDevExt->WmiCommData.SettableParityCheck = TRUE;
     pDevExt->WmiCommData.SettableStopBits = TRUE;
     pDevExt->WmiCommData.IsBusy = FALSE;
-
-    status = SerialGetDivisorFromBaud(
-                 pDevExt,
-                 pDevExt->ClockRate,
-                 pDevExt->SampleRate,
-                 16000000,
-                 &AppropriateDivisor
-                 );
-
-    if (NT_SUCCESS(status)) {
-        SERIAL_IOCTL_SYNC S;
-
-        pDevExt->CurrentBaud = 16000000;
-        pDevExt->WmiCommData.BaudRate = 16000000;
-
-        S.Extension = pDevExt;
-        S.Data = (PVOID) (ULONG_PTR) AppropriateDivisor;
-        SerialSetBaud(pDevExt->WdfInterrupt, &S);
-
-    }
 
     //
     // Common error path cleanup.  If the status is
