@@ -946,6 +946,45 @@ int serialfc_get_9bit(HANDLE h, BOOL *status)
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
 }
+
+int serialfc_enable_fixed_baud_rate(HANDLE h, unsigned rate)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE, 
+                           &rate, sizeof(rate), 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+int serialfc_disable_fixed_baud_rate(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+int serialfc_get_fixed_baud_rate(HANDLE h, int *rate)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_FIXED_BAUD_RATE, 
+                           NULL, 0, 
+                           rate, sizeof(*rate), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
  
 /******************************************************************************/
 /*!

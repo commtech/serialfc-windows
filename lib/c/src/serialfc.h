@@ -50,6 +50,10 @@ extern "C"
 #define IOCTL_FASTCOM_DISABLE_9BIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81A, METHOD_BUFFERED, FILE_ANY_ACCESS)
 #define IOCTL_FASTCOM_GET_9BIT CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81B, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+#define IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81C, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81D, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_FASTCOM_GET_FIXED_BAUD_RATE CTL_CODE(SERIALFC_IOCTL_MAGIC, 0x81E, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 
 __declspec(dllexport) int serialfc_connect(unsigned port_num, BOOL overlapped, HANDLE *h);
 __declspec(dllexport) int serialfc_enable_rs485(HANDLE h);
@@ -79,6 +83,9 @@ __declspec(dllexport) int serialfc_get_frame_length(HANDLE h, unsigned *num_char
 __declspec(dllexport) int serialfc_enable_9bit(HANDLE h);
 __declspec(dllexport) int serialfc_disable_9bit(HANDLE h);
 __declspec(dllexport) int serialfc_get_9bit(HANDLE h, BOOL *status);
+__declspec(dllexport) int serialfc_enable_fixed_baud_rate(HANDLE h, unsigned rate);
+__declspec(dllexport) int serialfc_disable_fixed_baud_rate(HANDLE h);
+__declspec(dllexport) int serialfc_get_fixed_baud_rate(HANDLE h, int *rate);
 __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, unsigned *bytes_written, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);
