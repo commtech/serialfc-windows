@@ -14,8 +14,8 @@ SRS_FIRM_RS644S_CAP_REQ_03 - Isochronous mode
  We have added a wrapper function and IOCTL calls around our typical 
  isochronous mode.
 
- IOCTL_THALES_ENABLE_MASTER_MODE - disables isochronous mode
- IOCTL_THALES_ENABLE_SLAVE_MODE - enables our isochronous mode 8
+ IOCTL_THALES_ENABLE_MASTER_MODE - enables isochronous mode 9
+ IOCTL_THALES_ENABLE_SLAVE_MODE - enables isochronous mode 8
  
  You can view an example of how to use these IOCTL calls in the C library
  functions serialfc_thales_enable_master_mode and serialfc_thales_enable_slave_mode
