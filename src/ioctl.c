@@ -690,6 +690,9 @@ Return Value:
 
             BaudRate = ((PSERIAL_BAUD_RATE)(buffer))->BaudRate;
 
+            if (Extension->FixedBaudRate != -1)
+                BaudRate = Extension->FixedBaudRate;
+
             //
             // Get the baud rate from the request.  We pass it
             // to a routine which will set the correct divisor.
@@ -737,6 +740,9 @@ Return Value:
             Br = (PSERIAL_BAUD_RATE)buffer;
 
             Br->BaudRate = Extension->CurrentBaud;
+
+            if (Extension->FixedBaudRate != -1)
+                Br->BaudRate = 9600;
 
             reqContext->Information = sizeof(SERIAL_BAUD_RATE);
 
@@ -2143,6 +2149,33 @@ Return Value:
             Status = FastcomGet9Bit(Extension, (BOOLEAN *)buffer);
 
             reqContext->Information = sizeof(BOOLEAN);
+            break;
+        }
+        case IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE: {
+            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+            if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+            }
+
+            FastcomEnableFixedBaudRate(Extension, *((unsigned *)buffer));
+            break;
+        }
+        case IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE: {
+            FastcomDisableFixedBaudRate(Extension);
+            break;
+        }
+        case IOCTL_FASTCOM_GET_FIXED_BAUD_RATE: {
+
+            Status = WdfRequestRetrieveOutputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
+             if( !NT_SUCCESS(Status) ) {
+                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                break;
+             }
+
+            FastcomGetFixedBaudRate(Extension, buffer);
+
+            reqContext->Information = sizeof(int);
             break;
         }
         case IOCTL_THALES_ENABLE_MASTER_MODE: {

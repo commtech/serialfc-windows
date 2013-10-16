@@ -2477,6 +2477,8 @@ void FastcomSetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                      "RS485 = %i\n", enable);
+
+    pDevExt->RS485 = enable;
 }
 
 void FastcomGetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
@@ -2679,6 +2681,8 @@ NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     if (NT_SUCCESS (status)) {
         SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                          "Isochronous mode = %i\n", mode);
+
+        pDevExt->Isochronous = mode;
     }
 
     return status;
@@ -2708,27 +2712,29 @@ NTSTATUS FastcomDisableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt)
     return FastcomSetIsochronous(pDevExt, -1);
 }
 
+// Active low
 void FastcomSetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
-    UCHAR current_mpio_lvlh, new_mpio_lvlh;
+    UCHAR current_mpio_lvl, new_mpio_lvl;
     
-    current_mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
+    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
 
     if (enable)
-        new_mpio_lvlh = current_mpio_lvlh | (0x1 << pDevExt->Channel); /* Enable termination */
+        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel);
     else
-        new_mpio_lvlh = current_mpio_lvlh & (0x1 << pDevExt->Channel); /* Disable termination */
+        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
 }
 
+// Active low
 void FastcomGetTerminationPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
-    UCHAR mpio_lvlh;
+    UCHAR mpio_lvl;
     
-    mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
+    mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
 
-    *enabled = mpio_lvlh & (0x1 << pDevExt->Channel) ? TRUE : FALSE;
+    *enabled = mpio_lvl & (0x1 << pDevExt->Channel) ? FALSE : TRUE;
 }
 
 NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2748,6 +2754,8 @@ NTSTATUS FastcomSetTermination(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     if (NT_SUCCESS (status)) {
         SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                          "Termination = %i\n", enable);
+
+        pDevExt->Termination = enable;
     }
 
     return status;
@@ -2793,16 +2801,16 @@ void FastcomSetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
 void FastcomSetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 {
-    UCHAR current_mpio_lvl, new_mpio_lvl;
+    UCHAR current_mpio_lvlh, new_mpio_lvlh;
     
-    current_mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+    current_mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
 
-    if (enable) 
-        new_mpio_lvl = current_mpio_lvl | (0x1 << pDevExt->Channel); /* Enable echo cancel */
+    if (enable)
+        new_mpio_lvlh = current_mpio_lvlh | (0x1 << pDevExt->Channel);
     else
-        new_mpio_lvl = current_mpio_lvl & ~(0x1 << pDevExt->Channel); /* Disable echo cancel */
+        new_mpio_lvlh = current_mpio_lvlh & ~(0x1 << pDevExt->Channel);
 
-    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVL_OFFSET, new_mpio_lvl);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOLVLH_OFFSET, new_mpio_lvlh);
 }
 
 void FastcomSetEchoCancelFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
@@ -2851,6 +2859,8 @@ void FastcomSetEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
 
     SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                      "Echo cancel = %i\n", enable);
+
+    pDevExt->EchoCancel = enable;
 }
 
 void FastcomEnableEchoCancel(SERIAL_DEVICE_EXTENSION *pDevExt) 
@@ -2874,11 +2884,11 @@ void FastcomGetEchoCancelPCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 
 void FastcomGetEchoCancelPCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
 {
-    UCHAR mpio_lvl;
+    UCHAR mpio_lvlh;
     
-    mpio_lvl = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVL_OFFSET);
+    mpio_lvlh = pDevExt->SerialReadUChar(pDevExt->Controller + MPIOLVLH_OFFSET);
 
-    *enabled = mpio_lvl & (0x1 << pDevExt->Channel) ? TRUE : FALSE;
+    *enabled = mpio_lvlh & (0x1 << pDevExt->Channel) ? TRUE : FALSE;
 }
 
 void FastcomGetEchoCancelFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled)
@@ -4382,6 +4392,8 @@ NTSTATUS FastcomSetFrameLength(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned num_ch
     if (NT_SUCCESS (status)) {
         SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
                          "Frame Length = %i\n", num_chars); 
+
+        pDevExt->FrameLength = num_chars;
     }
 
     return status;
@@ -4539,4 +4551,109 @@ NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
     WRITE_PORT_ULONG(ULongToPtr(pDevExt->Bar2), new_fcr);
 
     return STATUS_SUCCESS;
+}
+
+void FastcomGetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int *rate)
+{
+    *rate = pDevExt->FixedBaudRate;
+}
+
+void FastcomSetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int rate)
+{
+    SerialDbgPrintEx(TRACE_LEVEL_INFORMATION, DBG_PNP,
+                     "Fixed Baud Rate = %i\n", rate);
+
+    pDevExt->FixedBaudRate = rate;
+}
+
+void FastcomEnableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate)
+{
+    FastcomSetFixedBaudRate(pDevExt, rate);
+}
+
+void FastcomDisableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    FastcomSetFixedBaudRate(pDevExt, -1);
+}
+
+void SerialFcInit(
+    IN PSERIAL_DEVICE_EXTENSION pDevExt,
+    IN PCONFIG_DATA PConfigData)
+{
+    unsigned i = 0;
+
+    //PCI
+    switch (pDevExt->DeviceID) {
+    case FC_422_2_PCI_335_ID:
+    case FC_422_4_PCI_335_ID:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        break;
+
+    case FC_232_4_PCI_335_ID:
+    case FC_232_8_PCI_335_ID:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        break;
+
+    case FC_422_4_PCIe_ID:
+    case FC_422_8_PCIe_ID:
+        for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
+            pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
+        break;
+    }
+
+    if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F) {
+        UCHAR init_lcr;
+        UCHAR init_fcr;
+
+        init_lcr = 0x00;
+        init_fcr = 0x01; /* Enable FIFO (combined with enhanced enables 950 mode) */
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, init_fcr);
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0xbf); /* Set to 0xbf to access 650 registers */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + EFR_OFFSET, 0x10); /* Enable enhanced mode */
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+        pDevExt->ACR = 0x20;
+        pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Enable 950 trigger to ACR through ICR */
+
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
+    }
+
+    if (PConfigData) {
+        FastcomSetClockRate(pDevExt, PConfigData->ClockRate);
+        FastcomSetRS485(pDevExt, (BOOLEAN)PConfigData->RS485);
+        FastcomSetSampleRate(pDevExt, PConfigData->SampleRate);
+        FastcomSetTxTrigger(pDevExt, PConfigData->TxTrigger);
+        FastcomSetRxTrigger(pDevExt, PConfigData->RxTrigger);
+        FastcomSetTermination(pDevExt, (BOOLEAN)PConfigData->Termination);
+        FastcomSetEchoCancel(pDevExt, (BOOLEAN)PConfigData->EchoCancel);
+        FastcomSetIsochronous(pDevExt, PConfigData->Isochronous);
+        FastcomSetFrameLength(pDevExt, PConfigData->FrameLength);
+        FastcomSet9Bit(pDevExt, (BOOLEAN)PConfigData->NineBit);
+        FastcomSetFixedBaudRate(pDevExt, PConfigData->FixedBaudRate);
+    }
+    else {
+        FastcomSetClockRate(pDevExt, pDevExt->ClockRate);
+        FastcomSetRS485(pDevExt, pDevExt->RS485);
+        FastcomSetSampleRate(pDevExt, pDevExt->SampleRate);
+        FastcomSetTxTrigger(pDevExt, pDevExt->TxTrigger);
+        FastcomSetRxTrigger(pDevExt, pDevExt->RxTrigger);
+        FastcomSetTermination(pDevExt, pDevExt->Termination);
+        FastcomSetEchoCancel(pDevExt, pDevExt->EchoCancel);
+        FastcomSetIsochronous(pDevExt, pDevExt->Isochronous);
+        FastcomSetFrameLength(pDevExt, pDevExt->FrameLength);
+        FastcomSet9Bit(pDevExt, pDevExt->NineBit);
+        FastcomSetFixedBaudRate(pDevExt, pDevExt->FixedBaudRate);
+    }
 }

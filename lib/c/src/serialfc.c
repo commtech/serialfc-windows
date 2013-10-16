@@ -546,7 +546,7 @@ int serialfc_get_rx_trigger(HANDLE h, unsigned *level)
 	own supported range.
 	
     - FSCC Family (16c950): 200 Hz - 270 MHz
-    - Async-335 Family (17D15X): 6 MHz - 200 MHz
+    - Async-335 Family (17D15X): 6 MHz - 180 MHz
 	
 	The Async-PCIe family doesn't use a variable clock generator to achieve
 	baud rates so this is not required.
@@ -943,6 +943,45 @@ int serialfc_get_9bit(HANDLE h, BOOL *status)
   result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_9BIT, 
                            NULL, 0, 
                            status, sizeof(*status), 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+int serialfc_enable_fixed_baud_rate(HANDLE h, unsigned rate)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE, 
+                           &rate, sizeof(rate), 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+int serialfc_disable_fixed_baud_rate(HANDLE h)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE, 
+                           NULL, 0, 
+                           NULL, 0, 
+                           &temp, (LPOVERLAPPED)NULL);
+
+  return (result == TRUE) ? ERROR_SUCCESS : GetLastError();
+}
+
+int serialfc_get_fixed_baud_rate(HANDLE h, int *rate)
+{
+  DWORD temp;
+  BOOL result;
+
+  result = DeviceIoControl(h, (DWORD)IOCTL_FASTCOM_GET_FIXED_BAUD_RATE, 
+                           NULL, 0, 
+                           rate, sizeof(*rate), 
                            &temp, (LPOVERLAPPED)NULL);
 
   return (result == TRUE) ? ERROR_SUCCESS : GetLastError();

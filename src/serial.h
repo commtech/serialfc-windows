@@ -30,6 +30,7 @@ iver
 #define SERIAL_ISOCHRONOUS_DEFAULT      -1
 #define SERIAL_FRAME_LENGTH_DEFAULT     4
 #define SERIAL_9BIT_DEFAULT             0
+#define SERIAL_FIXED_BAUD_RATE_DEFAULT -1
 #define SERIAL_PERMIT_SHARE_DEFAULT     0
 #define SERIAL_LOG_FIFO_DEFAULT         0
 
@@ -459,6 +460,7 @@ typedef struct _CONFIG_DATA {
     ULONG               Isochronous;
     ULONG               FrameLength;
     ULONG               NineBit;
+    ULONG               FixedBaudRate;
     ULONG               PermitShare;
     ULONG               PermitSystemWideShare;
     ULONG               LogFifo;
@@ -489,6 +491,7 @@ typedef struct _SERIAL_FIRMWARE_DATA {
     ULONG           IsochronousDefault;
     ULONG           FrameLengthDefault;
     ULONG           NineBitDefault;
+    ULONG           FixedBaudRateDefault;
     ULONG           PermitShareDefault;
     ULONG           PermitSystemWideShare;
     ULONG           LogFifoDefault;
@@ -1305,10 +1308,16 @@ typedef struct _SERIAL_DEVICE_EXTENSION {
     SERIAL_WMI_PERF_DATA WmiPerfData;
 
     UINT16 DeviceID;
+    BOOLEAN RS485;
+    BOOLEAN Termination;
+    BOOLEAN EchoCancel;
+    int Isochronous;
+    unsigned FrameLength;
     unsigned SampleRate;
     unsigned TxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
     unsigned RxTrigger; /* Required for 335 and PCIe card's which have a write-only register */
-    unsigned NineBit; /* 9-bit mode can be retrieved on the FSCC but we store the info to avoid register calls */
+    BOOLEAN NineBit; /* 9-bit mode can be retrieved on the FSCC but we store the info to avoid register calls */
+    int FixedBaudRate;
     unsigned Channel;
     UINT32 Bar0;
 
