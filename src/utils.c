@@ -2505,7 +2505,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     UCHAR new_cks = 0;
     UCHAR new_mdm = 0;
 
-    if (mode > 8 || mode < -1)
+    if (mode > 10 || mode < -1)
         return STATUS_INVALID_PARAMETER;
 
     orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
