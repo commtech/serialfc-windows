@@ -2554,7 +2554,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
 
     case 9:
     case 10:
-        new_cks |= 0x20;
+        new_cks |= 0x10;
         break;
     }
 
@@ -2624,11 +2624,11 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
         *mode = 8;
         break;
 
-    case 0x20:
+    case 0x10:
         *mode = 9;
         break;
 
-    case 0x22:
+    case 0x12:
         *mode = 10;
         break;
     }
