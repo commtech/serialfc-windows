@@ -603,6 +603,7 @@ int serialfc_set_clock_rate(HANDLE h, unsigned rate)
 	7: Transmit using internal BRG, receive using internal BRG
 	8: Transmit and receive using external RI#
 	9: Transmit clock is output on DTR#
+   10: Transmit clock is output on DTR#, receive using external DSR#
 
 */
 /******************************************************************************/
