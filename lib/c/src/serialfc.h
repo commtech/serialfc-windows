@@ -90,9 +90,6 @@ __declspec(dllexport) int serialfc_write(HANDLE h, char *buf, unsigned size, uns
 __declspec(dllexport) int serialfc_read(HANDLE h, char *buf, unsigned size, unsigned *bytes_read, OVERLAPPED *o);
 __declspec(dllexport) int serialfc_disconnect(HANDLE h);
 
-__declspec(dllexport) int serialfc_thales_enable_master_mode(HANDLE h);
-__declspec(dllexport) int serialfc_thales_enable_slave_mode(HANDLE h);
-
 #ifdef __cplusplus
 }
 #endif
