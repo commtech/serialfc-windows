@@ -2386,11 +2386,11 @@ void FastcomSetRS485PCIe(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
     current_fctr = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_FCTR);
 
     if (enable) {
-        new_mcr = current_mcr | 0x1;  /* Enable 485 on transmitters using DTR pin */
+        new_mcr = current_mcr | 0x04;  /* Use DTR for Auto 485 */
         new_fctr = current_fctr | 0x20; /* Enable Auto 485 on UART */
     }
     else {
-        new_mcr = current_mcr & ~0x1;  /* Disable 485 on transmitters using DTR pin */
+        new_mcr = current_mcr & ~0x04;  /* Disable using DTR for Auto 485 */
         new_fctr = current_fctr & ~0x20; /* Disable Auto 485 on UART */
     }
 
