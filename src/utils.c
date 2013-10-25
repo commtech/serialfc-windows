@@ -2628,7 +2628,7 @@ void FastcomGetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int *mode)
         *mode = 9;
         break;
 
-    case 0x12:
+    case 0x19:
         *mode = 10;
         break;
     }
