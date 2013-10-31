@@ -1,4 +1,4 @@
-set NAME=serialfc-windows-2.3.0
+set NAME=serialfc-windows-2.4.1
 set TOP=bin\%NAME%
 set QSERIALFC=..\qserialfc\build\exe.win32-3.3
 set PYSERIALFC=..\pyserialfc\dist
@@ -68,6 +68,10 @@ xcopy %QSERIALFC%\* %TOP%\gui\ /e /i > nul
 echo Copying Changelog...
 copy ChangeLog.txt %TOP% > nul
 copy thales_mod.txt %TOP% > nul
+
+:copy_readme
+echo Copying README...
+copy README.md %TOP% > nul
 
 :zip_packages
 echo Zipping Drivers...
