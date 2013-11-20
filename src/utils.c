@@ -4570,59 +4570,79 @@ void FastcomDisableFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt)
     FastcomSetFixedBaudRate(pDevExt, -1);
 }
 
-void SerialFcInit(
-    IN PSERIAL_DEVICE_EXTENSION pDevExt,
-    IN PCONFIG_DATA PConfigData)
+void FastcomInitGpio(SERIAL_DEVICE_EXTENSION *pDevExt)
 {
-    unsigned i = 0;
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+        switch (pDevExt->DeviceID) {
+        case FC_422_2_PCI_335_ID:
+        case FC_422_4_PCI_335_ID:
+            /* Switch GPIO pins to outputs */
+            pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
+            break;
 
-    //PCI
-    switch (pDevExt->DeviceID) {
-    case FC_422_2_PCI_335_ID:
-    case FC_422_4_PCI_335_ID:
+        case FC_232_4_PCI_335_ID:
+        case FC_232_8_PCI_335_ID:
+            pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
+            pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
+            break;
+        }
+        break;
+
+    case CARD_TYPE_PCIe:
+         /* Switch GPIO pins to outputs */
         pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSELH_OFFSET, 0x00);
         break;
 
-    case FC_232_4_PCI_335_ID:
-    case FC_232_8_PCI_335_ID:
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOSEL_OFFSET, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINV_OFFSET, 0xc0);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOOD_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIO3T_OFFSET, 0x00);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + MPIOINT_OFFSET, 0x00);
-        break;
-
-    case FC_422_4_PCIe_ID:
-    case FC_422_8_PCIe_ID:
-        for (i = MPIOINT_OFFSET; i <= MPIOODH_OFFSET; i++)
-            pDevExt->SerialWriteUChar(pDevExt->Controller + i, 0x00);
+    default:
         break;
     }
+}
 
-    if (pDevExt->DeviceID >= 0x14 && pDevExt->DeviceID <= 0x1F) {
-        UCHAR init_lcr;
-        UCHAR init_fcr;
+void FastcomInitTriggers(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    /* Enable programmable trigger levels */
+    switch (FastcomGetCardType(pDevExt)) {
+    case CARD_TYPE_PCI:
+    case CARD_TYPE_PCIe: {
+            unsigned char current_fctr, new_fctr;
 
-        init_lcr = 0x00;
-        init_fcr = 0x01; /* Enable FIFO (combined with enhanced enables 950 mode) */
+            current_fctr = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_FCTR);
 
-        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
-        pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, init_fcr);
+            new_fctr = current_fctr | 0xc0; /* Enable programmable triggers */
+
+            pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, 0x01); /* Enable TX & RX FIFO's */
+            pDevExt->SerialWriteUChar(pDevExt->Controller + UART_EXAR_FCTR, new_fctr);
+        }
+        break;
+
+    case CARD_TYPE_FSCC:
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0x00);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, 0x01); /* Enable FIFO (combined with enhanced enables 950 mode) */
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0xbf); /* Set to 0xbf to access 650 registers */
         pDevExt->SerialWriteUChar(pDevExt->Controller + EFR_OFFSET, 0x10); /* Enable enhanced mode */
 
-        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0); /* Ensure last LCR value is not 0xbf */
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0x00); /* Ensure last LCR value is not 0xbf */
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
         pDevExt->ACR = 0x20;
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Enable 950 trigger to ACR through ICR */
 
-        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, init_lcr);
+        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0x00);
+        break;
+
+    default:
+        break;
     }
+}
+
+void SerialFcInit(
+    IN PSERIAL_DEVICE_EXTENSION pDevExt,
+    IN PCONFIG_DATA PConfigData)
+{
+    FastcomInitGpio(pDevExt);
+    FastcomInitTriggers(pDevExt);
 
     if (PConfigData) {
         FastcomSetClockRate(pDevExt, PConfigData->ClockRate);
