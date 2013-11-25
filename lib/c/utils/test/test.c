@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
 	fprintf(stdout, "NOTE: This will change your registers to defaults.\n\n");
 
-	fprintf(stdout, "1) Connect your included loopback plug.\n");
+	fprintf(stdout, "1) Connect your loopback plug.\n");
 	fprintf(stdout, "2) Press any key to start the test.\n\n");
 
 
