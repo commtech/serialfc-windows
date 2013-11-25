@@ -1,7 +1,7 @@
 TARGET = test
 
 SOURCES = test.c
-CFC_DIR = ..
+CFC_DIR = ..\..
 LIBS = $(CFC_DIR)\cserialfc.lib
 
 all: $(TARGET).exe

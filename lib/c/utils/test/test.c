@@ -6,7 +6,7 @@
 #include <serialfc.h>
 
 #define DATA_LENGTH 20
-#define NUM_ITERATIONS 100
+#define NUM_ITERATIONS 20
 
 int init(HANDLE h);
 int loop(HANDLE h);
@@ -79,16 +79,76 @@ int init(HANDLE h)
  
 	e = serialfc_set_clock_rate(h, 18432000);
 	if (e != 0) {
-		fprintf(stderr, "serialfc_connect failed with %d\n", e);
+		fprintf(stderr, "serialfc_set_clock_rate failed with %d\n", e);
 		return EXIT_FAILURE;
 	}
 
 	e = serialfc_set_sample_rate(h, 16);
 	if (e != 0) {
+		fprintf(stderr, "serialfc_set_sample_rate failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_disable_rs485(h);
+	if (e != 0) {
 		fprintf(stderr, "serialfc_connect failed with %d\n", e);
 		return EXIT_FAILURE;
 	}
-   
+
+	e = serialfc_disable_echo_cancel(h);
+	if (e != 0) {
+		fprintf(stderr, "serialfc_disable_echo_cancel failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_enable_termination(h);
+	if (e != 0 && e != ERROR_NOT_SUPPORTED) {
+		fprintf(stderr, "serialfc_enable_termination failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_set_tx_trigger(h, 32);
+	if (e != 0) {
+		fprintf(stderr, "serialfc_set_tx_trigger failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_set_rx_trigger(h, 32);
+	if (e != 0) {
+		fprintf(stderr, "serialfc_set_rx_trigger failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_disable_isochronous(h);
+	if (e != 0 && e != ERROR_NOT_SUPPORTED) {
+		fprintf(stderr, "serialfc_disable_isochronous failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_disable_external_transmit(h);
+	if (e != 0 && e != ERROR_NOT_SUPPORTED) {
+		fprintf(stderr, "serialfc_disable_external_transmit failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_set_frame_length(h, 1);
+	if (e != 0 && e != ERROR_NOT_SUPPORTED) {
+		fprintf(stderr, "serialfc_set_frame_length failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_disable_9bit(h);
+	if (e != 0 && e != ERROR_NOT_SUPPORTED) {
+		fprintf(stderr, "serialfc_disable_9bit failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
+	e = serialfc_disable_fixed_baud_rate(h);
+	if (e != 0) {
+		fprintf(stderr, "serialfc_disable_fixed_baud_rate failed with %d\n", e);
+		return EXIT_FAILURE;
+	}
+
 	GetCommState(h, &mdcb);
 	
 	mdcb.BaudRate = 115200;

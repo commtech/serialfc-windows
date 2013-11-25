@@ -26,7 +26,7 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 
 :create_directories
 echo Creating Directories...
-for %%A in (32, 64, lib, terminal, gui) do mkdir %TOP%\%%A\
+for %%A in (32, 64, lib, terminal, gui, test) do mkdir %TOP%\%%A\
 for %%A in (c, c++, net, python) do mkdir %TOP%\lib\%%A\
 
 :copy_dll_files
@@ -46,6 +46,11 @@ copy lib\net\netserialfc*.dll %TOP%\lib\net\ > nul
 copy lib\c\cserialfc*.dll %TOP%\lib\net\ > nul
 copy lib\net\src\*.cs %TOP%\lib\net\ > nul
 copy lib\net\makefile %TOP%\lib\net\ > nul
+
+:copy_test_files
+echo Copying Test Files...
+copy lib\c\utils\test\test.exe %TOP%\test\ > nul
+copy lib\c\cserialfc.dll %TOP%\test\ > nul
 
 :copy_sys_files
 echo Copying Driver Files...
