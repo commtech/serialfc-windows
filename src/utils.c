@@ -3786,20 +3786,20 @@ NTSTATUS FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     GetICS30703Data(value, 2, &solutiona, &solutionb, clock_data);
 
 
-#if 0 // TODO
 #ifdef DISABLE_XTAL
     clock_data[15] &= 0xfb;
 #else
     /* This enables XTAL on all cards except green FSCC cards with a revision
-       greater than 6. Some old protoype SuperFSCC cards will need to manually
-       disable XTAL as they are not supported in this driver by default. */
-    if (fscc_port_get_PDEV(port) == 0x0f && fscc_port_get_PREV(port) <= 6)
+       greater than 6 and 232 cards. Some old protoype SuperFSCC cards will 
+       need to manually disable XTAL as they are not supported in this driver 
+       by default. */
+    if (FsccGetPdev(pDevExt) == 0x0f && FsccGetPrev(pDevExt) <= 6 ||
+        FsccGetPdev(pDevExt) == 0x16)
         clock_data[15] &= 0xfb;
     else
         clock_data[15] |= 0x04;
 #endif
-#endif
-    clock_data[15] |= 0x04;
+
 
     data = (UINT32 *)ExAllocatePoolWithTag(NonPagedPool, sizeof(UINT32) * 323, 'stiB');
 
@@ -4545,6 +4545,16 @@ NTSTATUS FsccDisableAsync(SERIAL_DEVICE_EXTENSION *pDevExt)
 UCHAR FsccGetFrev(SERIAL_DEVICE_EXTENSION *pDevExt)
 {
     return READ_PORT_ULONG(ULongToPtr(pDevExt->Bar0 + VSTR_OFFSET + (pDevExt->Channel * 0x80))) & 0x000000ff;
+}
+
+UCHAR FsccGetPrev(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    return (READ_PORT_ULONG(ULongToPtr(pDevExt->Bar0 + VSTR_OFFSET + (pDevExt->Channel * 0x80))) & 0x0000ff00) >> 8;
+}
+
+UINT16 FsccGetPdev(SERIAL_DEVICE_EXTENSION *pDevExt)
+{
+    return (READ_PORT_ULONG(ULongToPtr(pDevExt->Bar0 + VSTR_OFFSET + (pDevExt->Channel * 0x80))) & 0xffff0000) >> 16;
 }
 
 void FastcomGetFixedBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, int *rate)
