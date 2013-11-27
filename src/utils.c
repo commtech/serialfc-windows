@@ -3794,10 +3794,12 @@ NTSTATUS FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
        need to manually disable XTAL as they are not supported in this driver 
        by default. */
     if ((FsccGetPdev(pDevExt) == 0x0f && FsccGetPrev(pDevExt) <= 6) ||
-        FsccGetPdev(pDevExt) == 0x16)
+        FsccGetPdev(pDevExt) == 0x16) {
         clock_data[15] &= 0xfb;
-    else
+    }
+    else {
         clock_data[15] |= 0x04;
+    }
 #endif
 
 
