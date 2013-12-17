@@ -1,3 +1,7 @@
+version 2.4.3 (12/17/2013)
+--------------------------------------------------------------------------------
+    * Fixed enabling RS485 on the 2nd port of FSCC cards
+
 version 2.4.2 (11/26/2013)
 --------------------------------------------------------------------------------
     * Fixed incorrectly setting the clock on FSCC-232 and FSCC green cards

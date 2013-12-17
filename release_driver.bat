@@ -1,4 +1,4 @@
-set NAME=serialfc-windows-2.4.2
+set NAME=serialfc-windows-2.4.3
 set TOP=bin\%NAME%
 set QSERIALFC=..\qserialfc\build\exe.win32-3.3
 set PYSERIALFC=..\pyserialfc\dist
