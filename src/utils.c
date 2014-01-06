@@ -3800,7 +3800,7 @@ NTSTATUS FastcomSetClockRateFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     struct IcpRsStruct solutionb;   //final results for IcpRsStruct data calculations
 
     if (value < 200 || value > 270000000)
-        return STATUS_NOT_SUPPORTED;
+        return STATUS_INVALID_PARAMETER;
 
     memset(&solutiona,0,sizeof(struct ResultStruct));
     memset(&solutionb,0,sizeof(struct IcpRsStruct));
