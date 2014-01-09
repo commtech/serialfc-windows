@@ -1,3 +1,7 @@
+version 2.4.4 (01/09/2014)
+--------------------------------------------------------------------------------
+    * Fixed clock frequency IOCTL return code on failure
+
 version 2.4.3 (12/17/2013)
 --------------------------------------------------------------------------------
     * Fixed enabling RS485 on the 2nd port of FSCC cards
