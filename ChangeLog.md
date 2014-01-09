@@ -1,3 +1,5 @@
+# ChangeLog
+
 ## [v2.4.4](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.4) (01/09/2014)
 - Fixed clock frequency IOCTL return code on failure
 
@@ -25,7 +27,7 @@
 
 ## [v2.2.2](https://github.com/commtech/serialfc-windows/releases/tag/v2.2.2) (9/20/2013)
 - Updated qserialfc to 
-[v1.2.2](https://github.com/commtech/qserialfc/blob/master/ChangeLog)
+[v1.2.2](https://github.com/commtech/qserialfc/releases/tag/v1.2.2)
 - Reinitialize the card correctly after going to sleep
 
 ## [v2.2.1](https://github.com/commtech/serialfc-windows/releases/tag/v2.2.1) (9/6/2013)
@@ -76,5 +78,5 @@
 - Fixed detecting of which card is present
 - Added more intuitive IOCTL error messages
 
-## v2.0.0 (1/11/2013)
+## [v2.0.0](https://github.com/commtech/serialfc-windows/releases/tag/v2.0.0) (1/11/2013)
 This is the initial release of the 2.0.X driver series.
