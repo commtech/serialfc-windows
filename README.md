@@ -657,9 +657,9 @@ specific key by adding a `ClockRate` DWORD. For example, if you want a specific 
 20 MHz you would set the value to `20000000`.
 
 ##### How do I change the COM port numbering?
-Open the 'Device Manager'
-Right click & select 'Properties' on each Commtech COM port
-Switch to the 'Port Settings' tab
-Click on the 'Advanced' button
-Then change the value in the 'COM Port Number' field
+1. Open the 'Device Manager'
+2. Right click & select 'Properties' on each Commtech COM port
+3. Switch to the 'Port Settings' tab
+4. Click on the 'Advanced' button
+5. Then change the value in the 'COM Port Number' field
 
