@@ -2165,6 +2165,8 @@ NTSTATUS FastcomSetTxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, TTL_OFFSET); /* To allow access to TTL */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Set the trigger level to TTL through ICR */
 
+    /* TODO: When 950 trigger levels are fixed, use the TTLH value also */
+
     WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
     return STATUS_SUCCESS;
@@ -2274,6 +2276,8 @@ NTSTATUS FastcomSetRxTriggerFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned valu
     WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
     pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, RTL_OFFSET); /* To allow access to RTL */
     pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, (UCHAR)value); /* Set the trigger level to RTL through ICR */
+
+    /* TODO: When 950 trigger levels are fixed, use the RTLH value also */
 
     WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 
@@ -4652,18 +4656,19 @@ void FastcomInitTriggers(SERIAL_DEVICE_EXTENSION *pDevExt)
         break;
 
     case CARD_TYPE_FSCC:
-        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0x00);
         pDevExt->SerialWriteUChar(pDevExt->Controller + FCR_OFFSET, 0x01); /* Enable FIFO (combined with enhanced enables 950 mode) */
 
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0xbf); /* Set to 0xbf to access 650 registers */
         pDevExt->SerialWriteUChar(pDevExt->Controller + EFR_OFFSET, 0x10); /* Enable enhanced mode */
 
+        /* Temporarily disable 950 trigger levels due to either interrupts not firing or not being handled correctly */
+#if 0
         pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0x00); /* Ensure last LCR value is not 0xbf */
         pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
         pDevExt->ACR = 0x20;
         pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Enable 950 trigger to ACR through ICR */
-
-        pDevExt->SerialWriteUChar(pDevExt->Controller + LCR_OFFSET, 0x00);
+#endif
+        pDevExt->ACR = 0x00;
         break;
 
     default:
