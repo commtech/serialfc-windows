@@ -639,7 +639,7 @@ port.nine_bit = True
 ```
 
 
-### How to change the default boot settings?
+##### How to change the default boot settings?
 There are two locations in the registry where settings can be stored. The first location is
 where you will assign the default settings computer wide.
 
@@ -655,4 +655,11 @@ parameters from the section above to the following key.
 In addition to the parameters above, you can also set the default clock frequency in the device
 specific key by adding a `ClockRate` DWORD. For example, if you want a specific port to default to
 20 MHz you would set the value to `20000000`.
+
+##### How do I change the COM port numbering?
+1. Open the 'Device Manager'
+2. Right click & select 'Properties' on each Commtech COM port
+3. Switch to the 'Port Settings' tab
+4. Click on the 'Advanced' button
+5. Then change the value in the 'COM Port Number' field
 
