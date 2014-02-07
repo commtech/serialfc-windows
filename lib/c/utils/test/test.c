@@ -78,7 +78,7 @@ int init(HANDLE h)
     int e = 0;
  
 	e = serialfc_set_clock_rate(h, 18432000);
-	if (e != 0) {
+	if (e != 0 && e != ERROR_NOT_SUPPORTED) {
 		fprintf(stderr, "serialfc_set_clock_rate failed with %d\n", e);
 		return EXIT_FAILURE;
 	}
