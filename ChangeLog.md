@@ -1,5 +1,10 @@
 # ChangeLog
 
+## [2.4.5](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.5) (02/13/2014)
+- Fixed test utility failing on 422/X-PCIe cards
+- Fixed 950 trigger level issue causing missing interrupts
+- Added better FSCC clock frequency range checks
+
 ## [2.4.4](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.4) (01/09/2014)
 - Fixed clock frequency IOCTL return code on failure
 
