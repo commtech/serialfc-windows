@@ -1,3 +1,6 @@
+# serialfc-windows
+This README file is best viewed [online](http://github.com/commtech/serialfc-windows/).
+
 ## Installation
 
 ### Downloading Driver Package
@@ -663,3 +666,17 @@ specific key by adding a `ClockRate` DWORD. For example, if you want a specific 
 4. Click on the 'Advanced' button
 5. Then change the value in the 'COM Port Number' field
 
+
+## Dependencies
+- Windows Driver Kit (7.1.0 used internally to support XP)
+
+
+## API Compatibility
+We follow [Semantic Versioning](http://semver.org/) when creating releases.
+
+
+## License
+
+Copyright (C) 2014 [Commtech, Inc.](http://commtech-fastcom.com)
+
+Licensed under the [GNU General Public License v3](http://www.gnu.org/licenses/gpl.txt).
