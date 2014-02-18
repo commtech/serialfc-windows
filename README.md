@@ -667,7 +667,7 @@ specific key by adding a `ClockRate` DWORD. For example, if you want a specific 
 5. Then change the value in the 'COM Port Number' field
 
 
-## Dependencies
+## Build Dependencies
 - Windows Driver Kit (7.1.0 used internally to support XP)
 
 
