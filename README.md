@@ -671,6 +671,10 @@ specific key by adding a `ClockRate` DWORD. For example, if you want a specific 
 - Windows Driver Kit (7.1.0 used internally to support XP)
 
 
+## Run-time Dependencies
+- OS: Windows XP+
+
+
 ## API Compatibility
 We follow [Semantic Versioning](http://semver.org/) when creating releases.
 
