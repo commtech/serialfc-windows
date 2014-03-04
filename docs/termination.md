@@ -1,0 +1,64 @@
+# Termination
+
+
+###### Support
+| Code           | Version
+| -------------- | --------
+| `serialfc-windows` | `v2.0.0` 
+
+
+## Get
+```c
+IOCTL_FASTCOM_GET_TERMINATION
+```
+
+###### Examples
+```c
+#include <serialfc.h>
+...
+
+unsigned status;
+
+DeviceIoControl(h, IOCTL_FASTCOM_GET_TERMINATION, 
+                NULL, 0, 
+                &status, sizeof(status), 
+                &temp, NULL);
+```
+
+
+## Enable
+```c
+IOCTL_FASTCOM_ENABLE_TERMINATION
+```
+
+###### Examples
+```c
+#include <serialfc.h>
+...
+
+DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_TERMINATION, 
+                NULL, 0, 
+                NULL, 0, 
+                &temp, NULL);
+```
+
+
+## Disable
+```c
+IOCTL_FASTCOM_DISABLE_TERMINATION
+```
+
+###### Examples
+```c
+#include <serialfc.h>
+...
+
+DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_TERMINATION, 
+                NULL, 0, 
+                NULL, 0, 
+                &temp, NULL);
+```
+
+
+### Additional Resources
+- Complete example: [`examples\termination.c`](https://github.com/commtech/serialfc-windows/blob/master/examples/termination.c)

@@ -1,56 +1,78 @@
 # serialfc-windows
 This README file is best viewed [online](http://github.com/commtech/serialfc-windows/).
 
-## Installation
+## Installing Driver
 
-### Downloading Driver Package
-You will more than likely want to download our pre-built driver package from
-the [Commtech website](http://www.commtech-fastcom.com/CommtechSoftware.html).
+##### Downloading Driver Package
+You can download a pre-built driver package directly from our
+[website](http://www.commtech-fastcom.com/CommtechSoftware.html).
 
 
-### Downloading Source Code
-If you are installing from the pre-built driver packge you can skip ahead
-to the section on loading the driver.
+## Quick Start Guide
+There is documentation for each specific function listed below, but lets get started
+with a quick programming example for fun.f
+_This tutorial has already been set up for you at_ 
+[`serialfc/examples/tutorial.c`](https://github.com/commtech/serialfc-windows/tree/master/examples/tutorial.c).
 
-The source code for the Fastcom serial driver is hosted on Github code hosting.
-To check out the latest code you will need Git and to run the following in a
-terminal.
+Create a new C file (named tutorial.c) with the following code.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <Windows.h>
+
+int main(void)
+{
+	HANDLE h = 0;
+	DWORD tmp;
+	char odata[] = "Hello world!";
+	char idata[20];
+	
+	/* Open port 0 in a blocking IO mode */
+	h = CreateFile("\\\\.\\FSCC0", GENERIC_READ | GENERIC_WRITE, 0, NULL, 
+	                  OPEN_EXISTING, 0, NULL);
+
+	if (h == INVALID_HANDLE_VALUE) { 
+        fprintf(stderr, "CreateFile failed with %d\n", GetLastError());		   
+		return EXIT_FAILURE; 
+	}
+	
+	/* Send "Hello world!" text */
+	WriteFile(h, odata, sizeof(odata), &tmp, NULL);
+
+	/* Read the data back in (with our loopback connector) */
+	ReadFile(h, idata, sizeof(idata), &tmp, NULL);
+
+	fprintf(stdout, "%s\n", idata);
+	
+	CloseHandle(h);
+	
+	return EXIT_SUCCESS;
+}
 
 ```
-git clone git://github.com/commtech/serialfc-windows.git serialfc
-```
 
-NOTE: We prefer you use the above method for downloading the driver source code
-      (because it is the easiest way to stay up to date) but you can also get 
-      the driver source code from the
-      [download page](https://github.com/commtech/serialfc-windows/tags/).
-
-Now that you have the latest code checked out you will more than likely want
-to switch to a stable version within the code directory. To do this browse
-the various tags for one you would like to switch to. Version v1.0.0 is only
-listed here as an example.
+For this example I will use the Visual Studio command line compiler, but
+you can use your compiler of choice.
 
 ```
-git tag
-git checkout v1.0.0
+# cl tutorial.c
 ```
 
-### Compiling Driver
-Compiling the driver is relatively simple assuming you have all of the
-required dependencies. You will need Windows Driver Kit 7.1.0 at a 
-minimum. After assembling all of these things you can build the driver by
-simply running the BLD command from within the source code directory.
+Now attach the included loopback connector.
 
 ```
-cd serialfc/src/
-BLD
+# tutorial.exe
+Hello world!
 ```
+
+You have now transmitted and received data! 
 
 
 ## Using The Serial Port
 
-The serialfc driver is a slightly modified version of the Windows serial driver
-with support for extra features of the Fastcom asychronous cards. Since the
+The SerialFC driver is a slightly modified version of the Windows serial driver
+with support for extra features of the Fastcom asynchronous cards. Since the
 driver is based on the standard Windows serial driver you get to leverage the
 full suite of options available in the Windows [Serial Communication]
 (http://msdn.microsoft.com/en-us/library/ff802693.aspx) API.
@@ -62,9 +84,11 @@ for as it will contain the information for 99% of your code.
 
 ### Setting Baud Rate
 ##### Max Supported Speeds
-- FSCC Family (16c950): 15 MHz
-- Async-335 Family (17D15X): 6.25 MHz
-- Async-PCIe Family (17V35X): 25 MHz
+| Card Family | Baud Rate |
+| ----------- | --------- |
+| FSCC (16C950) | 15 MHz |
+| Async-335 (17D15X) | 6.25 MHz |
+| Async-PCIe (17V35X) | 25 MHz |
 
 
 The Fastcom cards have their baud rate configured using the standard Windows
@@ -111,536 +135,29 @@ integer divisors for both of those baud rates.
 lcm(2000000, 9600) * 8 = 48000000
 ```
 
-
-
-
-All of the Fastcom released features can be configured using the basic Windows
-API or by using one of the included libraries (C, C++, .NET, Python).
-
-
-### Clock Rate
-
-##### Operating Ranges
-- FSCC Family (16c950): 200 Hz - 270 MHz
-- Async-335 Family (17D15X): 6 Mhz - 180 Mhz
-- Async-PCIe Family (17V35X): Not required
-
-###### Windows API
-```c
-#include <serialfc.h>
-
-...
-
-unsigned rate = 18432000;
-
-DeviceIoControl(h, IOCTL_FASTCOM_SET_CLOCK_RATE, 
-                &rate, sizeof(rate), 
-                NULL, 0, 
-                &temp, NULL);
-```
-
-###### C Library
-```
-#include <serialfc.h>
-...
-
-serialfc_set_clock_rate(h, 18432000);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.SetClockRate(18432000);
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.ClockRate = 18432000;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.clock_rate = 18432000
-```
-
-
-### Sample Rate
-
-##### Operating Ranges
-- FSCC Family (16c950): 4 - 16
-- Async-335 Family (17D15X): 8, 16
-- Async-PCIe Family (17V35X): 4, 8, 16
-
-###### Windows API
-```c
-#include <serialfc.h>
-...
-
-unsigned rate = 16;
-
-DeviceIoControl(h, IOCTL_FASTCOM_SET_SAMPLE_RATE, 
-                &rate, sizeof(rate), 
-                NULL, 0, 
-                &temp, NULL);
-
-DeviceIoControl(h, IOCTL_FASTCOM_GET_SAMPLE_RATE, 
-                NULL, 0, 
-                &rate, sizeof(rate), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-unsigned rate;
-
-serialfc_set_sample_rate(h, 16);
-serialfc_get_sample_rate(h, &rate);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.SetSampleRate(16);
-
-unsigned rate = port.GetSampleRate();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.SampleRate = 16;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.sample_rate = 16
-```
-
-
-### 485
-
-###### Windows API
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_RS485, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_RS485, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-				
-DeviceIoControl(h, IOCTL_FASTCOM_GET_RS485, 
-                NULL, 0, 
-                &status, sizeof(status), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-serialfc_enable_rs485(h);
-serialfc_disable_rs485(h);
-
-serialfc_get_rs485(h, &status);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.EnableRS485();
-port.DisableRS485();
-
-bool status = port.GetRS485();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.RS485 = true;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.rs485 = True
-```
-
-
-### Echo Cancel
-
-###### Windows API
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_ECHO_CANCEL, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_ECHO_CANCEL, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-				
-DeviceIoControl(h, IOCTL_FASTCOM_GET_ECHO_CANCEL, 
-                NULL, 0, 
-                &status, sizeof(status), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-serialfc_enable_echo_cancel(h);
-serialfc_disable_echo_cancel(h);
-
-serialfc_get_echo_cancel(h, &status);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.EnableEchoCancel();
-port.DisableEchoCancel();
-
-bool status = port.GetEchoCancel();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.EchoCancel = true;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.echo_cancel = True
-```
-
-
-### Termination
-
-###### Windows API
-```c
-#include <serialfc.h>
-
-...
-
-BOOL status;
-
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_TERMINATION, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_TERMINATION, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-				
-DeviceIoControl(h, IOCTL_FASTCOM_GET_TERMINATION, 
-                NULL, 0, 
-                &status, sizeof(status), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-serialfc_enable_termination(h);
-serialfc_disable_termination(h);
-
-serialfc_get_termination(h, &status);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.EnableTermination();
-port.DisableTermination();
-
-bool status = port.GetTermination();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.Termination = true;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.termination = True
-```
-
-### Trigger Levels
-
-###### Windows API
-```c
-#include <serialfc.h>
-...
-
-unsigned level = 32;
-
-DeviceIoControl(h, IOCTL_FASTCOM_SET_TX_TRIGGER, 
-				&level, sizeof(level), 
-                NULL, 0, 
-                &temp, NULL);
-				
-DeviceIoControl(h, IOCTL_FASTCOM_GET_TX_TRIGGER, 
-                NULL, 0, 
-				&level, sizeof(level), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-unsigned level;
-
-serialfc_set_tx_trigger(h, 32);
-serialfc_set_rx_trigger(h, 32);
-
-serialfc_get_tx_trigger(h, &level);
-serialfc_get_rx_trigger(h, &level);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-unsigned level;
-
-port.SetTxTrigger(32);
-port.SetRxTrigger(32);
-
-level = port.GetTxTrigger();
-level = port.GetRxTrigger();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.TxTrigger = 32;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.tx_trigger = 32
-port.rx_trigger = 32
-```
-
-### Isochronous
-
-###### Windows API
-```c
-#include <serialfc.h>
-...
-
-unsigned mode = TODO;
-
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_ISOCHRONOUS, 
-                &mode, sizeof(mode), 
-                NULL, 0, 
-                &temp, NULL);
-
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_ISOCHRONOUS, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-				
-DeviceIoControl(h, IOCTL_FASTCOM_GET_ISOCHRONOUS, 
-                NULL, 0, 
-                &mode, sizeof(mode), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-unsigned mode;
-
-serialfc_enable_isochronous(h, TODO);
-serialfc_disable_isochronous(h);
-
-serialfc_get_isochronousl(h, &mode);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.EnableIsochronous(TODO);
-port.DisableIsochronous();
-
-unsigned mode = port.GetIsochronous();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.EnableIsochronous(TODO);
-port.DisableIsochronous();
-
-int mode = port.GetIsochronous();
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.enable_isochronous(TODO)
-port.disable_isochrnous()
-
-mode = port.get_isochronous()
-```
-
-
-### 9-Bit Protocol
-Enabling 9-Bit protocol has a couple of effects.
-
-- Transmitting with 9-bit protocol enabled automatically sets the 1st byte's 9th bit to MARK, 
-  and all remaining bytes's 9th bits to SPACE.
-- Receiving with 9-bit protocol enabled will return two bytes per each 9-bits of data. 
-  The second of each byte-duo contains the 9th bit.
-
-###### Windows API
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_9BIT, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_9BIT, 
-                NULL, 0, 
-                NULL, 0, 
-                &temp, NULL);
-				
-DeviceIoControl(h, IOCTL_FASTCOM_GET_9BIT, 
-                NULL, 0, 
-                &status, sizeof(status), 
-                &temp, NULL);
-```
-
-###### C Library
-```c
-#include <serialfc.h>
-...
-
-BOOL status;
-
-serialfc_enable_9bit(h);
-serialfc_disable_9bit(h);
-
-serialfc_get_9bit(h, &status);
-```
-
-###### C++ Library
-```cpp
-#include <serialfc.hpp>
-...
-
-port.Enable9Bit();
-port.Disable9Bit();
-
-bool status = port.Get9Bit();
-```
-
-###### .NET Library
-```csharp
-using SerialFC;
-...
-
-port.NineBit = true;
-```
-
-###### Python Library
-```python
-import serialfc
-...
-
-port.nine_bit = True
-```
-
+## API Reference
+
+There are likely other configuration options you will need to set up for your 
+own program. All of these options are described on their respective documentation page.
+
+- [Connect](https://github.com/commtech/serialfc-windows/blob/master/docs/connect.md)
+- [Card Type](https://github.com/commtech/serialfc-windows/blob/master/docs/card-type.md)
+- [Clock Rate](https://github.com/commtech/serialfc-windows/blob/master/docs/clock-rate.md)
+- [Echo Cancel](https://github.com/commtech/serialfc-windows/blob/master/docs/echo-cancel.md)
+- [External Transmit](https://github.com/commtech/serialfc-windows/blob/master/docs/external-transmit.md)
+- [Fixed Baud Rate](https://github.com/commtech/serialfc-windows/blob/master/docs/fixed-baud-rate.md)
+- [Frame Length](https://github.com/commtech/serialfc-windows/blob/master/docs/frame-length.md)
+- [Isochronous](https://github.com/commtech/serialfc-windows/blob/master/docs/isochronous.md)
+- [9-Bit Protocol](https://github.com/commtech/serialfc-windows/blob/master/docs/nine_bit.md)
+- [RS485](https://github.com/commtech/serialfc-windows/blob/master/docs/rs485.md)
+- [RX Trigger](https://github.com/commtech/serialfc-windows/blob/master/docs/rx-trigger.md)
+- [Sample Rate](https://github.com/commtech/serialfc-windows/blob/master/docs/sample-rate.md)
+- [Termination](https://github.com/commtech/serialfc-windows/blob/master/docs/termination.md)
+- [TX Trigger](https://github.com/commtech/serialfc-windows/blob/master/docs/tx-trigger.md)
+- [Disconnect](https://github.com/commtech/serialfc-windows/blob/master/docs/disconnect.md)
+
+
+### FAQ
 
 ##### How to change the default boot settings?
 There are two locations in the registry where settings can be stored. The first location is
