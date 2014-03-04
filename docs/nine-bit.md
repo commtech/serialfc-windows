@@ -66,4 +66,4 @@ DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_9BIT,
 
 
 ### Additional Resources
-- Complete example: [`examples\nine_bit.c`](https://github.com/commtech/serialfc-windows/blob/master/examples/nine_bit.c)
+- Complete example: [`examples\nine-bit.c`](https://github.com/commtech/serialfc-windows/blob/master/examples/nine-bit.c)
