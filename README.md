@@ -170,7 +170,7 @@ own program. All of these options are described on their respective documentatio
 - [Fixed Baud Rate](https://github.com/commtech/serialfc-windows/blob/master/docs/fixed-baud-rate.md)
 - [Frame Length](https://github.com/commtech/serialfc-windows/blob/master/docs/frame-length.md)
 - [Isochronous](https://github.com/commtech/serialfc-windows/blob/master/docs/isochronous.md)
-- [9-Bit Protocol](https://github.com/commtech/serialfc-windows/blob/master/docs/nine_bit.md)
+- [9-Bit Protocol](https://github.com/commtech/serialfc-windows/blob/master/docs/nine-bit.md)
 - [RS485](https://github.com/commtech/serialfc-windows/blob/master/docs/rs485.md)
 - [RX Trigger](https://github.com/commtech/serialfc-windows/blob/master/docs/rx-trigger.md)
 - [Sample Rate](https://github.com/commtech/serialfc-windows/blob/master/docs/sample-rate.md)
