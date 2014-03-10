@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 	fprintf(stdout, "This is a very simple test to verify your card is\n");
 	fprintf(stdout, "communicating correctly.\n\n");
 
-	fprintf(stdout, "NOTE: This will change your registers to defaults.\n\n");
+	fprintf(stdout, "NOTE: This will change your settings to defaults.\n\n");
 
 	fprintf(stdout, "1) Connect your loopback plug.\n");
 	fprintf(stdout, "2) Press any key to start the test.\n\n");
