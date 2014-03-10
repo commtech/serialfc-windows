@@ -149,25 +149,28 @@ int init(HANDLE h)
 		return EXIT_FAILURE;
 	}
 
-	GetCommState(h, &mdcb);
-	
-	mdcb.BaudRate = 115200;
+    memset(&mdcb, 0, sizeof(mdcb));
+    memset(&cto, 0, sizeof(cto));
+
+    if (BuildCommDCB("baud=115200 parity=N data=8 stop=1", &mdcb) == 0) {
+        fprintf(stdout, "BuildCommDCB failed with %d\n", GetLastError());
+        return EXIT_FAILURE;
+    }    
+
+	cto.ReadIntervalTimeout = 1;
 	
 	if (SetCommState(h, &mdcb) == FALSE) {
         fprintf (stderr, "SetCommState failed with %d\n", GetLastError());
         return EXIT_FAILURE;
     }
+
+	if (SetCommTimeouts(h, &cto) == FALSE) {
+        fprintf(stdout, "SetCommTimeouts failed with %d\n", GetLastError());
+        return EXIT_FAILURE;
+    }    
 	
 	PurgeComm(h, PURGE_TXCLEAR | PURGE_RXCLEAR);
-	
-	cto.ReadIntervalTimeout = 25;
-	cto.ReadTotalTimeoutMultiplier = 2;
-	cto.ReadTotalTimeoutConstant = 10;
-	cto.WriteTotalTimeoutMultiplier = 2;
-	cto.WriteTotalTimeoutConstant = 0;
 
-	SetCommTimeouts(h, &cto);
-	
 	return ERROR_SUCCESS;
 }
 
@@ -181,7 +184,7 @@ int loop(HANDLE h)
 
 	memset(&o, 0, sizeof(o));
 	memset(odata, 0x01, sizeof(odata));
-	memset(&idata, 0, sizeof(idata));
+	memset(idata, 0x00, sizeof(idata));
 
 	e = serialfc_write(h, odata, sizeof(odata), &bytes_written, NULL);
 	if (e != 0) {
