@@ -149,25 +149,25 @@ int init(HANDLE h)
 		return EXIT_FAILURE;
 	}
 
-    memset(&mdcb, 0, sizeof(mdcb));
-    memset(&cto, 0, sizeof(cto));
+	memset(&mdcb, 0, sizeof(mdcb));
+	memset(&cto, 0, sizeof(cto));
 
-    if (BuildCommDCB("baud=115200 parity=N data=8 stop=1", &mdcb) == 0) {
-        fprintf(stdout, "BuildCommDCB failed with %d\n", GetLastError());
-        return EXIT_FAILURE;
+	if (BuildCommDCB("baud=115200 parity=N data=8 stop=1", &mdcb) == 0) {
+		fprintf(stdout, "BuildCommDCB failed with %d\n", GetLastError());
+		return EXIT_FAILURE;
     }    
 
 	cto.ReadIntervalTimeout = 1;
 	
 	if (SetCommState(h, &mdcb) == FALSE) {
-        fprintf (stderr, "SetCommState failed with %d\n", GetLastError());
-        return EXIT_FAILURE;
-    }
+		fprintf (stderr, "SetCommState failed with %d\n", GetLastError());
+		return EXIT_FAILURE;
+	}
 
 	if (SetCommTimeouts(h, &cto) == FALSE) {
-        fprintf(stdout, "SetCommTimeouts failed with %d\n", GetLastError());
-        return EXIT_FAILURE;
-    }    
+		fprintf(stdout, "SetCommTimeouts failed with %d\n", GetLastError());
+		return EXIT_FAILURE;
+	}
 	
 	PurgeComm(h, PURGE_TXCLEAR | PURGE_RXCLEAR);
 
