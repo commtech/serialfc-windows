@@ -1,10 +1,16 @@
 # Fixed Baud Rate
 
+###### Code Support
+| Code | Version |
+| ---- | ------- |
+| serialfc-windows | 2.3.0 |
 
-###### Support
-| Code           | Version
-| -------------- | --------
-| `serialfc-windows` | `v2.0.0` 
+###### Card Support
+| Card Family | Supported |
+| ----------- |:-----:|
+| FSCC (16C950) | Yes |
+| Async-335 (17D15X) | Yes |
+| Async-PCIe (17V35X) | Yes |
 
 
 ## Get
@@ -19,9 +25,9 @@ IOCTL_FASTCOM_GET_FIXED_BAUD_RATE
 
 int rate;
 
-DeviceIoControl(h, IOCTL_FASTCOM_GET_FIXED_BAUD_RATE, 
-                NULL, 0, 
-                &rate, sizeof(rate), 
+DeviceIoControl(h, IOCTL_FASTCOM_GET_FIXED_BAUD_RATE,
+                NULL, 0,
+                &rate, sizeof(rate),
                 &temp, NULL);
 ```
 
@@ -36,9 +42,11 @@ IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE
 #include <serialfc.h>
 ...
 
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE, 
+unsigned rate = 9600;
+
+DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_FIXED_BAUD_RATE,
                 &rate, sizeof(rate),
-                NULL, 0, 
+                NULL, 0,
                 &temp, NULL);
 ```
 
@@ -53,12 +61,12 @@ IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE
 #include <serialfc.h>
 ...
 
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE, 
-                NULL, 0, 
-                NULL, 0, 
+DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_FIXED_BAUD_RATE,
+                NULL, 0,
+                NULL, 0,
                 &temp, NULL);
 ```
 
 
 ### Additional Resources
-- Complete example: [`examples\fixed-baud-rate.c`](https://github.com/commtech/serialfc-windows/blob/master/examples/fixed-baud-rate.c)
+- Complete example: [`examples/fixed-baud-rate.c`](../examples/fixed-baud-rate.c)

@@ -1,9 +1,16 @@
 # Clock Rate
 
-###### Support
+###### Code Support
 | Code | Version |
-| -----| ------- |
-| `serialfc-windows` | `v2.0.0` 
+| ---- | ------- |
+| serialfc-windows | 2.1.0 |
+
+###### Card Support
+| Card Family | Supported |
+| ----------- |:-----:|
+| FSCC (16C950) | Yes |
+| Async-335 (17D15X) | Yes |
+| Async-PCIe (17V35X) | Not required |
 
 
 ###### Operating Range
@@ -19,17 +26,24 @@
 IOCTL_FASTCOM_SET_CLOCK_RATE
 ```
 
+| System Error | Value | Cause |
+| ------------ | -----:| ----- |
+| `ERROR_NOT_SUPPORTED` | 50 (0x32) | Not supported on this family of cards |
+| `ERROR_INVALID_PARAMETER` | 87 (0x57) | Invalid parameter |
+
 ###### Examples
 ```
 #include <serialfc.h>
 ...
 
-DeviceIoControl(h, IOCTL_FASTCOM_SET_CLOCK_RATE, 
-				&level, sizeof(level), 
-				NULL, 0, 
+unsigned rate = 18432000; /* 18.432 MHz */
+
+DeviceIoControl(h, IOCTL_FASTCOM_SET_CLOCK_RATE,
+				&rate, sizeof(rate),
+				NULL, 0,
 				&temp, NULL);
 ```
 
 
 ### Additional Resources
-- Complete example: [`examples\clock-rate.c`](https://github.com/commtech/serialfc-windows/blob/master/examples/clock-rate.c)
+- Complete example: [`examples/clock-rate.c`](../examples/clock-rate.c)

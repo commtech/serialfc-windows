@@ -1,10 +1,16 @@
 # Echo Cancel
 
+###### Code Support
+| Code | Version |
+| ---- | ------- |
+| serialfc-windows | 2.0.0 |
 
-###### Support
-| Code           | Version
-| -------------- | --------
-| `serialfc-windows` | `v2.0.0` 
+###### Card Support
+| Card Family | Supported |
+| ----------- |:-----:|
+| FSCC (16C950) | Yes |
+| Async-335 (17D15X) | Yes |
+| Async-PCIe (17V35X) | Yes |
 
 
 ## Get
@@ -19,9 +25,9 @@ IOCTL_FASTCOM_GET_ECHO_CANCEL
 
 unsigned status;
 
-DeviceIoControl(h, IOCTL_FASTCOM_GET_ECHO_CANCEL, 
-                NULL, 0, 
-                &status, sizeof(status), 
+DeviceIoControl(h, IOCTL_FASTCOM_GET_ECHO_CANCEL,
+                NULL, 0,
+                &status, sizeof(status),
                 &temp, NULL);
 ```
 
@@ -36,9 +42,9 @@ IOCTL_FASTCOM_ENABLE_ECHO_CANCEL
 #include <serialfc.h>
 ...
 
-DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_ECHO_CANCEL, 
-                NULL, 0, 
-                NULL, 0, 
+DeviceIoControl(h, IOCTL_FASTCOM_ENABLE_ECHO_CANCEL,
+                NULL, 0,
+                NULL, 0,
                 &temp, NULL);
 ```
 
@@ -53,12 +59,12 @@ IOCTL_FASTCOM_DISABLE_ECHO_CANCEL
 #include <serialfc.h>
 ...
 
-DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_ECHO_CANCEL, 
-                NULL, 0, 
-                NULL, 0, 
+DeviceIoControl(h, IOCTL_FASTCOM_DISABLE_ECHO_CANCEL,
+                NULL, 0,
+                NULL, 0,
                 &temp, NULL);
 ```
 
 
 ### Additional Resources
-- Complete example: [`examples\echo-cancel.c`](https://github.com/commtech/serialfc-windows/blob/master/examples/echo-cancel.c)
+- Complete example: [`examples/echo-cancel.c`](../examples/echo-cancel.c)
