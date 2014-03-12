@@ -1,0 +1,363 @@
+en: $Languages English (en); Italiano (it); Nederlands (nl)
+it: *
+nl: *
+
+en: (none)
+it: (nessuno)
+nl: (geen)
+
+en: none
+it: nessuno
+nl: geen
+
+en: even
+it: pari
+nl: even
+
+en: odd
+it: dispari
+nl: oneven
+
+en: mark
+it: mark
+nl: mark
+
+en: space
+it: space
+nl: space
+
+en: no handshake
+it: no controllo flusso
+nl: geen flow-control
+
+en: RTS/CTS
+it: RTS/CTS
+nl: RTS/CTS
+
+en: DTR/DSR
+it: DTR/DSR
+nl: DTR/DSR
+
+en: XON/XOFF
+it: XON/XOFF
+nl: XON/XOFF
+
+en: default
+it: default
+nl: standaard
+
+en: monospaced
+it: non proporz.
+nl: Niet proportioneel
+
+en: unifont
+it: unifont
+nl: unifont
+
+en: Disconnected - click to connect
+it: Disconnesso - cliccare per connettere
+nl: Verbroken - klik voor verbinden
+
+en: Forwarding port could not be opened
+it: La porta su cui inoltrare non può essere aperta
+nl: Poort voor doorzenden kon niet worden geopend
+
+en: Failed to initialize the port.\nPlease verify the COM port settings.
+it: Inizializzazione della porta non riuscita.\nVerificare le impostazioni della porta COM.
+nl: Instellen van de poort is mislukt.\nControleer de instellingen.
+
+en: Termite is initialized and ready.\nType a string in the edit line (below) and press <Enter>\n(or wait for the remote device to send data).
+it: Termite è inizializzato e pronto.\nDigita una stringa nella riga di trasmissione in basso e premi <Invio>\n(oppure attendi la ricezione di dati dal dispositivo remoto).
+nl: Termite is geïnitialiseerd.\nTik een regel in de invoerregel (onderaan) en druk op <Enter>\n(of wacht op ontvangst van het aangesloten apparaat).
+
+en: Termite document
+it: Documento Termite
+nl: Termite-document
+
+en: Only detected COM ports are in this list, but you can type another port name
+it: Solo le porte COM rilevate comapiono in questo elenco ma è possibile digitare un altro nome di porta
+nl: De lijst bevat alleen COM poorten die zijn gedetecteerd, maar u kunt ook een andere poort intikken
+
+en: Select a standard baud rate, or type in a custom baud rate
+it: Selezionare un baud rate standard oppure digitarne uno personalizzato
+nl: Kies een standaard baud-rate, of tik een speciale baud-rate in.
+
+en: Number of data bits
+it: Numero di bit del dato
+nl: Aantal data-bits
+
+en: Number of stop bits; for 5 data bits, 2 stop bits configures 1.5 stop bits
+it: Numero di bit di stop; per 5 bit di dato, selezionando 2 bit di stop si configurano 1,5 bit di stop
+nl: Aantal stop-bits; bij 5 data-bits is de keuze voor 2 stop-bits is eigenlijk 1.5 stop-bit
+
+en: Parity; mark=fixed high, space=fixed low
+it: Parità; mark=fisso alto, space=fisso basso
+nl: Pariteit; mark=altijd hoog, space=altijd laag
+
+en: Hardware or software flow control
+it: Controllo di flusso hardware o software
+nl: Hardware/software flow control
+
+en: Secondary port to forward received data to (both ways)
+it: Porta secondaria dove inoltrare i dati ricevuti (bidirezionale)
+nl: Tweede poort om ontvangen data aan door te zenden (beide richtingen)
+
+en: Transmit the text as is
+it: Trasmette il testo così com'è
+nl: De tekst versturen zonder aanvullingen
+
+en: Transmit the text and append a carriage return (ASCII 13)
+it: Trasmette il testo e aggiunge il carattere di ritorno a capo (ASCII 13)
+nl: De tekst aanvullen met een CR-teken (ASCII 13), dan versturen
+
+en: Transmit the text and append a new-line character (ASCII 10)
+it: Trasmette il testo ed aggiunge il carattere di nuova linea (ASCII 10)
+nl: Voeg een LF-teken toe (ASCII 10), dan verzenden
+
+en: Transmit the text and append carriage return and new-line characters (ASCII 10+13)
+it: Trasmette il testo ed aggiunge i caratteri di nuova linea e ritorno a capo (ASCII 10+13)
+nl: De tekst aanvullen met CR/LF-tekens (ASCII 10+13), dan verzenden
+
+en: Copies any transmitted text to the reception view
+it: Visualizza nella finestra di ricezione qualsiasi testo trasmesso
+nl: Kopieert alle verzonden tekst naar het ontvangst-venster
+
+en: Standard font or Unifont, the Unifont includes control code characters
+it: Font standard o Unifont, quello Unifont include il codice di controllo dei caratteri
+nl: Standaard lettertype of Unifont, het Unifont bevat speciale tekens (control characters)
+
+en: Enables/disables word wrap to the edge of the reception window
+it: Abilita/disabilita il ritorno a capo sul bordo della finestra di ricezione
+nl: Activeert het afbreken van regels (tussen woorden) wanneer de regels breder worden dan het ontvangstvenster
+
+en: Forces this utility topmost (on top of other windows)
+it: Forza questo programma sopra alle altre finestre
+nl: Houdt het venster bovenaan (topmost)
+
+en: Lets the Escape key close this utility
+it: Lascia che il tasto <Esc> chiuda questo programma
+nl: De Escape-toets sluit de applicatie
+
+en: Enables/disables auto-completion in the transmit edit field
+it: Abilita/disabilita il completamento automatico nella riga di trasmissione
+nl: Schakelt automatisch aanvullen in of uit
+
+en: Closes the port when this utility looses input focus, and re-opens the port when it gets input focus
+it: Chiude la porta quando questo programma perde il focus e la riapre la porta quando lo riacquisisce
+nl: Sluit de poort wanneer dit programma inactief is, en heropent de poort wanneer het programma weer actief wordt
+
+en: Select active plug-ins; configure a plug-in by double-clicking on its name
+it: Permette di selezionare i plugin attivi; doppio click sul nome di un plugin per configurarlo
+nl: Activeer plugin's, of configureer een plugin door op de naam een dubbelklik te geven
+
+en: Select the language for the user interface; if this list contains only English, the message catalog is not present
+it: Seleziona la lingua per l'interfaccia utente; se questa lista contiene solo English, il file catalogo di messaggi non è presente
+nl: Kies de taal voor de gebruikersinterface
+
+en: Forwarding port may not be the same as the primary port.
+it: La porta per l'inoltro non può essere uguale alla porta primaria.
+nl: De poort voor het doorsturen kan niet dezelfde zijn als de primaire poort.
+
+en: The application needs to be restarted for the changes to take effect.\n\nRestart now?
+it: L'applicazione necessita di un riavvio perché le modifiche abbiano effetto.\n\nRiavviare ora?
+nl: De wijzigingen worden van kracht na een nieuwe opstart van het programma.\n\nNu opnieuw starten?
+
+en: Text not found
+it: Testo non trovato
+nl: Tekst niet gevonden
+
+en: Waiting for port...
+it: Attendere la porta...
+nl: Wacht op poort...
+
+en: Transmit the text
+it: Trasmette il testo
+nl: De tekst verzenden
+
+en: Change communication settings or application settings, including plug-ins
+it: Cambia le impostazioni di comunicazione e del programma compresi i plugin
+nl: Instellen van comminucatie-parameters, programma-opties en plugin's
+
+en: Clear the reception window (erase all contents)
+it: Pulisce la finestra di ricezione (cancella tutto il contenuto)
+nl: Wis het ontvangst-venster
+
+en: Show application, version and copyright information
+it: Mostra la versione e le informazioni di copyright del programma
+nl: Toon informatie over het programma, de versie en het auteursrecht/licentie
+
+en: Exit the application
+it: Esce dal programma
+nl: Sluit het programma
+
+en: The current communication parameters. Click in this field to connect or disconnect
+it: Parametri di comunicazione attuali. Cliccare questo tasto per connettere o disconnettere
+nl: De huidige instellingen voor de communicatie. Klik in dit veld om de connectie te maken of te verbreken.
+
+en: Plain text file (*.txt)|*.txt|Rich Text file (*.rtf)|*.rtf|
+it: Testo normale (*.txt)|*.txt|Rich Text Format (*.rtf)|*.rtf|
+nl: Tekstbestanden (*.txt)|*.txt|Rich Text bestanden (*.rtf)|*.rtf|
+
+en: Saving the file failed!
+it: Salvataggio del file non riuscito
+nl: Bestandbewerking is mislukt!
+
+en: Termite 2.9 (by CompuPhase)
+it: Termite 2.9 (da CompuPhase)
+nl: Termite 2.9 (door CompuPhase)
+
+en: OK
+it: OK
+nl: OK
+
+en: &Settings
+it: &Impostaz.
+nl: In&stellen
+
+en: C&lear
+it: &Pulisci
+nl: &Wissen
+
+en: &About
+it: I&nfo
+nl: &Info.
+
+en: &Close
+it: &Chiudi
+nl: Sluiten
+
+en: Serial port settings
+it: Impostazioni porta seriale
+nl: Instellingen van de seriële poort
+
+en: Port configuration
+it: Configurazione porta
+nl: Poort-configuratie
+
+en: &Port
+it: &Porta
+nl: &Poort
+
+en: &Baud rate
+it: &Baud rate
+nl: &Baud
+
+en: &Data bits
+it: &Bit dati
+nl: &Data-bits
+
+en: &Stop bits
+it: Bit &Stop
+nl: &Stop-bits
+
+en: P&arity
+it: &Parità
+nl: P&ariteit
+
+en: &Flow control
+it: &Controllo flusso
+nl: &Flow control
+
+en: F&orward
+it: In&oltro
+nl: D&oorsturen
+
+en: Transmitted text
+it: Testo trasmesso
+nl: Verzonden tekst
+
+en: Append &nothing
+it: Aggiungi &nulla
+nl: &Niets toevoegen
+
+en: Append &CR
+it: Aggiungi C&R
+nl: &CR toevoegen
+
+en: Append &LF
+it: Aggiungi &LF
+nl: &LF toevoegen
+
+en: Append C&R-LF
+it: &Aggiungi CR-LF
+nl: C&R-LF toevoegen
+
+en: Local &echo
+it: Eco locale
+nl: &Herhaal getypte tekst
+
+en: Received text
+it: Testo ricevuto
+nl: Ontvangen tekst
+
+en: Font
+it: Font
+nl: Font
+
+en: &Word wrap
+it: &Testo a capo
+nl: &Zinnen afbreken
+
+en: Stay on &top
+it: Mantieni &sopra
+nl: Bo&venaan blijven
+
+en: Close on cancel
+it: Chiudi con <Esc>
+nl: Sluiten met Escape
+
+en: A&utocomplete edit line
+it: Completamento &autom.
+nl: A&utomatisch aanvullen
+
+en: Close port when inacti&ve
+it: Chiudi &porta se inattiva
+nl: Sluit poort indien inactief
+
+en: Plug-ins
+it: Plugin
+nl: Plugin's
+
+en: User interface language
+it: Lingua interfaccia utente
+nl: Taal gebruikersinterface
+
+en: Cancel
+it: Annulla
+nl: Annuleer
+
+en: About Termite 2.9
+it: Info su Termite 2.9
+nl: Informatie over Termite 2.9
+
+en: Termite 2.9\n\nTermite is a simple RS232 communication tool with a \"messenger\" or \"chat program\" user-interface.
+it: Termite 2.9\n\nTermite è un semplice strumento di comunicazione RS232 con un'interfaccia simile ai programmi di messaggistica o chat.
+nl: Termite 2.9\n\nTermite is een eenvoudig programma om via een RS232 poort to communiceren.
+
+en: Termite is \xa9 copyright 2006-2012, CompuPhase.\nThis version is freeware.
+it: Termite è \xa9 copyright 2006-2012, CompuPhase.\nQuesta versione è freeware.
+nl: Auteursrecht \xa9 van Termite behoort aan CompuPhase.\nDeze versie is vrij verspreidbaar.
+
+en: &Copy
+it: &Copia
+nl: &Kopieer
+
+en: &Save...
+it: &Salva...
+nl: &Opslaan...
+
+en: &Select all
+it: &Seleziona tutto
+nl: Alles &selecteren
+
+en: &Find...
+it: &Cerca
+nl: &Zoeken...
+
+en: &Print...
+it: &Stampa...
+nl: &Afdrukken
+
+en: Options
+nl: Opties
+it: Opzioni
