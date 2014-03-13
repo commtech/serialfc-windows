@@ -1,0 +1,3 @@
+[submodule "lib/c"]
+	path = lib/c
+	url = git://github.com/commtech/cserialfc.git
