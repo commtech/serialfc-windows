@@ -6,336 +6,328 @@
 
 namespace SerialFC {
 
-/// <param name="port_num">Used to indicate status.</param>
 Port::Port(unsigned port_num)
 {
-	init(port_num, false);
-}
-
-Port::Port(unsigned port_num, bool overlapped)
-{
-	init(port_num, overlapped);
+    init(port_num);
 }
 
 Port::~Port(void)
 {
-	cleanup();
+    cleanup();
 }
 
-void Port::init(unsigned port_num, bool overlapped, HANDLE h)
+void Port::init(unsigned port_num, HANDLE h)
 {
-	_port_num = port_num;
-	_overlapped = overlapped;
-	_h = h;
-} 
+    _port_num = port_num;
+    _h = h;
+}
 
-void Port::init(unsigned port_num, bool overlapped)
+void Port::init(unsigned port_num)
 {
-	_port_num = port_num;
-	_overlapped = overlapped;
+    _port_num = port_num;
 
-	int e = serialfc_connect(port_num, overlapped, &_h);
+    int e = serialfc_connect(port_num, &_h);
 
-	switch (e) {
-	case ERROR_SUCCESS:
-		break;
+    switch (e) {
+    case ERROR_SUCCESS:
+        break;
 
-	case ERROR_FILE_NOT_FOUND:
-		throw PortNotFoundException(port_num);
+    case ERROR_FILE_NOT_FOUND:
+        throw PortNotFoundException(port_num);
 
-	case ERROR_ACCESS_DENIED:
-		throw InsufficientPermissionsException();
+    case ERROR_ACCESS_DENIED:
+        throw InsufficientPermissionsException();
 
-	default:
-		throw SystemException(e);
-	}
-} 
+    default:
+        throw SystemException(e);
+    }
+}
 
 void Port::cleanup(void)
 {
-	int e = serialfc_disconnect(_h);
+    int e = serialfc_disconnect(_h);
 
-	if (e)
-			throw SystemException(e);
-} 
+    if (e)
+            throw SystemException(e);
+}
 
 Port::Port(const Port &other)
 {
-	init(other._port_num, other._overlapped);
+    init(other._port_num);
 }
 
 Port& Port::operator=(const Port &other)
 {
-	if (this != &other) {
-		HANDLE h2;
-		int e = serialfc_connect(other._port_num, other._overlapped, &h2);
+    if (this != &other) {
+        HANDLE h2;
+        int e = serialfc_connect(other._port_num, &h2);
 
-		if (e) {
-				throw SystemException(e);
-		}
-		else {
-				cleanup();
-				init(other._port_num, other._overlapped, h2);
-		}
-	}
+        if (e) {
+            throw SystemException(e);
+        }
+        else {
+            cleanup();
+            init(other._port_num, h2);
+        }
+    }
 
-	return *this;
+    return *this;
 }
 
 void Port::EnableRS485(void) throw(SystemException)
 {
-	int e = serialfc_enable_rs485(_h);
+    int e = serialfc_enable_rs485(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::DisableRS485(void) throw(SystemException)
 {
-	int e = serialfc_disable_rs485(_h);
+    int e = serialfc_disable_rs485(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 bool Port::GetRS485(void) throw(SystemException)
 {
-	BOOL status;
+    unsigned status;
 
-	int e = serialfc_get_rs485(_h, &status);
+    int e = serialfc_get_rs485(_h, &status);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return status != 0;
+    return status != 0;
 }
 
 void Port::EnableEchoCancel(void) throw(SystemException)
 {
-	int e = serialfc_enable_echo_cancel(_h);
+    int e = serialfc_enable_echo_cancel(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::DisableEchoCancel(void) throw(SystemException)
 {
-	int e = serialfc_disable_echo_cancel(_h);
+    int e = serialfc_disable_echo_cancel(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 bool Port::GetEchoCancel(void) throw(SystemException)
 {
-	BOOL status;
+    unsigned status;
 
-	int e = serialfc_get_echo_cancel(_h, &status);
+    int e = serialfc_get_echo_cancel(_h, &status);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return status != 0;
+    return status != 0;
 }
 
 void Port::EnableTermination(void) throw(SystemException)
 {
-	int e = serialfc_enable_termination(_h);
+    int e = serialfc_enable_termination(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::DisableTermination(void) throw(SystemException)
 {
-	int e = serialfc_disable_termination(_h);
+    int e = serialfc_disable_termination(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 bool Port::GetTermination(void) throw(SystemException)
 {
-	BOOL status;
+    unsigned status;
 
-	int e = serialfc_get_termination(_h, &status);
+    int e = serialfc_get_termination(_h, &status);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return status != 0;
+    return status != 0;
 }
 
 void Port::SetSampleRate(unsigned rate) throw(SystemException)
 {
-	int e = serialfc_set_sample_rate(_h, rate);
+    int e = serialfc_set_sample_rate(_h, rate);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 unsigned Port::GetSampleRate(void) throw(SystemException)
 {
-	unsigned rate;
+    unsigned rate;
 
-	int e = serialfc_get_sample_rate(_h, &rate);
+    int e = serialfc_get_sample_rate(_h, &rate);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return rate;
+    return rate;
 }
 
 void Port::SetTxTrigger(unsigned level) throw(SystemException)
 {
-	int e = serialfc_set_tx_trigger(_h, level);
+    int e = serialfc_set_tx_trigger(_h, level);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 unsigned Port::GetTxTrigger(void) throw(SystemException)
 {
-	unsigned level;
+    unsigned level;
 
-	int e = serialfc_get_tx_trigger(_h, &level);
+    int e = serialfc_get_tx_trigger(_h, &level);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return level;
+    return level;
 }
 
 void Port::SetRxTrigger(unsigned level) throw(SystemException)
 {
-	int e = serialfc_set_rx_trigger(_h, level);
+    int e = serialfc_set_rx_trigger(_h, level);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 unsigned Port::GetRxTrigger(void) throw(SystemException)
 {
-	unsigned level;
+    unsigned level;
 
-	int e = serialfc_get_rx_trigger(_h, &level);
+    int e = serialfc_get_rx_trigger(_h, &level);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return level;
+    return level;
 }
 
 void Port::SetClockRate(unsigned rate) throw(SystemException)
 {
-	int e = serialfc_set_clock_rate(_h, rate);
+    int e = serialfc_set_clock_rate(_h, rate);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::EnableIsochronous(unsigned mode) throw(SystemException)
 {
-	int e = serialfc_enable_isochronous(_h, mode);
+    int e = serialfc_enable_isochronous(_h, mode);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::DisableIsochronous() throw(SystemException)
 {
-	int e = serialfc_disable_isochronous(_h);
+    int e = serialfc_disable_isochronous(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 int Port::GetIsochronous(void) throw(SystemException)
 {
-	int mode;
+    int mode;
 
-	int e = serialfc_get_isochronous(_h, &mode);
+    int e = serialfc_get_isochronous(_h, &mode);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return mode;
+    return mode;
 }
 
 void Port::EnableExternalTransmit(unsigned num_frames) throw(SystemException)
 {
-	int e = serialfc_enable_external_transmit(_h, num_frames);
+    int e = serialfc_enable_external_transmit(_h, num_frames);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::DisableExternalTransmit() throw(SystemException)
 {
-	int e = serialfc_disable_external_transmit(_h);
+    int e = serialfc_disable_external_transmit(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 unsigned Port::GetExternalTransmit(void) throw(SystemException)
 {
-	unsigned num_frames;
+    unsigned num_frames;
 
-	int e = serialfc_get_external_transmit(_h, &num_frames);
+    int e = serialfc_get_external_transmit(_h, &num_frames);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return num_frames;
+    return num_frames;
 }
 
 void Port::SetFrameLength(unsigned num_chars) throw(SystemException)
 {
-	int e = serialfc_set_frame_length(_h, num_chars);
+    int e = serialfc_set_frame_length(_h, num_chars);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 unsigned Port::GetFrameLength(void) throw(SystemException)
 {
-	unsigned num_chars;
+    unsigned num_chars;
 
-	int e = serialfc_get_frame_length(_h, &num_chars);
+    int e = serialfc_get_frame_length(_h, &num_chars);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return num_chars;
+    return num_chars;
 }
 
 void Port::Enable9Bit(void) throw(SystemException)
 {
-	int e = serialfc_enable_9bit(_h);
+    int e = serialfc_enable_9bit(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 void Port::Disable9Bit(void) throw(SystemException)
 {
-	int e = serialfc_disable_9bit(_h);
+    int e = serialfc_disable_9bit(_h);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 }
 
 bool Port::Get9Bit(void) throw(SystemException)
 {
-	BOOL status;
+    unsigned status;
 
-	int e = serialfc_get_9bit(_h, &status);
+    int e = serialfc_get_9bit(_h, &status);
 
-	if (e)
-		throw SystemException(e);
+    if (e)
+        throw SystemException(e);
 
-	return status != 0;
+    return status != 0;
 }
 
 unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
@@ -345,19 +337,19 @@ unsigned Port::Write(const char *buf, unsigned size, OVERLAPPED *o)
     int e = serialfc_write(_h, (char *)buf, size, &bytes_written, o);
 
     if (e)
-		throw SystemException(e);
+        throw SystemException(e);
 
     return bytes_written;
 }
 
-unsigned Port::Write(const char *buf, unsigned size) 
+unsigned Port::Write(const char *buf, unsigned size)
 {
-	return Write(buf, size, 0);
+    return Write(buf, size, 0);
 }
 
 unsigned Port::Write(const std::string &s)
 {
-	return Write(s.c_str(), s.length());
+    return Write(s.c_str(), s.length());
 }
 
 unsigned Port::Read(char *buf, unsigned size, OVERLAPPED *o)
@@ -367,19 +359,19 @@ unsigned Port::Read(char *buf, unsigned size, OVERLAPPED *o)
     int e = serialfc_read(_h, buf, size, &bytes_read, o);
 
     if (e)
-		throw SystemException(e);
+        throw SystemException(e);
 
     return bytes_read;
 }
 
 unsigned Port::Read(char *buf, unsigned size)
 {
-	return Read(buf, size, (OVERLAPPED *)0);
+    return Read(buf, size, (OVERLAPPED *)0);
 }
 
 Port::operator HANDLE()
 {
-	return _h;
+    return _h;
 }
 
 } /* namespace SerialFC */
