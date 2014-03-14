@@ -29,7 +29,7 @@ Environment:
 
 
 EVT_WDF_INTERRUPT_SYNCHRONIZE SerialDecrementRTSCounter;
- 
+
 BOOLEAN
 SerialSetDTR(
     IN WDFINTERRUPT  Interrupt,
@@ -58,6 +58,12 @@ Return Value:
     UCHAR ModemControl;
 
     UNREFERENCED_PARAMETER(Interrupt);
+
+    /* 422/X-PCIe cards uses DTR for enabling/disabling the transmitter.
+       Here we are always disabling user DTR flow control to be compatible
+       with old code that has it set. */
+    if (FastcomGetCardType(Extension) == CARD_TYPE_PCIe)
+        return FALSE;
 
     ModemControl = READ_MODEM_CONTROL(Extension, Extension->Controller);
 
@@ -101,6 +107,12 @@ Return Value:
     UCHAR ModemControl;
 
     UNREFERENCED_PARAMETER(Interrupt);
+
+    /* 422/X-PCIe cards uses DTR for enabling/disabling the transmitter.
+       Here we are always disabling user DTR flow control to be compatible
+       with old code that has it set. */
+    if (FastcomGetCardType(Extension) == CARD_TYPE_PCIe)
+        return FALSE;
 
     ModemControl = READ_MODEM_CONTROL(Extension, Extension->Controller);
 
@@ -696,6 +708,12 @@ Return Value:
     PSERIAL_HANDFLOW HandFlow = S->Data;
 
     UNREFERENCED_PARAMETER(Interrupt);
+
+    /* 422/X-PCIe cards uses DTR for enabling/disabling the transmitter.
+       Here we are always disabling user DTR flow control to be compatible
+       with old code that has it set. */
+    if (FastcomGetCardType(Extension) == CARD_TYPE_PCIe)
+        HandFlow->ControlHandShake &= ~SERIAL_DTR_MASK;
 
     SerialSetupNewHandFlow(
         Extension,
