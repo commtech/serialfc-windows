@@ -1,5 +1,8 @@
 # ChangeLog
 
+## [2.4.6](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.6) (03/14/2014)
+- Ignore DTR setting on 422/X-PCIe cards since they aren't allowed.
+
 ## [2.4.5](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.5) (02/13/2014)
 - Fixed test utility failing on 422/X-PCIe cards
 - Fixed 950 trigger level issue causing missing interrupts
@@ -31,7 +34,7 @@
 - Fixed echo cancel and termination being set incorrectly on 422/X-PCIe cards
 
 ## [2.2.2](https://github.com/commtech/serialfc-windows/releases/tag/v2.2.2) (9/20/2013)
-- Updated qserialfc to 
+- Updated qserialfc to
 [v1.2.2](https://github.com/commtech/qserialfc/releases/tag/v1.2.2)
 - Reinitialize the card correctly after going to sleep
 
@@ -46,7 +49,7 @@
 - Fixed a bug where RS485 wasn't being fully setup on FSCC devices.
 - Added remaining get/set functions for the trigger levels.
 - Added support for getting the RS485 value.
-- Fixed Python bugs where disable_external_transmit and 
+- Fixed Python bugs where disable_external_transmit and
 - disable_isocchronous were failing.
 
 ## [2.1.5](https://github.com/commtech/serialfc-windows/releases/tag/v2.1.5) (6/21/2013)
