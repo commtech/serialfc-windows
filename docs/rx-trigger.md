@@ -1,5 +1,7 @@
 # RX Trigger Level
 
+The RX FIFO trigger level generates an interrupt whenever the receive FIFO level rises to this preset trigger level.
+
 ###### Code Support
 | Code | Version |
 | ---- | ------- |
