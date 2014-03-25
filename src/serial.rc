@@ -49,14 +49,14 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "Commtech, Inc.\0"
-            VALUE "FileDescription", "Serial Device Driver\0"
+            VALUE "FileDescription", "Fastcom Serial Driver\0"
             VALUE "FileVersion", "2.4.6\0"
             VALUE "InternalName", "serialfc.sys\0"
             VALUE "LegalCopyright", "Copyright (C) Commtech 2014\0"
             VALUE "LegalTrademarks", "Fastcom\0"
             VALUE "OriginalFilename", "serialfc.sys\0"
             VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "Fastcom Serial Family\0"
+            VALUE "ProductName", "serialfc-windows\0"
             VALUE "ProductVersion", "2.4.6\0"
             VALUE "SpecialBuild", "\0"
         END
