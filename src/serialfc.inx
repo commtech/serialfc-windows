@@ -36,6 +36,7 @@ ExcludeFromSelect=*
 
 [SourceDisksFiles]
 serialfc.sys=1
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
 
 [SourceDisksNames]
 1=%DISK_NAME%,
@@ -81,9 +82,6 @@ CopyFiles=CoInstaller_CopyFiles
 
 [CoInstaller_CopyFiles]
 WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
-
-[SourceDisksFiles]
-WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
 
 [CoInstaller_AddReg]
 HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
