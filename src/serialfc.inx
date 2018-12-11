@@ -43,6 +43,7 @@ WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with
 
 [DestinationDirs]
 DefaultDestDir  = 12
+CoInstaller_CopyFiles = 11
 
 ; For XP and later
 [Standard.NT$ARCH$]
@@ -73,9 +74,6 @@ ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
 ServiceBinary  = %12%\serialfc.sys
 
 ;-------------- WDF Coinstaller installation
-[DestinationDirs]
-CoInstaller_CopyFiles = 11
-
 [Serial_Inst.NT.CoInstallers]
 AddReg=CoInstaller_AddReg
 CopyFiles=CoInstaller_CopyFiles
