@@ -2303,7 +2303,12 @@ Return Value:
                          );
 
    KeLowerIrql(oldIrql);
+   // JRD - Following section removed because for some reason with enough
+   // ports installed at once it causes some systems to fail.
+   // It should be fine, as the INF for this driver should never catch anything
+   // that isn't a Commtech port.
 
+/*
    if (value1 == value2) {
 
       SerialLogError(
@@ -2328,7 +2333,7 @@ Return Value:
    }
 
    AllDone: ;
-
+*/
 
    //
    // If we think that there is a serial device then we determine
