@@ -1,5 +1,9 @@
 # ChangeLog
 
+## [2.4.7](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.6) (12/11/2018)
+- Fixed an issue with certain systems booting up and failing to find some serial ports.
+- Updated the .inx file to adhere to InfVerifier standards.
+
 ## [2.4.6](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.6) (03/14/2014)
 - Ignore DTR setting on 422/X-PCIe cards since they aren't allowed.
 
