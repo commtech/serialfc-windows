@@ -722,12 +722,10 @@ doTrasmitStuff:;
                             ULONG amountToWrite;
 
                             if (Extension->FifoPresent) {
-
-                                amountToWrite = (Extension->TxFifoAmount <
-                                                 Extension->WriteLength)?
-                                                Extension->TxFifoAmount:
-                                                Extension->WriteLength;
-
+                                // Trying to get the min of 3 values, basically.
+                                FastcomGetTxFifoSpace(Extension, &amountToWrite);
+                                if(amountToWrite > Extension->TxFifoAmount) amountToWrite = Extension->TxFifoAmount;
+                                if(amountToWrite > Extension->WriteLength) amountToWrite = Extension->WriteLength;
                             } else {
 
                                 amountToWrite = 1;

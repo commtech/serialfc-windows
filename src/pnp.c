@@ -1263,17 +1263,17 @@ Return Value:
     switch (FastcomGetCardType(pDevExt)) {
     case CARD_TYPE_PCI:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar0) / 0x200;
-        pDevExt->TxFifoAmount = 64;
+        pDevExt->TxFifoAmount = PCI_FIFO_SIZE;
         break;
 
     case CARD_TYPE_PCIe:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar0) / 0x400;
-        pDevExt->TxFifoAmount = 256;
+        pDevExt->TxFifoAmount = PCIE_FIFO_SIZE;
         break;
 
 	case CARD_TYPE_FSCC:
         pDevExt->Channel = ((PConfigData->Controller.LowPart & 0x0000ffff) - pDevExt->Bar1) / 0x8;
-        pDevExt->TxFifoAmount = 128;
+        pDevExt->TxFifoAmount = FSCC_FIFO_SIZE;
 		break;
 
 	default:

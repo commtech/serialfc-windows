@@ -600,7 +600,12 @@ KAFFINITY
 #define SERIAL_LAST_INTERRUPT_GROUP         0xFFFF
 #define SERIAL_PREFERRED_INTERRUPT_GROUP    SERIAL_LAST_INTERRUPT_GROUP
 
-
+//
+// These are the FIFO sizes of our card families.
+//
+#define PCI_FIFO_SIZE 64
+#define PCIE_FIFO_SIZE 256
+#define FSCC_FIFO_SIZE 128
 
 NTSTATUS FastcomSetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
 void FastcomGetSampleRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value);
@@ -660,6 +665,7 @@ UCHAR FsccGetPrev(SERIAL_DEVICE_EXTENSION *pDevExt);
 UINT16 FsccGetPdev(SERIAL_DEVICE_EXTENSION *pDevExt);
 
 NTSTATUS PCIeSetBaudRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned value);
+NTSTATUS FastcomGetTxFifoSpace(SERIAL_DEVICE_EXTENSION *pDevExt, ULONG *value);
 
 enum FASTCOM_CARD_TYPE FastcomGetCardType(SERIAL_DEVICE_EXTENSION *pDevExt);
 

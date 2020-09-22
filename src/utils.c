@@ -41,6 +41,7 @@ SerialRundownIrpRefs(
     );
 
 static const PHYSICAL_ADDRESS SerialPhysicalZero = {0};
+void FastcomGetTxFifoFillFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, UCHAR *value);
 
 VOID
 SerialPurgeRequests(
@@ -2353,6 +2354,49 @@ NTSTATUS FastcomGetRxTrigger(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned *value)
     }
 
     return STATUS_SUCCESS;
+}
+
+NTSTATUS FastcomGetTxFifoSpace(SERIAL_DEVICE_EXTENSION *pDevExt, ULONG *value)
+{
+    UCHAR fill_level;
+    int room_left = 0;
+    
+    // We want to make sure 
+    *value = 0;
+    switch (FastcomGetCardType(pDevExt)) {
+        case CARD_TYPE_PCI:
+            fill_level = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
+            room_left = PCI_FIFO_SIZE - fill_level;
+            break;
+        case CARD_TYPE_PCIe:
+            fill_level = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
+            room_left = PCIE_FIFO_SIZE - fill_level;
+            break;
+        case CARD_TYPE_FSCC:
+            FastcomGetTxFifoFillFSCC(pDevExt, &fill_level);
+            room_left = FSCC_FIFO_SIZE - fill_level;
+            break;
+        default:
+            return STATUS_NOT_SUPPORTED;
+    }
+    if(room_left > 0) *value = room_left;
+    
+    return STATUS_SUCCESS;
+}
+
+void FastcomGetTxFifoFillFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, UCHAR *value)
+{
+    UCHAR orig_lcr;
+    
+    orig_lcr = READ_LINE_CONTROL(pDevExt, pDevExt->Controller);
+
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, 0); /* Ensure last LCR value is not 0xbf */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR | 0x80); /* Enable TFL read enable */
+    *value = pDevExt->SerialReadUChar(pDevExt->Controller + 0x4);
+    pDevExt->SerialWriteUChar(pDevExt->Controller + SPR_OFFSET, ACR_OFFSET); /* To allow access to ACR */
+    pDevExt->SerialWriteUChar(pDevExt->Controller + ICR_OFFSET, pDevExt->ACR); /* Restore original ACR value */
+    WRITE_LINE_CONTROL(pDevExt, pDevExt->Controller, orig_lcr);
 }
 
 void FastcomSetRS485PCI(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN enable)
