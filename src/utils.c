@@ -2360,9 +2360,11 @@ NTSTATUS FastcomGetTxFifoSpace(SERIAL_DEVICE_EXTENSION *pDevExt, ULONG *value)
 {
     UCHAR fill_level;
     int room_left = 0;
-    
-    // We want to make sure 
-    *value = 0;
+
+    // Lets initialize the value impossibly high.
+    // This will catch weird cases, since the other
+    // two possibly values must be lower.
+    *value = sizeof(ULONG);
     switch (FastcomGetCardType(pDevExt)) {
         case CARD_TYPE_PCI:
             fill_level = pDevExt->SerialReadUChar(pDevExt->Controller + UART_EXAR_TXTRG);
@@ -2377,9 +2379,10 @@ NTSTATUS FastcomGetTxFifoSpace(SERIAL_DEVICE_EXTENSION *pDevExt, ULONG *value)
             room_left = FSCC_FIFO_SIZE - fill_level;
             break;
         default:
+            SerialDbgPrintEx(TRACE_LEVEL_WARNING, DBG_PNP, "Non-Fastcom card attempted to GetTxFifoSpace!\n");
             return STATUS_NOT_SUPPORTED;
     }
-    if(room_left > 0) *value = room_left;
+    if(room_left >= 0) *value = room_left;
     
     return STATUS_SUCCESS;
 }
