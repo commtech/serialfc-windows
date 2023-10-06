@@ -1,5 +1,12 @@
 # ChangeLog
 
+## [3.0.0.0](https://github.com/commtech/serialfc-windows/releases/tag/v3.0.0.0) ()
+- Removed ClockRate and floating point math from the drivers.
+- Added ClockBits for FSCC and PCI family.
+- Removed ClockRate from registry, and set default values for ClockBits.
+- Updated code to support Windows Universal.
+- No longer supports anything before Windows 10.
+
 ## [2.4.7](https://github.com/commtech/serialfc-windows/releases/tag/v2.4.6) (12/11/2018)
 - Fixed an issue with certain systems booting up and failing to find some serial ports.
 - Updated the .inx file to adhere to InfVerifier standards.

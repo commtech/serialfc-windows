@@ -282,8 +282,7 @@ Return Value:
               &DriverDefaultsPtr->IsochronousDefault);
 
     if (!NT_SUCCESS (status)) {
-
-        DriverDefaultsPtr->IsochronousDefault = SERIAL_ISOCHRONOUS_DEFAULT;
+        DriverDefaultsPtr->IsochronousDefault = (ULONG)SERIAL_ISOCHRONOUS_DEFAULT;
 
         status = WdfRegistryAssignULong(hKey,
                             &valueName,
@@ -352,7 +351,8 @@ Return Value:
 
     if (!NT_SUCCESS (status)) {
 
-        DriverDefaultsPtr->FixedBaudRateDefault = SERIAL_FIXED_BAUD_RATE_DEFAULT;
+
+        DriverDefaultsPtr->FixedBaudRateDefault = (ULONG)SERIAL_FIXED_BAUD_RATE_DEFAULT;
 
         status = WdfRegistryAssignULong(hKey,
                             &valueName,

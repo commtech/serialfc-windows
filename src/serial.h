@@ -1828,6 +1828,16 @@ typedef struct   _SUPPORTED_BAUD_RATES {
     ULONG Mask;
 }SUPPORTED_BAUD_RATES;
 
+struct clock_data_fscc {
+    unsigned long frequency;
+    unsigned char clock_bits[20];
+};
+
+struct clock_data_335 {
+    unsigned long frequency;
+    unsigned int clock_bits;
+};
+
 #define DLL_OFFSET 0x0
 #define DLM_OFFSET 0x1
 #define DLD_OFFSET 0x2
@@ -1887,3 +1897,5 @@ enum FASTCOM_CARD_TYPE { CARD_TYPE_PCI, CARD_TYPE_PCIe, CARD_TYPE_FSCC, CARD_TYP
 
 /* FSCC Bar0 register set */
 #define VSTR_OFFSET 0x4c
+
+#define DEFAULT_FSCC_CLOCK_BITS {0x0f, 0x61, 0xe5, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x16, 0x40, 0x01, 0x04, 0x00, 0xff, 0xff, 0xff }

@@ -38,7 +38,6 @@ DRIVER_INITIALIZE DriverEntry;
 
 EVT_WDF_DRIVER_DEVICE_ADD SerialEvtDeviceAdd;
 EVT_WDF_OBJECT_CONTEXT_CLEANUP SerialEvtDriverContextCleanup;
-
 EVT_WDF_DEVICE_CONTEXT_CLEANUP SerialEvtDeviceContextCleanup;
 EVT_WDF_DEVICE_D0_ENTRY SerialEvtDeviceD0Entry;
 EVT_WDF_DEVICE_D0_EXIT SerialEvtDeviceD0Exit;
@@ -631,7 +630,8 @@ void FastcomEnableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
 void FastcomDisableRS485(SERIAL_DEVICE_EXTENSION *pDevExt);
 NTSTATUS FastcomGetRS485(SERIAL_DEVICE_EXTENSION *pDevExt, BOOLEAN *enabled);
 
-NTSTATUS FastcomSetClockRate(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned rate);
+NTSTATUS FastcomSetClockBitsFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, struct clock_data_fscc *clock_data);
+NTSTATUS FastcomSetClockBitsPCI(SERIAL_DEVICE_EXTENSION *pDevExt, struct clock_data_335 *clock_data);
 
 NTSTATUS FastcomSetIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, int mode);
 NTSTATUS FastcomEnableIsochronous(SERIAL_DEVICE_EXTENSION *pDevExt, unsigned mode);

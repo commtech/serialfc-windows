@@ -149,8 +149,8 @@ SerialDeviceFileCreateWorker (
         case MmLargeSystem: {
 
             extension->BufferSize = 4096;
-            extension->InterruptReadBuffer = ExAllocatePoolWithTag(
-                                                 NonPagedPool,
+            extension->InterruptReadBuffer = ExAllocatePool2(
+                                                POOL_FLAG_NON_PAGED,
                                                  extension->BufferSize,
                                                  POOL_TAG
                                                  );
@@ -164,8 +164,8 @@ SerialDeviceFileCreateWorker (
         case MmMediumSystem: {
 
             extension->BufferSize = 1024;
-            extension->InterruptReadBuffer = ExAllocatePoolWithTag(
-                                                 NonPagedPool,
+            extension->InterruptReadBuffer = ExAllocatePool2(
+                POOL_FLAG_NON_PAGED,
                                                  extension->BufferSize,
                                                  POOL_TAG
                                                  );
@@ -179,8 +179,8 @@ SerialDeviceFileCreateWorker (
         case MmSmallSystem: {
 
             extension->BufferSize = 128;
-            extension->InterruptReadBuffer = ExAllocatePoolWithTag(
-                                                 NonPagedPool,
+            extension->InterruptReadBuffer = ExAllocatePool2(
+                POOL_FLAG_NON_PAGED,
                                                  extension->BufferSize,
                                                  POOL_TAG
                                                  );

@@ -2048,12 +2048,13 @@ Return Value:
     // Clean up error conditions
     //
 
-    PDevExt->DeviceName.Buffer = NULL;
-
     if (PDevExt->CreatedSerialCommEntry) {
         RtlDeleteRegistryValue(RTL_REGISTRY_DEVICEMAP, SERIAL_DEVICE_MAP,
-                               PDevExt->DeviceName.Buffer);
+            PDevExt->DeviceName.Buffer);
     }
+
+    PDevExt->DeviceName.Buffer = NULL;
+
 
     if(stringHandle) {
         WdfObjectDelete(stringHandle);

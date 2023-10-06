@@ -1309,8 +1309,8 @@ Return Value:
             try {
 
                 reqContext->Type3InputBuffer =
-                    ExAllocatePoolWithQuotaTag(
-                        NonPagedPool,
+                    ExAllocatePool2(
+                        POOL_FLAG_NON_PAGED,
                         Rs->InSize,
                         POOL_TAG
                         );
@@ -2029,13 +2029,32 @@ Return Value:
             break;
         }
         case IOCTL_FASTCOM_SET_CLOCK_RATE: {
-            Status = WdfRequestRetrieveInputBuffer(Request, sizeof(unsigned), &buffer, &bufSize);
-            if( !NT_SUCCESS(Status) ) {
-                SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
-                break;
-            }
+            Status = STATUS_NOT_SUPPORTED;
+            break;
+        }
+        case IOCTL_FASTCOM_SET_CLOCK_BITS: {
 
-            Status = FastcomSetClockRate(Extension, *((unsigned *)buffer));
+            switch (FastcomGetCardType(Extension)) {
+                case CARD_TYPE_FSCC:
+                    Status = WdfRequestRetrieveInputBuffer(Request, sizeof(struct clock_data_fscc), &buffer, &bufSize);
+                    if (!NT_SUCCESS(Status)) {
+                        SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                        break;
+                    }
+                    Status = FastcomSetClockBitsFSCC(Extension, (struct clock_data_fscc*)buffer);
+                    break;
+                case CARD_TYPE_PCI:
+                    Status = WdfRequestRetrieveInputBuffer(Request, sizeof(struct clock_data_335), &buffer, &bufSize);
+                    if (!NT_SUCCESS(Status)) {
+                        SerialDbgPrintEx(TRACE_LEVEL_ERROR, DBG_IOCTLS, "Could not get request memory buffer %X\n", Status);
+                        break;
+                    }
+                    Status = FastcomSetClockBitsPCI(Extension, (struct clock_data_335*)buffer);
+                    break;
+                default:
+                    Status = STATUS_NOT_SUPPORTED;
+                    break;
+            }
             break;
         }
         case IOCTL_FASTCOM_ENABLE_ISOCHRONOUS: {

@@ -278,10 +278,10 @@ Return Value:
                     // It may also reveal a new interrupt cause.
                     //
                     UCHAR ReceivedChar;
-                    UCHAR NinthBit;
+                    UCHAR NinthBit = 0;
 
                     do {
-                        BOOLEAN NinthBit;
+                        //BOOLEAN NinthBit;
                         if (Extension->NineBit) {
                             UCHAR lsr = Extension->SerialReadUChar(Extension->Controller + LSR_OFFSET);
                             NinthBit = (lsr & 0x04) >> 2; // LSR[2] = 9th bit
