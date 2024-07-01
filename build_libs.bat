@@ -7,7 +7,7 @@ cd %~dp0
 :building_libs
 echo Building DLLs...
 pushd %TOP%\c\ & nmake clean & nmake & nmake DEBUG & popd > nul
-pushd "%TOP%\c++\" & nmake clean & nmake & nmake DEBUG & popd > nul
+:pushd "%TOP%\c++\" & nmake clean & nmake & nmake DEBUG & popd > nul
 pushd %TOP%\net\ & nmake clean & nmake & nmake DEBUG & popd > nul
 
 :building_exes
