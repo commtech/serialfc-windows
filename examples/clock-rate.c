@@ -17,7 +17,7 @@ int main(void)
 
 	switch(type) {
 		case SERIALFC_CARD_TYPE_FSCC: {
-			struct clock_data_fscc clock_data;
+			clock_data_fscc clock_data;
 			
 			clock_data.frequency = 18432000;
 			return_value = calculate_clock_bits_fscc(&clock_data, 10);
@@ -28,7 +28,7 @@ int main(void)
 			break;
 		}
 		case SERIALFC_CARD_TYPE_PCI: {
-			struct clock_data_335 clock_data;
+			clock_data_335 clock_data;
 			
 			clock_data.frequency = 18432000;
 			return_value = calculate_clock_bits_335(&clock_data);

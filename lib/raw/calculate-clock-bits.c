@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #include "calculate-clock-bits.h"
 
 #define result_array_size 512
@@ -52,7 +51,7 @@ struct IcpRsStruct {
 int GetICS30703Data(struct clock_data_fscc *clock_data, unsigned long ppm);
 int GetICS30702Data(struct clock_data_335 *clock_data);
 
-int calculate_clock_bits_fscc(struct clock_data_fscc *clock_data, unsigned long ppm)
+int calculate_clock_bits_fscc(clock_data_fscc *clock_data, unsigned long ppm)
 {
     int t;
     int i;
@@ -96,7 +95,17 @@ int calculate_clock_bits_fscc(struct clock_data_fscc *clock_data, unsigned long 
 	else return 1;
 }
 
-int calculate_clock_bits_335(struct clock_data_335 *clock_data)
+int calculate_clock_bits_asynccom(clock_data_asynccom *clock_data, unsigned long ppm)
+{
+	return calculate_clock_bits_fscc(clock_data, ppm);
+}
+
+int calculate_clock_bits_synccom(clock_data_synccom *clock_data, unsigned long ppm)
+{
+	return calculate_clock_bits_fscc(clock_data, ppm);
+}
+
+int calculate_clock_bits_335(clock_data_335 *clock_data)
 {
     return GetICS30702Data(clock_data);
 }

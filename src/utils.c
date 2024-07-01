@@ -1756,6 +1756,10 @@ Return Value:
       } else {
          maxRemain = maxRemain80;
       }
+      // TODO maybe replace the above with.. this? I mean, the goal is to get 1% of the clock
+      // TODO this is borrowed from previous version, but why is the remainder calculated based
+      // off of the clock and not the baud rate? Aren't we more concerned with baud accuracy?
+      maxRemain = (ULONG)(ClockRate / 100);
 
       calculatedDivisor = (SHORT)(ClockRate / denominator);
       remainder = ClockRate % denominator;
@@ -3577,32 +3581,32 @@ void FastcomInitTriggers(SERIAL_DEVICE_EXTENSION *pDevExt)
     }
 }
 
-// TODO this might need to be 1843200 instead of 18432000
 void SerialFcInit(
     IN PSERIAL_DEVICE_EXTENSION pDevExt,
     IN PCONFIG_DATA PConfigData)
 {
     struct clock_data_fscc default_fscc_clock;
     struct clock_data_335 default_335_clock;
-    unsigned char default_bits[20] = DEFAULT_FSCC_CLOCK_BITS;
+    unsigned char default_fscc_bits[20] = DEFAULT_FSCC_CLOCK_BITS;
     int i;
 
     FastcomInitGpio(pDevExt);
     FastcomInitTriggers(pDevExt);
 
-    default_335_clock.frequency = 18432000;
-    default_335_clock.clock_bits = 1049473;
-
-    default_fscc_clock.frequency = 18432000;
-    for (i = 0; i < 20; i++) default_fscc_clock.clock_bits[i] = default_bits[i];
-
     switch (FastcomGetCardType(pDevExt)) {
-    case CARD_TYPE_FSCC:
-        FastcomSetClockBitsFSCC(pDevExt, &default_fscc_clock);
-        break;
-    case CARD_TYPE_PCI:
-        FastcomSetClockBitsPCI(pDevExt, &default_335_clock);
-        break;
+        case CARD_TYPE_FSCC:
+            default_fscc_clock.frequency = 18432000;
+            for (i = 0; i < 20; i++) default_fscc_clock.clock_bits[i] = default_fscc_bits[i];
+            FastcomSetClockBitsFSCC(pDevExt, &default_fscc_clock);
+            break;
+        case CARD_TYPE_PCI:
+            default_335_clock.frequency = 18432000;
+            default_335_clock.clock_bits = DEFAULT_335_CLOCK_BITS;
+            FastcomSetClockBitsPCI(pDevExt, &default_335_clock);
+            break;
+        case CARD_TYPE_PCIe:
+            pDevExt->ClockRate = 125000000;
+            break;
     }
 
     if (PConfigData) {
