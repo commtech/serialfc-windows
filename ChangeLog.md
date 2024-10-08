@@ -1,6 +1,6 @@
 # ChangeLog
 
-## [3.0.0.0](https://github.com/commtech/serialfc-windows/releases/tag/v3.0.0.0) ()
+## [3.0.0.0](https://github.com/commtech/serialfc-windows/releases/tag/v3.0.0.0) (10/07/2024)
 - Removed ClockRate and floating point math from the drivers.
 - Added ClockBits for FSCC and PCI family.
 - Removed ClockRate from registry, and set default values for ClockBits.
