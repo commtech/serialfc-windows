@@ -2616,7 +2616,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     case 3:
     case 6:
     case 8:
-        new_cks |= 0xD0;
+        new_cks |= 0xC0;
         new_mdm |= 0x04;
         break;
 
@@ -2624,7 +2624,7 @@ NTSTATUS FastcomSetIsochronousFSCC(SERIAL_DEVICE_EXTENSION *pDevExt, int mode)
     case 1:
     case 4:
     case 7:
-        new_cks |= 0x90;
+        new_cks |= 0x80;
         break;
 
     case 9:
