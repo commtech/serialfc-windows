@@ -1,5 +1,8 @@
 # ChangeLog
 
+## [3.0.0.1](https://github.com/commtech/serialfc-windows/releases/tag/v3.0.0.1) (11/07/2024)
+- Fixed an issue with isochronous modes 7 and 8 and the DTR pin.
+
 ## [3.0.0.0](https://github.com/commtech/serialfc-windows/releases/tag/v3.0.0.0) (10/07/2024)
 - Removed ClockRate and floating point math from the drivers.
 - Added ClockBits for FSCC and PCI family.
